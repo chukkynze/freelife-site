@@ -13,5 +13,15 @@
 
 Route::get('/', function()
 {
-	return View::make('hello');
+	return View::make('landing/home');
 });
+
+Route::get('/vendors/{id}', function($id){
+    return "vendor #".$id;
+})->where('id', '[0-9]+')
+;
+
+Route::get('/vendors', function(){
+    return "All vendors";
+})
+;

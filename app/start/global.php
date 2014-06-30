@@ -31,7 +31,10 @@ ClassLoader::addDirectories(array(
 |
 */
 
-Log::useFiles(storage_path().'/logs/laravel.log');
+#Log::useFiles(storage_path().'/logs/laravel.log');
+$logFile = 'applog-'.date("Y-m-d").'.log';
+
+Log::useDailyFiles(storage_path().'/logs/'.$logFile);
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +52,12 @@ Log::useFiles(storage_path().'/logs/laravel.log');
 App::error(function(Exception $exception, $code)
 {
 	Log::error($exception);
+});
+
+App::missing(function(Exception $exception)
+{
+	Log::error($exception);
+    return Response::make("Page not Found", 404);
 });
 
 /*
