@@ -33,6 +33,7 @@
   <!-- Custom css -->
   <link type="text/css" rel="stylesheet" href="/landing/css/layout.css">
   <link type="text/css" id="colors" rel="stylesheet" href="/landing/css/colors.css">
+  <link type="text/css" id="colors" rel="stylesheet" href="/landing/css/pricing_tables.css">
   <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script> <![endif]-->
   <script src="/landing/js/modernizr-2.6.1.min.js"></script>
 <!-- Favicons
@@ -61,18 +62,19 @@
             <div class="container">
                 <div class="row">
                     <div class="span12">
-                        <a href="index.html" class="brand">
+                        <a href="/" class="brand">
                             <img src="/landing/images/main-logo.png" alt="ALTEA website template"/>
                         </a>
                         <nav id="resMainMenu" class="scrollMenu">
                             <ul class="nav clearfix">
                                 <li class="active"><a href="#home">Home</a> </li>
 
-                                <li><a href="#news">For Vendors</a> </li>
-                                <li><a href="#services">For Freelancers</a> </li>
-                                <li><a href="#works">Pricing</a> </li>
+                                <li><a href="#freelancerSection">For Freelancers</a> </li>
+                                <li><a href="#vendorSection">For Vendors</a> </li>
+                                <li><a href="#pricingSection">Pricing</a> </li>
                                 <li><a href="#team">Our Team</a> </li>
                                 <li><a href="#contactSlice">Contact us</a> </li>
+                                <li><a href="/login">Login</a> </li>
                             </ul>
                         </nav>
                     </div>
@@ -98,12 +100,12 @@
         </section>
 
 
-        <section class="slice color4" id="news">
+        <section class="slice color4" id="freelancerSection">
             <div class="container imgHover">
                 <div class="row">
 
                     <div class="span12">
-                        <h1>Empower your contact list | </h1>
+                        <h1>Freelancer Value Offer</h1>
                     </div>
 
                     <article class="span4">
@@ -113,10 +115,7 @@
                         <div class="media-hover">
                             <div class="mask"></div>
                             <div class="iconLinks">
-                                <a href="blog-post.html" title="link" target="_blank" class="iconWrapper">
-                                    <i class="icon-link"></i>
-                                </a>
-                                <a href="/landing/images/news/news1.jpg" class="prettyPhoto iconWrapper" title="Zoom" >
+                                <a href="/landing/images/news/news1.jpg" class="prettyPhoto iconWrapper" title="Longer #1 value offer details. Nullam sed tortor odio. Suspendisse tincidunt dictum nisi, nec convallis odio." >
                                     <i class="icon-search"></i>
                                 </a>
                             </div>
@@ -124,14 +123,13 @@
                         <div class="media-list newsList">
                             <div class="media">
                                 <section class="newsDate">
-                                    <h4>12</h4>
-                                    <span>Oct.</span>
+                                    <h4>#1</h4>
                                 </section>
                                 <section class="media-body">
-                                    <h3>I feel good</h3>
+                                    <h3>freelancer value offer #1</h3>
                                     <p>Nullam sed tortor odio. Suspendisse tincidunt dictum nisi, nec convallis odio. </p>
-                                    <a href="blog-post.html" class="btn btn-small btn-inverse">
-                                        <i class="icon-right-open-mini"></i>read more
+                                    <a href="/freelancer-signup" class="btn btn-small btn-inverse">
+                                        sign up
                                     </a>
                                 </section>
                             </div>
@@ -144,10 +142,7 @@
                         <div class="media-hover">
                             <div class="mask"></div>
                             <div class="iconLinks">
-                                <a href="#vendorLink1" title="link" target="_blank" class="iconWrapper">
-                                    <i class="icon-link"></i>
-                                </a>
-                                <a href="/landing/images/news/news2.jpg" class="prettyPhoto iconWrapper" title="Zoom" >
+                                <a href="/landing/images/news/news2.jpg" class="prettyPhoto iconWrapper" title="Longer #2 value offer details. Nullam sed tortor odio. Suspendisse tincidunt dictum nisi, nec convallis odio." >
                                     <i class="icon-search"></i>
                                 </a>
                             </div>
@@ -155,14 +150,13 @@
                         <div class="media-list newsList">
                             <div class="media">
                                 <section class="newsDate">
-                                    <h4>25</h4>
-                                    <span>Nov.</span>
+                                    <h4>#2</h4>
                                 </section>
                                 <section class="media-body">
-                                    <h3>I updated my facebook status</h3>
+                                    <h3>freelancer value offer #2</h3>
                                     <p>Nullam sed tortor odio. Suspendisse tincidunt dictum nisi, nec convallis odio. </p>
-                                    <a href="blog-post.html" class="btn btn-small btn-inverse">
-                                        <i class="icon-right-open-mini"></i>read more
+                                    <a href="/freelancer-signup" class="btn btn-small btn-inverse">
+                                        sign up
                                     </a>
                                 </section>
                             </div>
@@ -175,10 +169,7 @@
                         <div class="media-hover">
                             <div class="mask"></div>
                             <div class="iconLinks">
-                                <a href="blog-post.html" title="link" target="_blank" class="iconWrapper">
-                                    <i class="icon-link"></i>
-                                </a>
-                                <a href="/landing/images/news/news3.jpg" class="prettyPhoto iconWrapper" title="Zoom" >
+                                <a href="/landing/images/news/news3.jpg" class="prettyPhoto iconWrapper" title="Longer #3 value offer details. Nullam sed tortor odio. Suspendisse tincidunt dictum nisi, nec convallis odio." >
                                     <i class="icon-search"></i>
                                 </a>
                             </div>
@@ -186,14 +177,13 @@
                         <div class="media-list newsList">
                             <div class="media">
                                 <section class="newsDate">
-                                    <h4>02</h4>
-                                    <span>Dec.</span>
+                                    <h4>#3</h4>
                                 </section>
                                 <section class="media-body">
-                                    <h3>I just got the new iPhone</h3>
+                                    <h3>freelancer value offer #3</h3>
                                     <p>Nullam sed tortor odio. Suspendisse tincidunt dictum nisi, nec convallis odio. </p>
-                                    <a href="blog-post.html" class="btn btn-small btn-inverse">
-                                        <i class="icon-right-open-mini"></i>read more
+                                    <a href="/freelancer-signup" class="btn btn-small btn-inverse">
+                                        sign up
                                     </a>
                                 </section>
                             </div>
@@ -205,7 +195,7 @@
 
 
         <nav class="arrowsNav">
-            <a href="#services" class="navDown color4">
+            <a href="#vendorSection" class="navDown color4">
                 <i class="icon-down-open"></i>
             </a>
             <a href="#home" class="navUp color1">
@@ -219,15 +209,15 @@
                 <div class="iconWrapper iconBig color4">
                     <i class="icon-megaphone "></i>
                 </div>
-                <blockquote class="bigTitle">Good design is good business.</blockquote>
+                <blockquote class="bigTitle">Feel good quote #1.</blockquote>
             </div>
         </div>
 
-        <section class="slice" id="services">
+        <section class="slice" id="vendorSection">
             <div class="container">
                 <div class="row">
                     <div class="span12">
-                        <h1>Our services</h1>
+                        <h1>Vendor value offer</h1>
                     </div>
 
                     <div class="span3">
@@ -236,8 +226,8 @@
                                 <i class="icon-heart"></i>
                             </div>
                             <section class="boxContent">
-                                <h2>Clean design</h2>
-                                <p>Elegant layouts that help you organize your content in the best way.</p>
+                                <h2>Value Offer #1</h2>
+                                <p>1 Long sentence describing vendor value offer #1</p>
                             </section>
                         </article>
                     </div>
@@ -248,8 +238,8 @@
                                 <i class="icon-star-empty"></i>
                             </div>
                             <section class="boxContent">
-                                <h2>HTML5 &amp; CSS3</h2>
-                                <p>Built with modern technologies like HTML5 and CSS3, SEO optimised.</p>
+                                <h2>Value Offer #2</h2>
+                                <p>1 Long sentence describing vendor value offer #2</p>
                             </section>
                         </article>
                     </div>
@@ -260,8 +250,8 @@
                                 <i class="icon-cog"></i>
                             </div>
                             <section class="boxContent">
-                                <h2>Easy Customization</h2>
-                                <p>Clear code and documentation, build your website in no time!</p>
+                                <h2>Value Offer #3</h2>
+                                <p>1 Long sentence describing vendor value offer #3</p>
                             </section>
                         </article>
                     </div>
@@ -272,31 +262,36 @@
                                 <i class="icon-mobile-1"></i>
                             </div>
                             <section class="boxContent">
-                                <h2>Responsive design</h2>
-                                <p>Compatible with various desktop, tablet, and mobile devices.</p>
+                                <h2>Value Offer #4</h2>
+                                <p>1 Long sentence describing vendor value offer #4</p>
                             </section>
                         </article>
                     </div>
                 </div>
+            </div>
+            <div class="container text-center">
+                <a href="/vendor-signup" class="btn btn-large btn-inverse">
+                    sign up
+                </a>
             </div>
         </section>
         <section class="slice color1">
             <div class="container">
                 <div class="row">
                     <div class="span4">
-                        <img src="/landing/images/theme-pics/services.png" alt="services">
+                        <img src="/landing/images/theme-pics/services.png" alt="vendorSection">
                     </div>
 
                     <div class="span4">
-                        <h2>Choose your color, build your website, now!</h2>
+                        <h2>More details on value offer & close</h2>
                         <p>You want a guarantee, buy a toaster. Dyin' ain't much of a livin', boy. You see, in this world there's two kinds of people, my friend: Those with loaded guns and those who dig. You dig. Are you feeling lucky punk This is my gun, Clyde! What you have to ask yourself is, do I feel lucky. Well do ya' punk? Are you feeling lucky punk.</p><p> When a naked man's chasing a woman through an alley with a butcher knife and a hard-on, I figure he's not out collecting for the Red Cross. Well, do you have anything to say for yourself? Dyin' ain't much of a livin', boy. Are you feeling lucky punk </p>
-                        <a href="#" class="btn">read more</a>
+                        <a href="/vendor-signup" class="btn">sign up</a>
                     </div>
 
                     <div class="span4">
-                        <h2>Altea, a clean one page website template</h2>
+                        <h2>More details on value offer & close</h2>
                         <p> We got no food we got no money and our pets heads are falling off! haaaaaaarry. It's because i'm green isn't it! it's because i'm green isn't it! Good morning, oh in case i don't see you, good afternoon, good evening and goodnight.</p><h3>hey, maybe i will give you a call sometime</h3><p> your number still 911? hey, maybe i will give you a call sometime. Your entrance was good, his was better. Look ma i'm road kill! </p>
-                        <a href="#" class="btn">read more</a>
+                        <a href="/vendor-signup" class="btn">sign up</a>
                     </div>
                 </div>
             </div>
@@ -307,301 +302,104 @@
             <a href="#paralaxSlice2" class="navDown color1">
                 <i class="icon-down-open"></i>
             </a>
-            <a href="#news" class="navUp color3">
+            <a href="#freelancerSection" class="navUp color3">
                 <i class="icon-up-open"></i>
             </a>
         </nav>
 
 
-        <section class="slice color3" id="works">
+        <section class="slice color3" id="pricingSection">
             <div class="container clearfix">
                 <div class="row">
-                    <div class="span12">
-                        <h1>Our Work</h1>
-                    </div>
-
-                    <nav id="filter" class="span12 text-center">
-                        <ul>
-                            <li><a href="" class="current btn btn-small" data-filter="*">All</a></li>
-                            <li><a href="" class="btn btn-small" data-filter=".graphics" >Graphics</a></li>
-                            <li><a href="" class="btn btn-small" data-filter=".women">Women</a></li>
-                            <li><a href="" class="btn btn-small" data-filter=".cats">Cats</a></li>
-                        </ul>
-                    </nav>
 
                     <div class="span12">
-                    <div class="row">
-                      <div class="portfolio-items isotopeWrapper clearfix imgHover" id="3">
-                        <article class="boxLink boxNew span4 isotopeItem women">
-                          <section class="imgWrapper"><img alt="" src="/landing/images/portfolio/vign6.jpg"></section>
-                          <div class="media-hover">
-                            <div class="mask"></div>
-                            <div class="iconLinks">
-                              <a href="portfolio-project-fullwidth-image.html" title="link" target="_blank" class="sizer iconWrapper">
-                                <i class="icon-picture"></i>
-                              </a>
-                              <a href="/landing/images/portfolio/zoom6.jpg" class="prettyPhoto iconWrapper" title="Zoom" >
-                                <i class="icon-search"></i>
-                              </a>
-                            </div>
-                          </div>
-                          <section class="boxContent">
-                            <h3>Full width image</h3>
-                            <p>
-                              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vulputate nunc ut tellus sollicitudin placerat.
-                              <br>
-                              <a href="portfolio-project-fullwidth-image.html" class="moreLink">&rarr; read more</a>
-                            </p>
-                          </section>
-                        </article>
-                        <article class="boxLink boxNew span4 isotopeItem cats">
-                          <section class="imgWrapper"> <img alt="" src="/landing/images/portfolio/vign1.jpg"> </section>
-                          <div class="media-hover">
-                            <div class="mask"></div>
-                            <div class="iconLinks">
-                              <a href="portfolio-project-fullwidth-video.html" title="link" target="_blank" class="sizer iconWrapper">
-                                <i class="icon-videocam"></i>
-                              </a>
-                              <a href="http://www.youtube.com/watch?v=aqrtF7L86NQ" class="prettyPhoto iconWrapper" title="Video Popup" >
-                                <i class="icon-search"></i>
-                              </a>
-                            </div>
-                          </div>
-                          <section class="boxContent">
-                            <h3>Video YouTube</h3>
-                            <p>
-                              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vulputate nunc ut tellus sollicitudin placerat.
-                              <br>
-                              <a href="portfolio-project-fullwidth-video.html" class="moreLink">&rarr; read more</a>
-                            </p>
-                          </section>
-                          <div class="newBadge">New!</div>
-                        </article>
-
-                        <article class="boxLink boxNew span4 isotopeItem graphics">
-                          <section class="imgWrapper"> <img alt="" src="/landing/images/portfolio/vign7.jpg"> </section>
-                          <div class="media-hover">
-                            <div class="mask"></div>
-                            <div class="iconLinks">
-                              <a href="portfolio-project-fullwidth-video.html" title="link" target="_blank" class="sizer iconWrapper">
-                                <i class="icon-videocam"></i>
-                              </a>
-                              <a href="http://vimeo.com/30581015" class="prettyPhoto iconWrapper" title="Video Popup" >
-                                <i class="icon-search"></i>
-                              </a>
-                            </div>
-                          </div>
-                          <section class="boxContent">
-                            <h3>Video Vimeo</h3>
-                            <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vulputate nunc ut tellus sollicitudin placerat.
-                              <br>
-                              <a href="portfolio-project-fullwidth-video.html" class="moreLink">&rarr; read more</a> </p>
-                            </section>
-                            <div class="newBadge">New!</div>
-                          </article>
-
-                          <article class="boxLink boxNew span4 isotopeItem cats">
-                            <section class="imgWrapper"> <img alt="" src="/landing/images/portfolio/vign3.jpg"> </section>
-                            <div class="media-hover">
-                              <div class="mask"></div>
-                              <div class="iconLinks">
-                                <a href="portfolio-project-fullwidth-carousel.html" title="link" target="_blank" class="sizer iconWrapper">
-                                  <i class="icon-camera"></i>
-                                </a>
-                                <a href="#" class="prettyPhotoGallery iconWrapper animated flipOutX" title="Zoom" data-rel="images/slider/camera/camera-slide4.jpg,images/slider/camera/camera-slide5.jpg,images/slider/camera/camera-slide6.jpg">
-                                  <i class="icon-search"></i>
-                                </a>
-                              </div>
-                            </div>
-                            <section class="boxContent">
-                              <h3>Gallery</h3>
-                              <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vulputate nunc ut tellus sollicitudin placerat.
-                                <br>
-                                <a href="portfolio-project-fullwidth-carousel.html" class="moreLink">&rarr; read more</a>
-                              </p>
-                            </section>
-                          </article>
-
-                          <article class="boxLink boxNew span4 isotopeItem cats">
-                            <section class="imgWrapper"> <img alt="" src="/landing/images/portfolio/vign2.jpg"> </section>
-                            <div class="media-hover">
-                              <div class="mask"></div>
-                              <div class="iconLinks">
-                                <a href="portfolio-project-fullwidth-carousel.html" title="link" target="_blank" class="sizer iconWrapper">
-                                  <i class="icon-camera"></i>
-                                </a>
-                                <a href="/landing/images/portfolio/zoom2.jpg" class="prettyPhoto iconWrapper" title="Gallery Popup">
-                                  <i class="icon-search"></i>
-                                </a>
-                              </div>
-                            </div>
-                            <section class="boxContent">
-                              <h3>Lorem ipsum dolor sit amet</h3>
-                              <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vulputate nunc ut tellus sollicitudin placerat.
-                                <br>
-                                <a href="#" class="moreLink">&rarr; read more</a>
-                              </p>
-                            </section>
-                          </article>
-
-                          <article class="boxLink boxNew span4 isotopeItem women">
-                            <section class="imgWrapper"> <img alt="" src="/landing/images/portfolio/vign4.jpg"> </section>
-                            <div class="media-hover">
-                              <div class="mask"></div>
-                              <div class="iconLinks">
-                                <a href="portfolio-project-fullwidth-video.html" title="link" target="_blank" class="sizer iconWrapper">
-                                  <i class="icon-videocam"></i>
-                                </a>
-                                <a href="/landing/images/portfolio/zoom4.jpg" class=" iconWrapper prettyPhoto" title="Zoom">
-                                  <i class="icon-search"></i>
-                                </a>
-                              </div>
-                            </div>
-                            <section class="boxContent">
-                              <h3>Lorem ipsum dolor sit amet</h3>
-                              <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vulputate nunc ut tellus sollicitudin placerat.
-                                <br>
-                                <a href="#" class="moreLink">&rarr; read more</a>
-                              </p>
-                            </section>
-                          </article>
-
-                          <article class="boxLink boxNew span4 isotopeItem graphics">
-                            <section class="imgWrapper"> <img alt="" src="/landing/images/portfolio/vign8.jpg"> </section>
-                            <div class="media-hover">
-                              <div class="mask"></div>
-                              <div class="iconLinks">
-                                <a href="portfolio-project-fullwidth-carousel.html" title="link" target="_blank" class="sizer iconWrapper">
-                                  <i class="icon-camera"></i>
-                                </a>
-                                <a href="/landing/images/portfolio/zoom8.jpg" class="prettyPhoto iconWrapper" title="Zoom" >
-                                  <i class="icon-search"></i>
-                                </a>
-                              </div>
-                            </div>
-                            <section class="boxContent">
-                              <h3>Lorem ipsum dolor sit amet</h3>
-                              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vulputate nunc ut tellus sollicitudin placerat.
-                                <br>
-                                <a href="#" class="moreLink">&rarr; read more</a></p>
-                              </section>
-                            </article>
-
-                            <article class="boxLink boxNew span4 isotopeItem women">
-                              <section class="imgWrapper"> <img alt="" src="/landing/images/portfolio/vign5.jpg"> </section>
-                              <div class="media-hover">
-                                <div class="mask"></div>
-                                <div class="iconLinks">
-                                  <a href="portfolio-project-fullwidth-image.html" title="link" target="_blank" class="sizer iconWrapper">
-                                    <i class="icon-picture"></i>
-                                  </a>
-                                  <a href="/landing/images/portfolio/zoom5.jpg" class="prettyPhoto iconWrapper" title="Zoom" >
-                                    <i class="icon-search"></i>
-                                  </a>
-                                </div>
-                              </div>
-                              <section class="boxContent">
-                                <h3>Lorem ipsum dolor sit amet</h3>
-                                <p>
-                                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vulputate nunc ut tellus sollicitudin placerat.
-                                  <br>
-                                  <a href="#" class="moreLink">&rarr; read more</a>
-                                </p>
-                              </section>
-                            </article>
-
-
-                            <article class="boxLink boxNew span4 isotopeItem graphics">
-                              <section class="imgWrapper"> <img alt="" src="/landing/images/portfolio/vign9.jpg"> </section>
-                              <div class="media-hover">
-                                <div class="mask"></div>
-                                <div class="iconLinks">
-                                  <a href="portfolio-project-fullwidth-carousel.html" title="link" target="_blank" class="sizer iconWrapper">
-                                    <i class="icon-camera"></i>
-                                  </a>
-                                  <a href="#" class="prettyPhotoGallery iconWrapper" title="Zoom" data-rel="images/portfolio2/ill_7_1.jpg,images/portfolio2/ill_7_2.jpg,images/portfolio2/ill_7_3.jpg">
-                                    <i class="icon-search"></i>
-                                  </a>
-                                </div>
-                              </div>
-                              <section class="boxContent">
-                                <h3>Lorem ipsum dolor sit amet</h3>
-                                <p>
-                                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vulputate nunc ut tellus sollicitudin placerat.
-                                  <br>
-                                  <a href="#" class="moreLink">&rarr; read more</a>
-                                </p>
-                              </section>
-                            </article>
-
-
-                          </div>
-                        </div>
-                      </div>
-
-                </div>
-            </div>
-        </section>
-
-
-        <section class="color1 slice" id="quoteWrapper">
-            <div class="container">
-                <div class="ctaBox clearfix">
-                    <div class="row-fluid">
-                        <div class="span9">
-                            <blockquote>Like what you see? <small>Request a proposal now!</small></blockquote>
-                        </div>
-                        <div class="span3">
-                            <a class="btn btn-large" title="" href="#" id="quoteTrigger"> Get a quote!</a>
-                        </div>
+                        <h1>Our Affordable Plans</h1>
                     </div>
 
-                    <div class="row">
-                        <div class="span12" id="quoteFormWrapper">
+                    <div class="span12">
 
-                            <form id="projectQuote" method="post" action="js-plugin/neko-contact-ajax-plugin/php/form-handler-quotation.php">
-                                <div class="row-fluid">
+                        <div class="row pricing_tbls">
 
-                                    <div class="span4">
-                                        <h3>Ask us about your projects</h3>
-                                        <p>
-                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam vel pulvinar ligula. Sed rutrum condimentum sapien vel facilisis. Proin pulvinar ultrices odio.
-                                        </p>
-                                    </div>
-
-                                    <div class="span4">
-                                        <input type="text" id="inputName" class="span5" placeholder="Name" name="name">
-                                        <input type="text" id="inputEmail" class="span5" placeholder="Email" name="email">
-                                        <input type="text" id="inputCompany" class="span5" placeholder="Company" name="company">
-                                    </div>
-
-                                    <div class="span4">
-
-                                        <select name="quoteType">
-                                            <option disabled selected>Project Type</option>
-                                            <option value="web project">web project</option>
-                                            <option value="design project">design project</option>
-                                            <option value="hosting project">hosting project</option>
-                                        </select>
-
-                                        <textarea name="comment" id="quoteComment" placeholder="message"></textarea>
-
+                            <div class="span3">
+                                <div class="for_header">
+                                    <h4 class="gr_grey">Basic plan</h4>
+                                    <div class="price">
+                                        <p>$2.99 <span>/month</span> </p>
                                     </div>
                                 </div>
+                                <div class="for_border">
+                                    <p><span>200Mb</span> Monthly traffic </p>
+                                    <p><span>10Gb</span> disk space</p>
+                                    <p><span>5</span> Domains</p>
+                                    <p><span>5</span> Subdomains</p>
+                                    <p>Unlimited email support</p>
+                                    <p>PHP 5 Support</p>
+                                    <p>MySql support</p>
+                                    <p><a class="btn" href="#">Sign Up</a></p>
+                                </div>
+                            </div>
 
-                                <div class="row-fluid">
-                                    <div class="span8 offset4">
-                                        <div class="quoteResult pull-left"></div>
-                                        <button class="btn btn-large pull-right" type="submit">Send</button>
+                            <div class="span3">
+                                <div class="for_header">
+                                    <h4 class="gr_grey">Standard plan</h4>
+                                    <div class="price">
+                                        <p>$6.99 <span>/month</span> </p>
                                     </div>
                                 </div>
-                            </form>
+                                <div class="for_border">
+                                    <p><span>400Mb</span> Monthly traffic </p>
+                                    <p><span>20Gb</span> disk space</p>
+                                    <p><span>10</span> Domains</p>
+                                    <p><span>10</span> Subdomains</p>
+                                    <p>Unlimited email support</p>
+                                    <p>PHP 5 Support</p>
+                                    <p>MySql support</p>
+                                    <p><a class="btn" href="#">Sign Up</a></p>
+                                </div>
+                            </div>
+
+                            <div class="span3">
+                                <div class="for_header">
+                                    <h4 class="gr_grey">Featured plan</h4>
+                                    <div class="price">
+                                      <p>$9.99 <span>/month</span> </p>
+                                    </div>
+                                </div>
+                                <div class="for_border">
+                                    <p><span>700Mb</span> Monthly traffic </p>
+                                    <p><span>50Gb</span> disk space</p>
+                                    <p><span>15</span> Domains</p>
+                                    <p><span>20</span> Subdomains</p>
+                                    <p>Unlimited email support</p>
+                                    <p>PHP 5 Support</p>
+                                    <p>MySql support</p>
+                                    <p><a class="btn" href="#">Sign Up</a></p>
+                                </div>
+                            </div>
+
+                            <div class="span3">
+                                <div class="for_header">
+                                    <h4 class="gr_grey">Deluxe plan</h4>
+                                    <div class="price">
+                                        <p>$19.99 <span>/month</span> </p>
+                                    </div>
+                                </div>
+                                <div class="for_border">
+                                    <p><span>3500Mb</span> Monthly traffic </p>
+                                    <p><span>150Gb</span> disk space</p>
+                                    <p><span>30</span> Domains</p>
+                                    <p><span>27</span> Subdomains</p>
+                                    <p>Unlimited email support</p>
+                                    <p>PHP 5 Support</p>
+                                    <p>MySql support</p>
+                                    <p><a class="btn" href="#">Sign Up</a></p>
+                                </div>
+                            </div>
 
                         </div>
+
                     </div>
+
                 </div>
             </div>
         </section>
@@ -611,7 +409,7 @@
             <a href="#team" class="navDown color1">
                 <i class="icon-down-open"></i>
             </a>
-            <a href="#works" class="navUp color4">
+            <a href="#vendorSection" class="navUp color4">
                 <i class="icon-up-open"></i>
             </a>
         </nav>
@@ -624,8 +422,7 @@
                 </div>
 
                 <blockquote>
-                    Less is only more<br/>
-                    where more is no good
+                    Another Feel Good quote #2
                 </blockquote>
 
             </div>
@@ -733,7 +530,7 @@
             <a href="#contactSlice" class="navDown color1">
                 <i class="icon-down-open"></i>
             </a>
-            <a href="#works" class="navUp color2">
+            <a href="#pricingSection" class="navUp color2">
                 <i class="icon-up-open"></i>
             </a>
         </nav>
@@ -874,7 +671,7 @@
             <div class="container">
                 <div class="row">
                     <div class="span12">
-                        <p>Copyright © 2012 <a href="http://www.little-neko.com" target="blank">Little NEKO</a> / All rights reserved.</p>
+                        <p>Copyright © <?php echo date("Y"); ?> Company Name / All rights reserved.</p>
                     </div>
                 </div>
             </div>

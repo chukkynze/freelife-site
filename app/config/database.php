@@ -44,46 +44,46 @@ return array(
 	|
 	*/
 
-	'connections' => array(
+	'connections'   =>  array
+                        (
 
-		'sqlite' => array(
-			'driver'   => 'sqlite',
-			'database' => __DIR__.'/../database/production.sqlite',
-			'prefix'   => '',
-		),
+                            'main_db'   =>  array
+                                            (
+                                                'driver'    => 'mysql',
+                                                'host'      => 'localhost',
+                                                'database'  => 'freelife_db',
+                                                'username'  => 'freelife_dba',
+                                                'password'  => 'nL]Eoa!g,[4*',
+                                                'charset'   => 'utf8',
+                                                'collation' => 'utf8_unicode_ci',
+                                                'prefix'    => '',
+                                            ),
 
-		'mysql' => array(
-			'driver'    => 'mysql',
-			'host'      => 'localhost',
-			'database'  => 'forge',
-			'username'  => 'forge',
-			'password'  => '',
-			'charset'   => 'utf8',
-			'collation' => 'utf8_unicode_ci',
-			'prefix'    => '',
-		),
+                            'utils_db'  =>  array
+                                            (
+                                                'driver'    => 'mysql',
+                                                'host'      => 'localhost',
+                                                'database'  => 'freelife_utils',
+                                                'username'  => 'freelife_dba',
+                                                'password'  => 'nL]Eoa!g,[4*',
+                                                'charset'   => 'utf8',
+                                                'collation' => 'utf8_unicode_ci',
+                                                'prefix'    => '',
+                                            ),
 
-		'pgsql' => array(
-			'driver'   => 'pgsql',
-			'host'     => 'localhost',
-			'database' => 'forge',
-			'username' => 'forge',
-			'password' => '',
-			'charset'  => 'utf8',
-			'prefix'   => '',
-			'schema'   => 'public',
-		),
+                            'queue_db'  =>  array
+                                            (
+                                                'driver'    => 'mysql',
+                                                'host'      => 'localhost',
+                                                'database'  => 'freelife_queue',
+                                                'username'  => 'freelife_dba',
+                                                'password'  => 'nL]Eoa!g,[4*',
+                                                'charset'   => 'utf8',
+                                                'collation' => 'utf8_unicode_ci',
+                                                'prefix'    => '',
+                                            ),
 
-		'sqlsrv' => array(
-			'driver'   => 'sqlsrv',
-			'host'     => 'localhost',
-			'database' => 'database',
-			'username' => 'root',
-			'password' => '',
-			'prefix'   => '',
-		),
-
-	),
+                        ),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -96,7 +96,7 @@ return array(
 	|
 	*/
 
-	'migrations' => 'migrations',
+	'migrations' => 'freelife_migrations',
 
 	/*
 	|--------------------------------------------------------------------------

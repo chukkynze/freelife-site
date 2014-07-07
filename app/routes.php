@@ -10,7 +10,39 @@
 | and give it the Closure to execute when that URI is requested.
 |
 */
+// System Routes
+App::missing(function($exception){
+    return Response::make("Page not found", 404);
+});
+App::missing(function($exception){
+    return Response::make("Page not found", 500);
+});
 
+
+// Outside Paywall Routes
+
+Route::get('/login', function(){
+    return "login";
+})
+;
+
+Route::get('/signup', function(){
+    return Redirect::to("freelancer-signup");
+})
+;
+
+Route::get('/vendor-signup', function(){
+    return "vendor-signup";
+})
+;
+
+Route::get('/freelancer-signup', function(){
+    return "freelancer-signup";
+})
+;
+
+
+// Behind Paywall Routes
 Route::get('/', function()
 {
 	return View::make('landing/home');
