@@ -43,10 +43,7 @@ Route::get('/freelancer-signup', function(){
 
 
 // Behind Paywall Routes
-Route::get('/', function()
-{
-	return View::make('landing/home');
-});
+Route::get('/', 'HomeController@showHome');
 
 Route::get('/vendors/{id}', function($id){
     return "vendor #".$id;
