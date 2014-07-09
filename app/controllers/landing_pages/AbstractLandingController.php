@@ -13,7 +13,10 @@
 
 class AbstractLandingController extends BaseController
 {
+    const POLICY_UserIDCookieDuration    =   365;
+
     public $SiteUser;
+    public $SiteUserCookie;
     public $SiteHit;
 
 
@@ -36,11 +39,28 @@ class AbstractLandingController extends BaseController
 
 
     /**
-     * @param mixed $SiteUser
+     * @return bool|\Illuminate\Database\Eloquent\Model|static
      */
-    public function setSiteUser($SiteUser)
+    public function setSiteUser()
     {
-        $this->SiteUser = $SiteUser;
+        $newSiteUser    =   SiteUser::create(
+            array
+            (
+                'member_id'     =>  0,
+                'agent'         =>  $_SERVER['HTTP_USER_AGENT'],
+                'ip_address'    =>  sprintf('%u', ip2long($_SERVER['REMOTE_ADDR'])),
+                'user_status'   =>  'Open',
+            ));
+        $newSiteUser->save();
+
+        $this->SiteUser = $newSiteUser;
+
+        // Set user cookie
+        $timeCookie             =   time() + (60*60*24*self::POLICY_UserIDCookieDuration);
+        $cookieValue            =   urlencode($this->SiteUser->id);
+        $this->SiteUserCookie   =   Cookie::make('ekinect_uid', $cookieValue, $timeCookie, '/', $_SERVER['SERVER_NAME'], 0, 0);
+
+        return ( is_object($this->SiteUser) ? $this->SiteUser : FALSE );
     }
 
     /**
@@ -48,7 +68,20 @@ class AbstractLandingController extends BaseController
      */
     public function getSiteUser()
     {
-        return $this->SiteUser;
+        $siteUserID   =   (int) Cookie::get('ekinect_uid');
+        if(isset($siteUserID) && $siteUserID > 0)
+        {
+            $siteUser   =   SiteUser::find($siteUserID);
+            $this->SiteUserCookie = $siteUserID;
+
+            if(FALSE != $siteUser && is_object($siteUser))
+            {
+                $this->SiteUser =   $siteUser;
+                return $this->SiteUser;
+            }
+        }
+
+        return $this->setSiteUser();
     }
 
 

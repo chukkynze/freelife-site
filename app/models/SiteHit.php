@@ -13,7 +13,9 @@
 
 class SiteHit extends Eloquent
 {
-    public $var;
+    protected $table        =   'site_hits';
+    protected $primaryKey   =   'id';
+    protected $connection   =   'main_db';
 
 
 

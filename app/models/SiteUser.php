@@ -13,7 +13,22 @@
 
 class SiteUser extends Eloquent
 {
-    public $var;
+    protected $table        =   'site_users';
+    protected $primaryKey   =   'id';
+    protected $connection   =   'main_db';
+    protected $fillable     =   array
+                                (
+                                    'user_type',
+                                    'member_id',
+                                    'agent',
+                                    'ip_address',
+                                    'user_status',
+                                );
+    protected $guarded      =   array
+                                (
+                                    'id',
+                                    'hash',
+                                );
 
 
 

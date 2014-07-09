@@ -18,8 +18,13 @@ class HomeController extends AbstractLandingController
 	public function showHome()
 	{
         // Find/Create a SiteUser uid from cookie
+        $d =1;
+
+        $this->getSiteUser();
         // Register a SiteHit
-		return View::make('landing/home');
+		return is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
+            ?   Response::make(View::make('landing/home'))
+            :   Response::make(View::make('landing/home'))->withCookie($this->SiteUserCookie);
 	}
 
 
