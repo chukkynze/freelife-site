@@ -18,7 +18,6 @@ class SiteUser extends Eloquent
     protected $connection   =   'main_db';
     protected $fillable     =   array
                                 (
-                                    'user_type',
                                     'member_id',
                                     'agent',
                                     'ip_address',
@@ -27,9 +26,11 @@ class SiteUser extends Eloquent
     protected $guarded      =   array
                                 (
                                     'id',
-                                    'hash',
                                 );
 
 
-
+    public function getId()
+    {
+        return $this->id;
+    }
 }

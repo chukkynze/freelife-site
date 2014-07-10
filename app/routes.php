@@ -25,6 +25,10 @@ Route::get('/login', function(){
     return "login";
 })
 ;
+Route::get('/login-with-verification', function(){
+    return "login-with-verification";
+})
+;
 
 Route::get('/signup', function(){
     return Redirect::to("freelancer-signup");

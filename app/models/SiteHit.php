@@ -16,6 +16,18 @@ class SiteHit extends Eloquent
     protected $table        =   'site_hits';
     protected $primaryKey   =   'id';
     protected $connection   =   'main_db';
+    protected $fillable     =   array
+                                (
+                                    'user_id',
+                                    'cookies',
+                                    'url_location',
+                                    'client_time',
+                                    'server_time',
+                                );
+    protected $guarded      =   array
+                                (
+                                    'id',
+                                );
 
 
 
