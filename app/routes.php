@@ -21,10 +21,39 @@ App::missing(function($exception){
 
 // Outside Paywall Routes
 
-Route::get('/login', function(){
-    return "login";
-})
+Route::get('/login',
+        array
+        (
+            'as'        =>  'login',
+            'uses'      =>  'AuthController@showAccess',
+        ))
 ;
+
+Route::get('/login-again',
+        array
+        (
+            'as'        =>  'login',
+            'uses'      =>  'AuthController@loginAgain',
+        ))
+;
+
+/*
+
+
+Route::get
+    (
+        '/login',
+        array
+        (
+            'as'        =>  'login',
+            'uses'      =>  'AuthController@showAccess',
+        )
+    );
+;
+ */
+
+
+
 Route::get('/login-with-verification', function(){
     return "login-with-verification";
 })
