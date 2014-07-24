@@ -12,17 +12,33 @@
 
 class AuthController extends BaseController
 {
+    const POLICY_AllowedVerificationSeconds_Signup				=   43200;
+	const POLICY_AllowedVerificationSeconds_ChangePassword		=   10800;
+
+	const POLICY_AllowedLoginAttempts       					=   3;
+    const POLICY_AllowedLoginCaptchaAttempts    				=   3;
+    const POLICY_AllowedSignupAttempts       					=   3;
+    const POLICY_AllowedForgotAttempts       					=   3;
+    const POLICY_AllowedChangeVerifiedMemberPasswordAttempts 	=   3;
+    const POLICY_AllowedChangeOldMemberPasswordAttempts 		=   3;
+    const POLICY_AllowedLostSignupVerificationAttempts 			=   3;
+    const POLICY_AllowedAttemptsLookBackDuration  				=   'Last1Hour';
+
+
     private $activity;
     private $reason;
+
+    public function __construct()
+    {
+        $this->getSiteUser();   // Find/Create a SiteUser uid from cookie
+        $this->setSiteHit();    // Register a SiteHit
+    }
 
 
     public function showAccess()
 	{
         $activity   =   ( isset($this->activity)    ?   $this->activity :   'login');
         $reason     =   ( isset($this->reason)      ?   $this->reason   :   '');
-
-        $this->getSiteUser();   // Find/Create a SiteUser uid from cookie
-        $this->setSiteHit();    // Register a SiteHit
 
         // Auth Forms
         #$LoginForm          =   new LoginForm();
@@ -37,7 +53,6 @@ class AuthController extends BaseController
 
         #$AttemptedLogins           =   $this->getAccessAttemptTable()->getAccessAttemptByUserIDs('LoginForm',          array($this->getUser()->id), self::POLICY_AllowedAttemptsLookBackDuration);
         #$AttemptedLoginCaptchas    =   $this->getAccessAttemptTable()->getAccessAttemptByUserIDs('LoginCaptchaForm',   array($this->getUser()->id), self::POLICY_AllowedAttemptsLookBackDuration);
-        #$AttemptedSignups          =   $this->getAccessAttemptTable()->getAccessAttemptByUserIDs('SignupForm',         array($this->getUser()->id), self::POLICY_AllowedAttemptsLookBackDuration);
         #$AttemptedForgots          =   $this->getAccessAttemptTable()->getAccessAttemptByUserIDs('ForgotForm',         array($this->getUser()->id), self::POLICY_AllowedAttemptsLookBackDuration);
 
 		$LoginFormMessages          =   '';
@@ -99,11 +114,247 @@ class AuthController extends BaseController
             :   Response::make(View::make('auth/login', $viewData))->withCookie($this->SiteUserCookie);
 	}
 
+    public function processSignup()
+    {
+        $AttemptedSignups          =   $this->getAccessAttemptTable()->getAccessAttemptByUserIDs('SignupForm',         array($this->getUser()->id), self::POLICY_AllowedAttemptsLookBackDuration);
+        if($AttemptedSignups['total'] > self::POLICY_AllowedSignupAttempts)
+        {
+            $this->applyLock('Locked:Excessive-Signup-Attempts', $this->getRequest()->getPost('new_member'),'excessive-signups');
+            return $this->redirect()->toRoute('custom-error-18');
+        }
+        else
+        {
+            $SubmittedForm          =   $SignupForm;
+            $SubmittedFormValues    =   $this->getRequest()->getPost();
+            $SubmittedFormName      =   'SignupForm';
+            $SubmittedFormCSRF      =   'signup_csrf';
+
+            /**
+             * Check for robot entries against dummy variables
+             */
+            if(!$this->isFormClean($SubmittedFormName, $SubmittedFormValues))
+            {
+                $this->registerAccessAttempt($SubmittedFormName, 0);
+
+                // todo : add an admin alert
+
+                $this->_writeLog('info', $SubmittedFormName . " has invalid dummy variables passed.");
+                $SubmittedFormValues[$SubmittedFormCSRF]    =   '!98475b8!#urwgfwitg2^347tg2%78rtg283*rg';
+            }
+
+            $SignupFormValues   =   $this->getRequest()->getPost();
+            $SignupForm->setData($SignupFormValues);
+
+            if ($SignupForm->isValid($SignupFormValues))
+            {
+                $validatedData          =   $SignupForm->getData();
+
+                // Add the emailAddress
+                $this->addEmailStatus($validatedData['new_member'], 'AddedUnverified');
+
+                // Get the Site User so you can associate this user behaviour with this new member
+                $this->SiteUser         =   $this->getUser();
+
+                // todo: Check if member email already exists
+                $doesMemberAlreadyExist =   $this->getMemberEmailsTable()->getMemberEmailsByEmail($validatedData['new_member']);
+                if($doesMemberAlreadyExist != FALSE)
+                {
+                    $this->registerAccessAttempt($SubmittedFormName, 0);
+                    return $this->redirect()->toRoute('member-already-exists');
+                }
+
+
+                // Create a Member Object
+                $LoginCredentials   =   $this->getMemberTable()->generateLoginCredentials($validatedData['new_member'], $validatedData['password']);
+                $NewMember          =   new Member();
+                $NewMember->setMemberType('6');
+                $NewMember->setMemberCreationTime();
+                $NewMember->setMemberPauseTime(1);
+                $NewMember->setMemberCancellationTime(1);
+                $NewMember->setMemberLastUpdateTime();
+                $NewMember->setMemberLoginCredentials($LoginCredentials[0]);
+                $NewMember->setMemberLoginSalt1($LoginCredentials[1]);
+                $NewMember->setMemberLoginSalt2($LoginCredentials[2]);
+                $NewMember->setMemberLoginSalt3($LoginCredentials[3]);
+                $NewMemberObject    =   $this->getMemberTable()->getMember($this->getMemberTable()->saveMember($NewMember));
+
+                if(!is_object($NewMemberObject))
+                {
+                    // todo: handle this better. Write an error, add fatal admin alert and a log entry
+                    $this->registerAccessAttempt($SubmittedFormName, 0);
+                    $this->_writeLog('info', $SubmittedFormName . " - Could not create a new member object.");
+                    throw new \Exception("Could not create a new member object");
+                }
+
+                // Update User with Member ID
+                $this->SiteUser->setUserMemberID($NewMemberObject->id);
+                $this->SiteUser     =   $this->getUserTable()->getUser($this->getUserTable()->saveUser($this->SiteUser));
+
+                // Create & Save a Member Status Object
+                $this->addMemberStatus($NewMemberObject->id, 'Successful-Signup');
+
+                // Create & Save a Member Emails Object
+                $NewMemberEmail         =   new MemberEmails();
+                $NewMemberEmail->setMemberEmailsMemberID($NewMemberObject->id);
+                $NewMemberEmail->setMemberEmailsEmailAddress($validatedData['new_member']);
+                $NewMemberEmail->setMemberEmailsVerificationSent(0);
+                $NewMemberEmail->setMemberEmailsVerificationSentOn(0);
+                $NewMemberEmail->setMemberEmailsVerified(0);
+                $NewMemberEmail->setMemberEmailsVerifiedOn(0);
+                $NewMemberEmail->setMemberEmailsCreationTime();
+                $NewMemberEmail->setMemberEmailsLastUpdateTime();
+                $NewMemberEmailObject   =   $this->getMemberEmailsTable()->getMemberEmails($this->getMemberEmailsTable()->saveMemberEmails($NewMemberEmail));
+
+                if(!is_object($NewMemberEmailObject))
+                {
+                    // todo: handle this better. Write an error, add fatal admin alert and a log entry
+                    $this->registerAccessAttempt($SubmittedFormName, 0);
+                    $this->_writeLog('info', $SubmittedFormName . " - Could not create a new member email object.");
+                    throw new \Exception("Could not create a new member email object.");
+                }
+
+                // Prepare an Email for Validation
+                // setup SMTP options
+                $verifyEmailLink    =   $this->getMemberEmailsTable()->getVerifyEmailLink($validatedData['new_member'], $NewMemberObject->id, 'verify-new-member');
+                $this->sendEmail('verify-new-member', array('verifyEmailLink' => $verifyEmailLink), 'General', $NewMemberEmailObject->getMemberEmailsEmailAddress());
+
+                // Update Member emails that verification was sent and at what time for this member
+                $NewMemberEmailObject->setMemberEmailsVerified(0);
+                $NewMemberEmailObject->setMemberEmailsVerifiedOn(0);
+                $NewMemberEmailObject->setMemberEmailsVerificationSent(1);
+                $NewMemberEmailObject->setMemberEmailsVerificationSentOn(strtotime('now'));
+                $NewMemberEmailObject   =   $this->getMemberEmailsTable()->getMemberEmails($this->getMemberEmailsTable()->saveMemberEmails($NewMemberEmailObject));
+
+
+                // Add the emailAddress status
+                $this->addEmailStatus($NewMemberEmailObject->getMemberEmailsEmailAddress(), 'VerificationSent');
+
+                // Store admin alert for new member
+                // todo: Create a cron script that checks for new members since the last check and adds alerts and sends off emails to whomever needs to know plus other tasks. Call it process new members
+
+                // Add
+
+                // Redirect to Successful Signup Page that informs them of the need to validate the email before they can enjoy the free 90 day Premium membership
+                $this->registerAccessAttempt($SubmittedFormName, 1);
+                return $this->redirect()->toRoute('member-signup-success');
+            }
+            else
+            {
+                $this->registerAccessAttempt($SubmittedFormName, 0);
+                $SignupFormMessages           =   $SignupForm->getMessages();
+            }
+        }
+    }
+
+
+    public function logout()
+    {
+		if ($this->getAuthService()->hasIdentity())
+        {
+            $this->getAuthService()->clearIdentity();
+        }
+    }
+
     public function loginAgain()
     {
         $this->activity     =   "login";
         $this->reason       =   "expired-session";
         return $this->showAccess();
+    }
+
+    public function successfulLogout()
+    {
+        $this->activity     =   "login";
+        $this->reason       =   "intentional-logout";
+        return $this->showAccess();
+    }
+
+    public function successfulAccessCredentialChange()
+    {
+        $this->activity     =   "login";
+        $this->reason       =   "changed-password";
+        return $this->showAccess();
+    }
+
+    public function loginCaptcha()
+    {
+        $this->activity     =   "login-captcha";
+        $this->reason       =   "";
+        return $this->showAccess();
+    }
+
+    public function memberLogout()
+    {
+        $this->logout();
+
+		// return $this->redirect()->toRoute('member-login-after-intentional-logout');
+    }
+
+    public function memberLogoutExpiredSession()
+    {
+        $this->logout();
+
+		// return $this->redirect()->toRoute('member-login-after-expired-session');
+    }
+
+    public function signup()
+    {
+        $this->activity     =   "signup";
+        $this->reason       =   "";
+        return $this->showAccess();
+    }
+
+    public function vendorSignup()
+    {
+        $this->activity     =   "signup";
+        $this->reason       =   "";
+        return $this->showAccess();
+    }
+
+    public function freelancerSignup()
+    {
+        $this->activity     =   "signup";
+        $this->reason       =   "";
+        return $this->showAccess();
+    }
+
+    public function forgot()
+    {
+        $this->activity     =   "forgot";
+        $this->reason       =   "";
+        return $this->showAccess();
+    }
+
+    public function resetPassword()
+    {
+        $this->activity     =   "forgot";
+        $this->reason       =   "";
+        return $this->showAccess();
+    }
+
+    public function changePasswordWithOldPassword()
+    {
+
+    }
+
+    public function processVerificationDetails()
+    {
+
+    }
+
+    public function resendSignupConfirmation()
+    {
+        // lostSignupVerificationAction
+    }
+
+    public function verifyEmail($vcode)
+    {
+        echo $vcode;
+    }
+
+    public function changePasswordWithVerifyEmailLink($vcode)
+    {
+
     }
 
 }

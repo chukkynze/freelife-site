@@ -23,8 +23,8 @@ class SetupMainDb extends Migration
          * Entity: SiteUser
          * Table: site_users
          */
-		Schema::dropIfExists('site_users');
-		Schema::create('site_users', function($table)
+		Schema::connection($this->connection)->dropIfExists('site_users');
+		Schema::connection($this->connection)->create('site_users', function($table)
         {
             // Parameters
             $table->engine = 'InnoDB';
@@ -48,15 +48,19 @@ class SetupMainDb extends Migration
             $table->softDeletes();
 
             // Indexes
-            $table->index(array('id', 'member_id'));
+            $table->index(array('member_id')                , 'ndx1');
+            $table->index(array('ip_address')               , 'ndx2');
+            $table->index(array('id', 'member_id')          , 'ndx0_1');
+            $table->index(array('id', 'agent')              , 'ndx0_a');
+            $table->index(array('ip_address', 'agent')      , 'ndx2_a');
         });
 
         /**
          * Entity: SiteHit
          * Table: site_hits
          */
-		Schema::dropIfExists('site_hits');
-		Schema::create('site_hits', function($table)
+		Schema::connection($this->connection)->dropIfExists('site_hits');
+		Schema::connection($this->connection)->create('site_hits', function($table)
         {
             // Parameters
             $table->engine = 'InnoDB';
@@ -73,15 +77,23 @@ class SetupMainDb extends Migration
             $table->softDeletes();
 
             // Indexes
-            $table->index(array('url_location', 'server_time'));
+            $table->index(array('user_id')                      , 'ndx1');
+            $table->index(array('url_location')                 , 'ndx2');
+            $table->index(array('client_time')                  , 'ndx3');
+            $table->index(array('server_time')                  , 'ndx4');
+            $table->index(array('client_time','server_time')    , 'ndx3_4');
+            $table->index(array('server_time','user_id')        , 'ndx4_1');
+            $table->index(array('server_time','url_location')   , 'ndx4_2');
+            
+            
         });
 
         /**
          * Entity: Member
          * Table: members
          */
-		Schema::dropIfExists('members');
-		Schema::create('members', function($table)
+		Schema::connection($this->connection)->dropIfExists('members');
+		Schema::connection($this->connection)->create('members', function($table)
         {
             // Parameters
             $table->engine = 'InnoDB';
@@ -107,9 +119,8 @@ class SetupMainDb extends Migration
             $table->softDeletes();
 
             // Indexes
-            $table->index(array('salt1', 'salt2', 'salt3'));
+            $table->index(array('salt1', 'salt2', 'salt3')  , 'ndx1');
         });
-
 	}
 
 	/**
@@ -123,17 +134,17 @@ class SetupMainDb extends Migration
          * Entity: SiteUser
          * Table: site_user
          */
-		Schema::dropIfExists('site_user');
+		Schema::connection($this->connection)->dropIfExists('site_user');
         /**
          * Entity: SiteHit
          * Table: site_hits
          */
-        Schema::dropIfExists('site_hit');
+        Schema::connection($this->connection)->dropIfExists('site_hit');
         /**
          * Entity: Member
          * Table: members
          */
-        Schema::dropIfExists('members');
+        Schema::connection($this->connection)->dropIfExists('members');
 	}
 
 }

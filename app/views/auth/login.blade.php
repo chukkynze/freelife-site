@@ -44,7 +44,7 @@
 					<div class="row">
 						<div class="col-md-4 col-md-offset-4">
 							<div id="logo">
-								<a href="<?php echo link_to('/', $secure = null); ?>"><img src="/admin/img/logo/notarytoolz-logo.png" height="60" alt="logo name" /></a>
+								<a href="/"><img src="/app/images/site_images/logo.png" height="60" alt="logo name" /></a>
 							</div>
 						</div>
 					</div>
@@ -101,12 +101,7 @@
 
 
 								<div class="divide-40"></div>
-{{ Form::open(array('action' => 'AuthController@showAccess')) }}
-                                    <?php
-
-                                        #echo $this->form()->openTag($LoginForm);
-                                        #echo $this->formHidden($LoginForm->get('login_csrf'));
-                                    ?>
+                                    {{ Form::open(array('action' => 'AuthController@showAccess')) }}
 
                                         <input class="notarytoolzInput Input1" name="usr"          type="text"  value="">
                                         <input class="notarytoolzInput Input2" name="username"     type="text"  value="">
@@ -114,34 +109,20 @@
                                         <input class="notarytoolzInput Input4" name="login_email"  type="text"  value="">
 
                                         <div class="form-group">
-                                            <?php
-                                            #echo $this->formLabel($LoginForm->get('returning_member'));
-                                            echo Form::label('returning_member', 'E-Mail Address');
-                                            ?>
+                                            <?php echo Form::label('returning_member', 'E-Mail Address'); ?>
                                             <i class="fa fa-envelope"></i>
-                                            <?php
-                                            #echo $this->formInput($LoginForm->get('returning_member'));
-                                            echo Form::text('returning_member');
-                                            ?>
+                                            <?php echo Form::text('returning_member'); ?>
                                         </div>
                                         <div class="form-group">
-                                            <?php
-                                            #echo $this->formLabel($LoginForm->get('LoginFormPasswordField'));
-                                            echo Form::label('LoginFormPasswordField', 'Password');
-                                            ?>
+                                            <?php echo Form::label('LoginFormPasswordField', 'Password'); ?>
                                             <i class="fa fa-lock"></i>
-                                            <?php
-                                            #echo $this->formInput($LoginForm->get('LoginFormPasswordField'));
-                                            echo Form::password('LoginFormPasswordField');
-                                            ?>
+                                            <?php echo Form::password('LoginFormPasswordField'); ?>
                                         </div>
                                         <div class="form-actions">
                                             <button type="submit" class="btn-lg btn-danger">Login</button>
                                         </div>
-                                    <?php
-                                        #echo $this->form()->closeTag($LoginForm);
-                                    ?>
-{{ Form::close() }}
+
+                                    {{ Form::close() }}
 								<!-- SOCIAL LOGIN
 								<div class="divide-20"></div>
 								<div class="center">
@@ -179,7 +160,7 @@
 								<h2 class="bigintro">Free Sign Up</h2>
 								<div class="center">
 									<h3><strong>no credit card required</strong></h3>
-									<strong><a href='/resendSignupConfirmation'>Re-send</a> your signup verification email</strong>
+									<strong><a href='/resend-signup-confirmation'>Re-send</a> your signup verification email</strong>
 								</div>
 
                                 <?php if($SignupFormMessages != ''): ?>
@@ -200,42 +181,38 @@
 
 								<div class="divide-40"></div>
 
-								<?php
+                                {{ Form::open(array('method' => 'POST', 'action' => 'AuthController@processSignup')) }}
 
-                                    echo $this->form()->openTag($SignupForm);
-                                    echo $this->formHidden($SignupForm->get('signup_csrf'));
-                                ?>
+                                    <input class="notarytoolzInput Input1" name="usr"          type="text"  value="">
+                                    <input class="notarytoolzInput Input2" name="username"     type="text"  value="">
+                                    <input class="notarytoolzInput Input3" name="email"        type="text"  value="">
+                                    <input class="notarytoolzInput Input4" name="login_email"  type="text"  value="">
 
-                                        <input class="notarytoolzInput Input1" name="usr"          type="text"  value="">
-                                        <input class="notarytoolzInput Input2" name="username"     type="text"  value="">
-                                        <input class="notarytoolzInput Input3" name="email"        type="text"  value="">
-                                        <input class="notarytoolzInput Input4" name="login_email"  type="text"  value="">
-
-                                        <div class="form-group">
-                                        <?php echo $this->formLabel($SignupForm->get('new_member')); ?>
+                                    <div class="form-group">
+                                        <?php echo Form::label('new_member', 'Email Address'); ?>
                                         <i class="fa fa-envelope"></i>
-                                        <?php echo $this->formInput($SignupForm->get('new_member')); ?>
+                                        <?php echo Form::text('new_member'); ?>
                                     </div>
                                     <div class="form-group">
-                                        <?php echo $this->formLabel($SignupForm->get('password')); ?>
+                                        <?php echo Form::label('password', 'Password'); ?>
                                         <i class="fa fa-lock"></i>
-                                        <?php echo $this->formInput($SignupForm->get('password')); ?>
+                                        <?php echo Form::password('password'); ?>
                                     </div>
                                     <div class="form-group">
-                                        <?php echo $this->formLabel($SignupForm->get('cpassword')); ?>
+                                        <?php echo Form::label('cpassword', 'Password'); ?>
                                         <i class="fa fa-check-square-o"></i>
-                                        <?php echo $this->formInput($SignupForm->get('cpassword')); ?>
+                                        <?php echo Form::password('cpassword'); ?>
                                     </div>
                                     <div class="form-actions">
-                                        <?php echo $this->formLabel()->openTag($SignupForm->get('acceptTerms')) ?>
-                                        <?php echo $this->formCheckbox($SignupForm->get('acceptTerms')) ?>
-                                        <?php echo $this->translate($SignupForm->get('acceptTerms')->getLabel()) ?>
-                                        <?php echo $this->formLabel()->closeTag($SignupForm->get('acceptTerms')) ?>
+                                        <label class="checkbox" for="SignupFormTermsBox">
+                                            <input type="hidden" name="acceptTerms" value="">
+                                            <input type="checkbox" name="acceptTerms" id="SignupFormTermsBox" class="uniform" value="1">
+                                            I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>
+                                        </label>
                                         <button type="submit" class="btn-lg btn-success">Sign Up</button>
                                     </div>
-                                <?php
-                                    echo $this->form()->closeTag($SignupForm);
-                                ?>
+
+                                {{ Form::close() }}
 
 								<!-- SOCIAL REGISTER
 								<div class="divide-20"></div>
@@ -289,28 +266,24 @@
 
 								<div class="divide-40"></div>
 
-                                    <?php
-                                        echo $this->form()->openTag($ForgotForm);
-                                        echo $this->formHidden($ForgotForm->get('forgot_csrf'));
-                                    ?>
+                                {{ Form::open(array('action' => 'AuthController@showAccess')) }}
 
-                                        <input class="notarytoolzInput Input1" name="usr"          type="text"  value="">
-                                        <input class="notarytoolzInput Input2" name="username"     type="text"  value="">
-                                        <input class="notarytoolzInput Input3" name="email"        type="text"  value="">
-                                        <input class="notarytoolzInput Input4" name="login_email"  type="text"  value="">
+                                    <input class="notarytoolzInput Input1" name="usr"          type="text"  value="">
+                                    <input class="notarytoolzInput Input2" name="username"     type="text"  value="">
+                                    <input class="notarytoolzInput Input3" name="email"        type="text"  value="">
+                                    <input class="notarytoolzInput Input4" name="login_email"  type="text"  value="">
 
 
-                                        <div class="form-group">
-                                            <?php echo $this->formLabel($ForgotForm->get('forgot_email')); ?>
-                                            <i class="fa fa-envelope"></i>
-                                            <?php echo $this->formInput($ForgotForm->get('forgot_email')); ?>
-                                        </div>
-                                        <div class="form-actions">
-                                            <button type="submit" class="btn-lg btn-info">Send Me Reset Instructions</button>
-                                        </div>
-                                    <?php
-                                        echo $this->form()->closeTag($ForgotForm);
-                                    ?>
+                                    <div class="form-group">
+                                            <?php echo Form::label('forgot_email', 'E-Mail Address'); ?>
+                                        <i class="fa fa-envelope"></i>
+                                            <?php echo Form::text('forgot_email'); ?>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn-lg btn-info">Send Me Reset Instructions</button>
+                                    </div>
+
+                                {{ Form::close() }}
 
 								<div class="login-helpers">
 									<a href="#" onclick="swapScreen('login');return false;">Back to Login</a> <br>
@@ -324,13 +297,15 @@
 	</section>
 	<!--/PAGE -->
 
-    <?php echo $this->headScript()
-        ->prependFile($this->basePath() . '/auth/theme/js/script.js'                                                          , 'text/javascript', array())
-        ->prependFile($this->basePath() . '/auth/theme/js/uniform/jquery.uniform.min.js'                                      , 'text/javascript', array())
-        ->prependFile($this->basePath() . '/auth/theme/bootstrap-dist/js/bootstrap.min.js'                              , 'text/javascript', array())
-        ->prependFile($this->basePath() . '/auth/theme/js/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js'    , 'text/javascript', array())
-        ->prependFile($this->basePath() . '/auth/theme/js/jquery/jquery-2.0.3.min.js'                                         , 'text/javascript', array())
-    ; ?>
+    <script type="text/javascript" src="/auth/theme/js/jquery/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="/auth/theme/js/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script type="text/javascript" src="/auth/theme/bootstrap-dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/auth/theme/js/uniform/jquery.uniform.min.js"></script>
+    <script type="text/javascript" src="/auth/theme/js/script.js"></script>
+    <!--[if lt IE 9]><script type="text/javascript" src="/auth/theme/js/flot/excanvas.min.js"></script><![endif]-->
+    <!--[if lt IE 9]><script type="text/javascript" src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <!--[if lt IE 9]><script type="text/javascript" src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script><![endif]-->
+
 
     <script>
 		jQuery(document).ready(function() {

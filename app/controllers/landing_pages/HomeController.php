@@ -15,19 +15,49 @@ class HomeController extends AbstractLandingController
 {
     public $var;
 
-	public function showHome()
-	{
+    public function __construct()
+    {
         $this->getSiteUser();   // Find/Create a SiteUser uid from cookie
         $this->setSiteHit();    // Register a SiteHit
+    }
+
+	public function showHome()
+	{
 
         $viewData   =   array
                         (
                             'activity'  =>  'login',
                         );
 
-		return is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
-            ?   Response::make(View::make('landing/home', $viewData))
-            :   Response::make(View::make('landing/home', $viewData))->withCookie($this->SiteUserCookie);
+		return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
+                    ?   Response::make(View::make('landing/home', $viewData))
+                    :   Response::make(View::make('landing/home', $viewData))->withCookie($this->SiteUserCookie);
+	}
+
+	public function showTerms()
+	{
+
+        $viewData   =   array
+                        (
+                            'activity'  =>  'login',
+                        );
+
+		return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
+                    ?   Response::make(View::make('landing/terms', $viewData))
+                    :   Response::make(View::make('landing/terms', $viewData))->withCookie($this->SiteUserCookie);
+	}
+
+	public function showPrivacy()
+	{
+
+        $viewData   =   array
+                        (
+                            'activity'  =>  'login',
+                        );
+
+		return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
+                    ?   Response::make(View::make('landing/privacy', $viewData))
+                    :   Response::make(View::make('landing/privacy', $viewData))->withCookie($this->SiteUserCookie);
 	}
 
 

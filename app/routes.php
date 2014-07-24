@@ -19,71 +19,100 @@ App::missing(function($exception){
 });
 
 
-// Outside Paywall Routes
-
-Route::get('/login',
-        array
-        (
-            'as'        =>  'login',
-            'uses'      =>  'AuthController@showAccess',
-        ))
-;
-
-Route::get('/login-again',
-        array
-        (
-            'as'        =>  'login',
-            'uses'      =>  'AuthController@loginAgain',
-        ))
-;
-
-/*
-
-
-Route::get
-    (
-        '/login',
-        array
-        (
-            'as'        =>  'login',
-            'uses'      =>  'AuthController@showAccess',
-        )
-    );
-;
- */
+// Outside Paywall Routes - Landing Pages
+Route::get('/',             'HomeController@showHome');
+Route::get('/terms',        'HomeController@showTerms');
+Route::get('/privacy',      'HomeController@showPrivacy');
 
 
 
-Route::get('/login-with-verification', function(){
-    return "login-with-verification";
-})
-;
+// Entering Paywall Routes - Access Authorization
+Route::get('/login',                                                    array('as' =>  'login',                                 'uses'  =>  'AuthController@showAccess',                        ));
+Route::get('/login-again',                                              array('as' =>  'loginAgain',                            'uses'  =>  'AuthController@loginAgain',                        ));
+Route::get('/you-have-successfully-logged-out',                         array('as' =>  'successfulLogout',                      'uses'  =>  'AuthController@successfulLogout',                  ));
+Route::get('/you-have-successfully-changed-your-access-credentials',    array('as' =>  'successfulAccessCredentialChange',      'uses'  =>  'AuthController@successfulAccessCredentialChange',  ));
+Route::get('/login-captcha',                                            array('as' =>  'loginCaptcha',                          'uses'  =>  'AuthController@loginCaptcha',                      ));
+Route::get('/member-logout',                                            array('as' =>  'memberLogout',                          'uses'  =>  'AuthController@memberLogout',                      ));
+Route::get('/member-logout-expired-session',                            array('as' =>  'memberLogoutExpiredSession',            'uses'  =>  'AuthController@memberLogoutExpiredSession',        ));
+Route::get('/signup',                                                   array('as' =>  'signup',                                'uses'  =>  'AuthController@signup',                            ));
+Route::post('/signup',                                                  array('as' =>  'processSignup',                         'uses'  =>  'AuthController@processSignup',                     ));
+Route::get('/vendor-signup',                                            array('as' =>  'vendorSignup',                          'uses'  =>  'AuthController@vendorSignup',                      ));
+Route::get('/freelancer-signup',                                        array('as' =>  'freelancerSignup',                      'uses'  =>  'AuthController@freelancerSignup',                  ));
+Route::get('/forgot',                                                   array('as' =>  'forgot',                                'uses'  =>  'AuthController@forgot',                            ));
+Route::get('/reset-password',                                           array('as' =>  'resetPassword',                         'uses'  =>  'AuthController@resetPassword',                     ));
+Route::get('/password-change',                                          array('as' =>  'changePasswordWithOldPassword',         'uses'  =>  'AuthController@changePasswordWithOldPassword',     ));
+Route::get('/verification-details',                                     array('as' =>  'processVerificationDetails',            'uses'  =>  'AuthController@processVerificationDetails',        ));
+Route::get('/resend-signup-confirmation',                               array('as' =>  'resendSignupConfirmation',              'uses'  =>  'AuthController@resendSignupConfirmation',          ));
+Route::get('/email-verification/{vcode}',                               array('as' =>  'verifyEmail',                           'uses'  =>  'AuthController@verifyEmail',                       ));
+Route::get('/change-password-verification/{vcode}',                     array('as' =>  'changePasswordWithVerifyEmailLink',     'uses'  =>  'AuthController@changePasswordWithVerifyEmailLink', ));
 
-Route::get('/signup', function(){
-    return Redirect::to("freelancer-signup");
-})
-;
-
-Route::get('/vendor-signup', function(){
-    return "vendor-signup";
-})
-;
-
-Route::get('/freelancer-signup', function(){
-    return "freelancer-signup";
-})
-;
 
 
 // Behind Paywall Routes
-Route::get('/', 'HomeController@showHome');
 
-Route::get('/vendors/{id}', function($id){
-    return "vendor #".$id;
-})->where('id', '[0-9]+')
-;
 
-Route::get('/vendors', function(){
-    return "All vendors";
-})
-;
+
+// API Routes - No Auth
+Route::group(array('prefix' => 'api'), function()
+{
+    Route::group(array('prefix' => 'vendor'), function()
+    {
+        Route::get('user', function()
+        {
+            //
+        });
+
+    });
+
+    Route::group(array('prefix' => 'vendors'), function()
+    {
+        Route::get('user', function()
+        {
+            //
+        });
+
+    });
+
+    Route::group(array('prefix' => 'freelancer'), function()
+    {
+        Route::get('user', function()
+        {
+            //
+        });
+
+    });
+
+    Route::group(array('prefix' => 'freelancers'), function()
+    {
+        Route::get('user', function()
+        {
+            //
+        });
+
+    });
+
+});
+
+
+// API Routes - With Auth
+Route::group(array('prefix' => 'api'), function()
+{
+    Route::group(array('prefix' => 'admin'), function()
+    {
+        Route::get('user', function()
+        {
+            //
+        });
+
+    });
+
+    Route::group(array('prefix' => 'admin'), function()
+    {
+        Route::get('user', function()
+        {
+            //
+        });
+
+    });
+
+});
