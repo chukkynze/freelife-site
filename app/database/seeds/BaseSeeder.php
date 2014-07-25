@@ -37,6 +37,13 @@ class BaseSeeder extends Seeder
     protected $connection;
 
     /**
+     * In the case of large CSV files this is the number of rows in one chunk of broken off data
+     *
+     * @var string
+     */
+    protected $rowbreak;
+
+    /**
      * Run DB seed if the content of the csv file is as needed for insertion.
      * Overwrite this method in seeder class if you need custom row formatting
      */

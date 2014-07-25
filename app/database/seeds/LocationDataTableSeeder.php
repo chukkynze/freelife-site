@@ -15,20 +15,49 @@ class LocationDataTableSeeder extends BaseSeeder
 {
     public function __construct()
     {
+        echo "Seeding Location Data.\n";
         $this->table        = 'location_data';
         $this->connection   = 'utils_db';
         $this->filename     = app_path().'/database/csv/location_data.csv';
+        $this->rowbreak     = 1000;
     }
 
 
     public function run()
     {
         ini_set('memory_limit', '-1');
-        echo "Start @ " . strtotime("now");
-        DB::connection($this->connection)->table($this->table)->truncate();
-        $seedData   =   $this->seedFromCSV($this->filename, ',');
-        DB::connection($this->connection)->table($this->table)->insert($seedData);
-        echo "End @ " . strtotime("now");
+        $startTime          =   strtotime("now");
+        $seedData           =   $this->seedFromCSV($this->filename, ',');
+        $totalRowsToInsert  =   isset($seedData) ? count($seedData) : 0;
+        $totalBreaksNeeded  =   ceil(($totalRowsToInsert/$this->rowbreak));
+        echo "Extracted " . $totalRowsToInsert . " rows from file.\n";
+
+        if($totalRowsToInsert > 0)
+        {
+            DB::connection($this->connection)->table($this->table)->truncate();
+            $offset=0;
+            $rowsInsertedSoFar=0;
+            $loopSecondsSummed=0;
+            for($i=1; $i<=$totalBreaksNeeded; $i++)
+            {
+                $loopStartTime      =   strtotime("now");
+                $chunk              =   array_slice($seedData, $offset, $this->rowbreak);
+                $offset             =   $offset+$this->rowbreak;
+                DB::connection($this->connection)->table($this->table)->insert($chunk);
+                $rowsInsertedSoFar  =   $rowsInsertedSoFar + count($chunk);
+                $loopEndTime        =   strtotime("now");
+                $loopSeconds        =   $loopEndTime-$loopStartTime;
+                $loopSecondsSummed  =   $loopSecondsSummed + ($loopSeconds);
+
+                echo "Inserted " . count($chunk) . " - " . $rowsInsertedSoFar . " of "
+                    . $totalRowsToInsert . " rows [" . number_format((($rowsInsertedSoFar/$totalRowsToInsert)*100),2)
+                    . "%] in " . ($loopSeconds) . " seconds: " . $loopSecondsSummed . " seconds so far.\n";
+            }
+        }
+
+        $endTime    =   strtotime("now");
+        $duration   =   $endTime-$startTime;
+        echo "Seeded " . $totalRowsToInsert . " rows in " . $duration . " seconds.\n";
     }
 
     /**
@@ -64,7 +93,7 @@ class LocationDataTableSeeder extends BaseSeeder
                     $data[] =   array_combine($header, $row);
                 }
                 #$x++;
-                #if($x==150)break;
+                #if($x==50)break;
             }
             fclose($handle);
         }

@@ -19,6 +19,12 @@ App::missing(function($exception){
 });
 
 
+// Custom Error Pages
+Route::get('/there-was-a-problem/{errorNumber}',         array('as' =>  'custom-error',     'uses'  =>  'HomeController@processErrors',));
+
+
+
+
 // Outside Paywall Routes - Landing Pages
 Route::get('/',             'HomeController@showHome');
 Route::get('/terms',        'HomeController@showTerms');

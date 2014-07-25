@@ -114,13 +114,77 @@ class AuthController extends BaseController
             :   Response::make(View::make('auth/login', $viewData))->withCookie($this->SiteUserCookie);
 	}
 
+
+    public function logout()
+    {
+		if ($this->getAuthService()->hasIdentity())
+        {
+            $this->getAuthService()->clearIdentity();
+        }
+    }
+
+    public function loginAgain()
+    {
+        $this->activity     =   "login";
+        $this->reason       =   "expired-session";
+        return $this->showAccess();
+    }
+
+    public function successfulLogout()
+    {
+        $this->activity     =   "login";
+        $this->reason       =   "intentional-logout";
+        return $this->showAccess();
+    }
+
+    public function successfulAccessCredentialChange()
+    {
+        $this->activity     =   "login";
+        $this->reason       =   "changed-password";
+        return $this->showAccess();
+    }
+
+    public function loginCaptcha()
+    {
+        $this->activity     =   "login-captcha";
+        $this->reason       =   "";
+        return $this->showAccess();
+    }
+
+    public function memberLogout()
+    {
+        $this->logout();
+
+		// return $this->redirect()->toRoute('member-login-after-intentional-logout');
+    }
+
+    public function memberLogoutExpiredSession()
+    {
+        $this->logout();
+
+		// return $this->redirect()->toRoute('member-login-after-expired-session');
+    }
+
+    public function signup()
+    {
+        $this->activity     =   "signup";
+        $this->reason       =   "";
+        return $this->showAccess();
+    }
+
     public function processSignup()
     {
-        $AttemptedSignups          =   $this->getAccessAttemptTable()->getAccessAttemptByUserIDs('SignupForm',         array($this->getUser()->id), self::POLICY_AllowedAttemptsLookBackDuration);
+        $AccessAttempt      =   new AccessAttempt();
+        $AttemptedSignups   =   $AccessAttempt->getAccessAttemptByUserIDs
+                                                (
+                                                    'SignupForm',
+                                                    array($this->getSiteUser()->id),
+                                                    self::POLICY_AllowedAttemptsLookBackDuration
+                                                );
         if($AttemptedSignups['total'] > self::POLICY_AllowedSignupAttempts)
         {
             $this->applyLock('Locked:Excessive-Signup-Attempts', $this->getRequest()->getPost('new_member'),'excessive-signups');
-            return $this->redirect()->toRoute('custom-error-18');
+            return Redirect::route('custom-error',array('errorNumber' => 18));
         }
         else
         {
@@ -246,64 +310,6 @@ class AuthController extends BaseController
         }
     }
 
-
-    public function logout()
-    {
-		if ($this->getAuthService()->hasIdentity())
-        {
-            $this->getAuthService()->clearIdentity();
-        }
-    }
-
-    public function loginAgain()
-    {
-        $this->activity     =   "login";
-        $this->reason       =   "expired-session";
-        return $this->showAccess();
-    }
-
-    public function successfulLogout()
-    {
-        $this->activity     =   "login";
-        $this->reason       =   "intentional-logout";
-        return $this->showAccess();
-    }
-
-    public function successfulAccessCredentialChange()
-    {
-        $this->activity     =   "login";
-        $this->reason       =   "changed-password";
-        return $this->showAccess();
-    }
-
-    public function loginCaptcha()
-    {
-        $this->activity     =   "login-captcha";
-        $this->reason       =   "";
-        return $this->showAccess();
-    }
-
-    public function memberLogout()
-    {
-        $this->logout();
-
-		// return $this->redirect()->toRoute('member-login-after-intentional-logout');
-    }
-
-    public function memberLogoutExpiredSession()
-    {
-        $this->logout();
-
-		// return $this->redirect()->toRoute('member-login-after-expired-session');
-    }
-
-    public function signup()
-    {
-        $this->activity     =   "signup";
-        $this->reason       =   "";
-        return $this->showAccess();
-    }
-
     public function vendorSignup()
     {
         $this->activity     =   "signup";
@@ -356,5 +362,72 @@ class AuthController extends BaseController
     {
 
     }
+
+	/**
+	 * Applies an appropriate lock to a user, ip, and or member and sends an email if necessary and possible
+	 *
+	 * @param        $lockStatus
+	 * @param string $contactEmail
+	 * @param string $emailTemplateName
+	 * @param array  $emailTemplateOptionsArray
+	 * @param string $emailTemplateSendFromTag
+	 */
+	public function applyLock($lockStatus, $contactEmail='', $emailTemplateName='', $emailTemplateOptionsArray=array(), $emailTemplateSendFromTag='Customer Service')
+	{
+		// Get the User
+		$this->SiteUser 	=	$this->getSiteUser();
+		// Change the user status
+		$this->SiteUser->setUserStatus($lockStatus);
+		// Lock the user
+		$this->getUserTable()->saveUser($this->SiteUser);
+
+		// Create an IP Block
+		$ipBinLock			=	new IPBin();
+		$ipBinLock->setIPBinUserID($this->SiteUser->id);
+		$ipBinLock->setIPBinMemberID($this->SiteUser->getUserMemberID());
+		$ipBinLock->setIPBinIPAddress();
+		$ipBinLock->setIPBinIPAddressStatus($lockStatus);
+		$ipBinLock->setIPBinCreationTime();
+		$ipBinLock->setIPBinLastUpdateTime();
+		// Lock the user ip
+		$this->getIPBinTable()->saveIPBin($ipBinLock);
+
+		// Lock the user member
+		if($this->getUser()->getUserMemberID() > 0)
+		{
+			$MemberStatus 	=	$this->getMemberStatusTable()->getMemberStatusByMemberID($this->getUser()->getUserMemberID());
+		}
+		if(is_object($MemberStatus))
+		{
+			$MemberStatus->setMemberStatusStatus($lockStatus);
+			$this->getMemberStatusTable()->saveMemberStatus($MemberStatus);
+		}
+
+		// Validate email format
+		$validator 	= 	new \Zend\Validator\EmailAddress();
+		if ($validator->isValid($contactEmail))
+		{
+			// if email is in our database
+			$MemberEmailsObject = 	$this->getMemberEmailsTable()->getMemberEmailsByEmail($contactEmail);
+			if(is_object($MemberEmailsObject))
+			{
+				// Lock the member associated with the email address
+				$MemberStatus 	=	$this->getMemberStatusTable()->getMemberStatusByMemberID($MemberEmailsObject->getMemberEmailsMemberID());
+				$MemberStatus->setMemberStatusStatus($lockStatus);
+				$this->getMemberStatusTable()->saveMemberStatus($MemberStatus);
+
+				// Send an email to the member
+				$this->sendEmail($emailTemplateName, $emailTemplateOptionsArray, $emailTemplateSendFromTag, $MemberEmailsObject->getMemberEmailsEmailAddress());
+			}
+			else
+			{
+				// Send an email to the user
+				$this->sendEmail($emailTemplateName, $emailTemplateOptionsArray, $emailTemplateSendFromTag, $contactEmail);
+			}
+		}
+	}
+
+
+
 
 }
