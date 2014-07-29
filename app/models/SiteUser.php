@@ -33,4 +33,35 @@ class SiteUser extends Eloquent
     {
         return $this->id;
     }
+
+
+    public function getMemberId()
+    {
+        return $this->member_id;
+    }
+
+    public function lockUserStatus($lockStatus)
+    {
+        $SiteUser   =   SiteUser::where("id","=", $this->getId())->first();
+        $newData    =   array
+                        (
+                            'user_status'   =>  $lockStatus,
+                        );
+        $SiteUser->fill($newData);
+        $SiteUser->save();
+    }
+
+    public function lockMemberStatus($lockStatus, $memberID)
+    {
+        if($memberID > 0)
+        {
+            $SiteUserMember     =   MemberStatus::where("member_id","=", $memberID)->first();
+            $newData            =   array
+                                    (
+                                        'status'   =>  $lockStatus,
+                                    );
+            $SiteUserMember->fill($newData);
+            $SiteUserMember->save();
+        }
+    }
 }

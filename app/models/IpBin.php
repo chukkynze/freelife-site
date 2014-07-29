@@ -29,5 +29,18 @@ class IpBin extends Eloquent
                                 );
 
 
-
+    public function blockIPAddress($userID=0, $lockStatus, $memberID=0)
+    {
+        $newIPBinLock   =   IpBin::create
+                            (
+                                array
+                                (
+                                    'user_id'       =>  $userID,
+                                    'member_id'     =>  $memberID,
+                                    'ip_address'    =>  sprintf('%u', ip2long($_SERVER['REMOTE_ADDR'])),
+                                    'ip_status'     =>  $lockStatus,
+                                )
+                            );
+        $newIPBinLock->save();
+    }
 }

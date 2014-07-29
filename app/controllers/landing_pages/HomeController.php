@@ -60,13 +60,13 @@ class HomeController extends AbstractLandingController
                     :   Response::make(View::make('landing/privacy', $viewData))->withCookie($this->SiteUserCookie);
 	}
 
-    public function processErrorsAction($errorNumber)
+    public function processErrors($errorNumber)
     {
         // todo:  this can be stored in the database so we can track which errors occur the most and at what frequency and by which member and user
 
 		// Customer Service should be the first point of call not Tech support
-        $techSupport            =   "<a href='mailto:technicalsupport@notarytoolz.com?subject=Error:".$this->params('errorNbr')."'>Technical Support</a>";
-        $customerService        =   "<a href='mailto:customersupport@notarytoolz.com?subject=Error:".$this->params('errorNbr')."'>Customer Support</a>";
+        $techSupport            =   "<a href='mailto:technicalsupport@ekinect.com?subject=Error:".$errorNumber."'>Technical Support</a>";
+        $customerService        =   "<a href='mailto:customersupport@ekinect.com?subject=Error:".$errorNumber."'>Customer Support</a>";
         $chooseSubscription     =   "<a href='/plans'>Choose a Plan</a>";
 
         switch($errorNumber)
@@ -147,6 +147,9 @@ class HomeController extends AbstractLandingController
                             break;
 
             case '22'   :   $ErrorMsg       =   "Unfortunately your verification link has expired. Please, retry or email " . $customerService . ". We are sure they can help you.";
+                            break;
+
+            case '23'   :   $ErrorMsg       =   "Unfortunately your security parameters are incorrect. Please, retry, refresh or email " . $customerService . ". We are sure they can help you.";
                             break;
 
 			/**

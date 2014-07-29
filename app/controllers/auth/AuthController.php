@@ -183,7 +183,7 @@ class AuthController extends BaseController
                                                 );
         if($AttemptedSignups['total'] > self::POLICY_AllowedSignupAttempts)
         {
-            $this->applyLock('Locked:Excessive-Signup-Attempts', $this->getRequest()->getPost('new_member'),'excessive-signups');
+            $this->applyLock('Locked:Excessive-Signup-Attempts', '','excessive-signups');
             return Redirect::route('custom-error',array('errorNumber' => 18));
         }
         else
@@ -374,40 +374,28 @@ class AuthController extends BaseController
 	 */
 	public function applyLock($lockStatus, $contactEmail='', $emailTemplateName='', $emailTemplateOptionsArray=array(), $emailTemplateSendFromTag='Customer Service')
 	{
-		// Get the User
-		$this->SiteUser 	=	$this->getSiteUser();
-		// Change the user status
-		$this->SiteUser->setUserStatus($lockStatus);
-		// Lock the user
-		$this->getUserTable()->saveUser($this->SiteUser);
+	    // Lock user status
+		$this->getSiteUser()->lockUserStatus($lockStatus, $this->getSiteUser()->getID());
 
 		// Create an IP Block
-		$ipBinLock			=	new IPBin();
-		$ipBinLock->setIPBinUserID($this->SiteUser->id);
-		$ipBinLock->setIPBinMemberID($this->SiteUser->getUserMemberID());
-		$ipBinLock->setIPBinIPAddress();
-		$ipBinLock->setIPBinIPAddressStatus($lockStatus);
-		$ipBinLock->setIPBinCreationTime();
-		$ipBinLock->setIPBinLastUpdateTime();
-		// Lock the user ip
-		$this->getIPBinTable()->saveIPBin($ipBinLock);
+		$ipBin  =	new IPBin();
+        $ipBin->blockIPAddress($this->getSiteUser()->getID(), $lockStatus, $this->getSiteUser()->getMemberID());
 
 		// Lock the user member
-		if($this->getUser()->getUserMemberID() > 0)
-		{
-			$MemberStatus 	=	$this->getMemberStatusTable()->getMemberStatusByMemberID($this->getUser()->getUserMemberID());
-		}
-		if(is_object($MemberStatus))
-		{
-			$MemberStatus->setMemberStatusStatus($lockStatus);
-			$this->getMemberStatusTable()->saveMemberStatus($MemberStatus);
-		}
+		$this->getSiteUser()->lockMemberStatus($lockStatus, $this->getSiteUser()->getMemberID());
 
-		// Validate email format
-		$validator 	= 	new \Zend\Validator\EmailAddress();
-		if ($validator->isValid($contactEmail))
-		{
-			// if email is in our database
+        $validator  =   Validator::make(
+            array(
+                'email' => $contactEmail
+            ),
+            array(
+                'email' => 'required|email|unique:member_emails'
+            )
+        );
+
+        if ($validator->passes())
+        {
+            // if email is in our database
 			$MemberEmailsObject = 	$this->getMemberEmailsTable()->getMemberEmailsByEmail($contactEmail);
 			if(is_object($MemberEmailsObject))
 			{
@@ -424,7 +412,7 @@ class AuthController extends BaseController
 				// Send an email to the user
 				$this->sendEmail($emailTemplateName, $emailTemplateOptionsArray, $emailTemplateSendFromTag, $contactEmail);
 			}
-		}
+        }
 	}
 
 

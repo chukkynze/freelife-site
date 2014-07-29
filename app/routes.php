@@ -32,6 +32,18 @@ Route::get('/privacy',      'HomeController@showPrivacy');
 
 
 
+// Entering Paywall Filters
+Route::filter('csrf', function()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'PUT')
+    {
+        if (Session::token() != Input::get('_token'))
+        {
+            return Redirect::route('custom-error',array('errorNumber' => 23));
+        }
+    }
+});
+
 // Entering Paywall Routes - Access Authorization
 Route::get('/login',                                                    array('as' =>  'login',                                 'uses'  =>  'AuthController@showAccess',                        ));
 Route::get('/login-again',                                              array('as' =>  'loginAgain',                            'uses'  =>  'AuthController@loginAgain',                        ));
@@ -41,7 +53,7 @@ Route::get('/login-captcha',                                            array('a
 Route::get('/member-logout',                                            array('as' =>  'memberLogout',                          'uses'  =>  'AuthController@memberLogout',                      ));
 Route::get('/member-logout-expired-session',                            array('as' =>  'memberLogoutExpiredSession',            'uses'  =>  'AuthController@memberLogoutExpiredSession',        ));
 Route::get('/signup',                                                   array('as' =>  'signup',                                'uses'  =>  'AuthController@signup',                            ));
-Route::post('/signup',                                                  array('as' =>  'processSignup',                         'uses'  =>  'AuthController@processSignup',                     ));
+Route::post('/signup',                                                  array('as' =>  'processSignup',                         'uses'  =>  'AuthController@processSignup',                     'before' => 'csrf',));
 Route::get('/vendor-signup',                                            array('as' =>  'vendorSignup',                          'uses'  =>  'AuthController@vendorSignup',                      ));
 Route::get('/freelancer-signup',                                        array('as' =>  'freelancerSignup',                      'uses'  =>  'AuthController@freelancerSignup',                  ));
 Route::get('/forgot',                                                   array('as' =>  'forgot',                                'uses'  =>  'AuthController@forgot',                            ));
