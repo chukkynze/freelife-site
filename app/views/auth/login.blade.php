@@ -183,10 +183,10 @@
 
                                 {{ Form::open(array('method' => 'POST', 'action' => 'AuthController@processSignup')) }}
 
-                                    <input class="notarytoolzInput Input1" name="usr"          type="text"  value="">
-                                    <input class="notarytoolzInput Input2" name="username"     type="text"  value="">
-                                    <input class="notarytoolzInput Input3" name="email"        type="text"  value="">
-                                    <input class="notarytoolzInput Input4" name="login_email"  type="text"  value="">
+                                    <?php echo Form::text('usr'         , null, array('class' => "notarytoolzInput Input1", 'value' => '')); ?>
+                                    <?php echo Form::text('username'    , null, array('class' => "notarytoolzInput Input2", 'value' => '')); ?>
+                                    <?php echo Form::text('email'       , null, array('class' => "notarytoolzInput Input3", 'value' => '')); ?>
+                                    <?php echo Form::text('login_email' , null, array('class' => "notarytoolzInput Input4", 'value' => '')); ?>
 
                                     <div class="form-group">
                                         <?php echo Form::label('new_member', 'Email Address'); ?>
@@ -199,14 +199,13 @@
                                         <?php echo Form::password('password'); ?>
                                     </div>
                                     <div class="form-group">
-                                        <?php echo Form::label('cpassword', 'Password'); ?>
+                                        <?php echo Form::label('password_confirmation', 'Password'); ?>
                                         <i class="fa fa-check-square-o"></i>
-                                        <?php echo Form::password('cpassword'); ?>
+                                        <?php echo Form::password('password_confirmation'); ?>
                                     </div>
                                     <div class="form-actions">
                                         <label class="checkbox" for="SignupFormTermsBox">
-                                            <input type="hidden" name="acceptTerms" value="">
-                                            <input type="checkbox" name="acceptTerms" id="SignupFormTermsBox" class="uniform" value="1">
+                                            <?php echo Form::checkbox('acceptTerms','1', false, array("id" => "SignupFormTermsBox", "class" => "uniform")); ?>
                                             I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>
                                         </label>
                                         <button type="submit" class="btn-lg btn-success">Sign Up</button>

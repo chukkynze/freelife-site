@@ -174,139 +174,198 @@ class AuthController extends BaseController
 
     public function processSignup()
     {
-        $AccessAttempt      =   new AccessAttempt();
-        $AttemptedSignups   =   $AccessAttempt->getAccessAttemptByUserIDs
-                                                (
-                                                    'SignupForm',
-                                                    array($this->getSiteUser()->id),
-                                                    self::POLICY_AllowedAttemptsLookBackDuration
-                                                );
-        if($AttemptedSignups['total'] > self::POLICY_AllowedSignupAttempts)
+        if(Request::isMethod('post'))
         {
-            $this->applyLock('Locked:Excessive-Signup-Attempts', '','excessive-signups');
-            return Redirect::route('custom-error',array('errorNumber' => 18));
-        }
-        else
-        {
-            $SubmittedForm          =   $SignupForm;
-            $SubmittedFormValues    =   $this->getRequest()->getPost();
-            $SubmittedFormName      =   'SignupForm';
-            $SubmittedFormCSRF      =   'signup_csrf';
-
-            /**
-             * Check for robot entries against dummy variables
-             */
-            if(!$this->isFormClean($SubmittedFormName, $SubmittedFormValues))
+            $AccessAttempt      =   new AccessAttempt();
+            $AttemptedSignups   =   $AccessAttempt->getAccessAttemptByUserIDs
+                                                    (
+                                                        'SignupForm',
+                                                        array($this->getSiteUser()->id),
+                                                        self::POLICY_AllowedAttemptsLookBackDuration
+                                                    );
+            if($AttemptedSignups['total'] > self::POLICY_AllowedSignupAttempts)
             {
-                $this->registerAccessAttempt($SubmittedFormName, 0);
-
-                // todo : add an admin alert
-
-                $this->_writeLog('info', $SubmittedFormName . " has invalid dummy variables passed.");
-                $SubmittedFormValues[$SubmittedFormCSRF]    =   '!98475b8!#urwgfwitg2^347tg2%78rtg283*rg';
-            }
-
-            $SignupFormValues   =   $this->getRequest()->getPost();
-            $SignupForm->setData($SignupFormValues);
-
-            if ($SignupForm->isValid($SignupFormValues))
-            {
-                $validatedData          =   $SignupForm->getData();
-
-                // Add the emailAddress
-                $this->addEmailStatus($validatedData['new_member'], 'AddedUnverified');
-
-                // Get the Site User so you can associate this user behaviour with this new member
-                $this->SiteUser         =   $this->getUser();
-
-                // todo: Check if member email already exists
-                $doesMemberAlreadyExist =   $this->getMemberEmailsTable()->getMemberEmailsByEmail($validatedData['new_member']);
-                if($doesMemberAlreadyExist != FALSE)
-                {
-                    $this->registerAccessAttempt($SubmittedFormName, 0);
-                    return $this->redirect()->toRoute('member-already-exists');
-                }
-
-
-                // Create a Member Object
-                $LoginCredentials   =   $this->getMemberTable()->generateLoginCredentials($validatedData['new_member'], $validatedData['password']);
-                $NewMember          =   new Member();
-                $NewMember->setMemberType('6');
-                $NewMember->setMemberCreationTime();
-                $NewMember->setMemberPauseTime(1);
-                $NewMember->setMemberCancellationTime(1);
-                $NewMember->setMemberLastUpdateTime();
-                $NewMember->setMemberLoginCredentials($LoginCredentials[0]);
-                $NewMember->setMemberLoginSalt1($LoginCredentials[1]);
-                $NewMember->setMemberLoginSalt2($LoginCredentials[2]);
-                $NewMember->setMemberLoginSalt3($LoginCredentials[3]);
-                $NewMemberObject    =   $this->getMemberTable()->getMember($this->getMemberTable()->saveMember($NewMember));
-
-                if(!is_object($NewMemberObject))
-                {
-                    // todo: handle this better. Write an error, add fatal admin alert and a log entry
-                    $this->registerAccessAttempt($SubmittedFormName, 0);
-                    $this->_writeLog('info', $SubmittedFormName . " - Could not create a new member object.");
-                    throw new \Exception("Could not create a new member object");
-                }
-
-                // Update User with Member ID
-                $this->SiteUser->setUserMemberID($NewMemberObject->id);
-                $this->SiteUser     =   $this->getUserTable()->getUser($this->getUserTable()->saveUser($this->SiteUser));
-
-                // Create & Save a Member Status Object
-                $this->addMemberStatus($NewMemberObject->id, 'Successful-Signup');
-
-                // Create & Save a Member Emails Object
-                $NewMemberEmail         =   new MemberEmails();
-                $NewMemberEmail->setMemberEmailsMemberID($NewMemberObject->id);
-                $NewMemberEmail->setMemberEmailsEmailAddress($validatedData['new_member']);
-                $NewMemberEmail->setMemberEmailsVerificationSent(0);
-                $NewMemberEmail->setMemberEmailsVerificationSentOn(0);
-                $NewMemberEmail->setMemberEmailsVerified(0);
-                $NewMemberEmail->setMemberEmailsVerifiedOn(0);
-                $NewMemberEmail->setMemberEmailsCreationTime();
-                $NewMemberEmail->setMemberEmailsLastUpdateTime();
-                $NewMemberEmailObject   =   $this->getMemberEmailsTable()->getMemberEmails($this->getMemberEmailsTable()->saveMemberEmails($NewMemberEmail));
-
-                if(!is_object($NewMemberEmailObject))
-                {
-                    // todo: handle this better. Write an error, add fatal admin alert and a log entry
-                    $this->registerAccessAttempt($SubmittedFormName, 0);
-                    $this->_writeLog('info', $SubmittedFormName . " - Could not create a new member email object.");
-                    throw new \Exception("Could not create a new member email object.");
-                }
-
-                // Prepare an Email for Validation
-                // setup SMTP options
-                $verifyEmailLink    =   $this->getMemberEmailsTable()->getVerifyEmailLink($validatedData['new_member'], $NewMemberObject->id, 'verify-new-member');
-                $this->sendEmail('verify-new-member', array('verifyEmailLink' => $verifyEmailLink), 'General', $NewMemberEmailObject->getMemberEmailsEmailAddress());
-
-                // Update Member emails that verification was sent and at what time for this member
-                $NewMemberEmailObject->setMemberEmailsVerified(0);
-                $NewMemberEmailObject->setMemberEmailsVerifiedOn(0);
-                $NewMemberEmailObject->setMemberEmailsVerificationSent(1);
-                $NewMemberEmailObject->setMemberEmailsVerificationSentOn(strtotime('now'));
-                $NewMemberEmailObject   =   $this->getMemberEmailsTable()->getMemberEmails($this->getMemberEmailsTable()->saveMemberEmails($NewMemberEmailObject));
-
-
-                // Add the emailAddress status
-                $this->addEmailStatus($NewMemberEmailObject->getMemberEmailsEmailAddress(), 'VerificationSent');
-
-                // Store admin alert for new member
-                // todo: Create a cron script that checks for new members since the last check and adds alerts and sends off emails to whomever needs to know plus other tasks. Call it process new members
-
-                // Add
-
-                // Redirect to Successful Signup Page that informs them of the need to validate the email before they can enjoy the free 90 day Premium membership
-                $this->registerAccessAttempt($SubmittedFormName, 1);
-                return $this->redirect()->toRoute('member-signup-success');
+                $this->applyLock('Locked:Excessive-Signup-Attempts', '','excessive-signups');
+                return Redirect::route('custom-error',array('errorNumber' => 18));
             }
             else
             {
-                $this->registerAccessAttempt($SubmittedFormName, 0);
-                $SignupFormMessages           =   $SignupForm->getMessages();
+                $SubmittedPostValues    =   Input::all();
+                $SubmittedFormName      =   'SignupForm';
+
+                /**
+                 * Check for robot entries against dummy variables
+                 */
+                if($this->isFormClean($SubmittedFormName, $SubmittedPostValues))
+                {
+                    $formFields     =   array
+                                        (
+                                            'new_member'                =>  Input::get('new_member'),
+                                            'password'                  =>  Input::get('password'),
+                                            'password_confirmation '    =>  Input::get('password_confirmation'),
+                                            'acceptTerms'               =>  Input::get('acceptTerms'),
+                                        );
+                    $formRules      =   array
+                                        (
+                                            'new_member'                =>  array
+                                                                            (
+                                                                                'required',
+                                                                                'email',
+                                                                                'unique:member_emails,email_address',
+                                                                                'between:5,120',
+                                                                            ),
+                                            'password'                  =>  array
+                                                                            (
+                                                                                'required',
+                                                                                'confirmed',
+                                                                                'same:password_confirmation',
+                                                                                'between:10,256',
+                                                                            ),
+                                            'password_confirmation '    =>  array
+                                                                            (
+                                                                                'required',
+                                                                                'between:10,256',
+                                                                            ),
+                                            'acceptTerms'               =>  array
+                                                                            (
+                                                                                'required',
+                                                                                'boolean',
+                                                                                'accepted',
+                                                                            ),
+                                        );
+                    $formMessages   =   array
+                                        (
+                                            'new_member.required'   =>  "An email address is required and can not be empty.",
+                                            'new_member.email'      =>  "Your email address format is invalid.",
+                                            'new_member.unique'     =>  "Please, check your inbox for previous sign up instructions.",
+                                            'new_member.between'    =>  "Please, re-check your email address' size.",
+
+                                            'password.required'                     =>  "Please enter your password.",
+                                            'password.confirmed'                    =>  "A password confirmation is required.",
+                                            'password.same:password_confirmation'   =>  "Passwords do not match.",
+                                            'password.between'                      =>  "Passwords must be more than 10 digits. Valid characters only.",
+
+                                            'password_confirmation.required'    =>  "Password confirmation is required.",
+                                            'password_confirmation.between'     =>  "A confirmed passwords must be more than 10 digits. Valid characters only.",
+
+                                            'acceptTerms.required'  =>  "Please indicate that you read our Terms & Privacy Policy.",
+                                            'acceptTerms.boolean'   =>  "Please, indicate that you read our Terms & Privacy Policy.",
+                                            'acceptTerms.accepted'  =>  "Please indicate that you read our Terms & Privacy Policy",
+                                        );
+
+                    $validator      =   Validator::make($formFields, $formRules, $formMessages);
+
+                    if ($validator->passes())
+                    {
+                        // Add the emailAddress
+                        $this->addEmailStatus($validatedData['new_member'], 'AddedUnverified');
+
+                        // Get the Site User so you can associate this user behaviour with this new member
+                        $this->SiteUser         =   $this->getSiteUser();
+
+                        // todo: Check if member email already exists
+                        $doesMemberAlreadyExist =   $this->getMemberEmailsTable()->getMemberEmailsByEmail($validatedData['new_member']);
+                        if($doesMemberAlreadyExist != FALSE)
+                        {
+                            $this->registerAccessAttempt($SubmittedFormName, 0);
+                            return $this->redirect()->toRoute('member-already-exists');
+                        }
+
+
+                        // Create a Member Object
+                        $LoginCredentials   =   $this->getMemberTable()->generateLoginCredentials($validatedData['new_member'], $validatedData['password']);
+                        $NewMember          =   new Member();
+                        $NewMember->setMemberType('6');
+                        $NewMember->setMemberCreationTime();
+                        $NewMember->setMemberPauseTime(1);
+                        $NewMember->setMemberCancellationTime(1);
+                        $NewMember->setMemberLastUpdateTime();
+                        $NewMember->setMemberLoginCredentials($LoginCredentials[0]);
+                        $NewMember->setMemberLoginSalt1($LoginCredentials[1]);
+                        $NewMember->setMemberLoginSalt2($LoginCredentials[2]);
+                        $NewMember->setMemberLoginSalt3($LoginCredentials[3]);
+                        $NewMemberObject    =   $this->getMemberTable()->getMember($this->getMemberTable()->saveMember($NewMember));
+
+                        if(!is_object($NewMemberObject))
+                        {
+                            // todo: handle this better. Write an error, add fatal admin alert and a log entry
+                            $this->registerAccessAttempt($SubmittedFormName, 0);
+                            $this->_writeLog('info', $SubmittedFormName . " - Could not create a new member object.");
+                            throw new \Exception("Could not create a new member object");
+                        }
+
+                        // Update User with Member ID
+                        $this->SiteUser->setUserMemberID($NewMemberObject->id);
+                        $this->SiteUser     =   $this->getUserTable()->getUser($this->getUserTable()->saveUser($this->SiteUser));
+
+                        // Create & Save a Member Status Object
+                        $this->addMemberStatus($NewMemberObject->id, 'Successful-Signup');
+
+                        // Create & Save a Member Emails Object
+                        $NewMemberEmail         =   new MemberEmails();
+                        $NewMemberEmail->setMemberEmailsMemberID($NewMemberObject->id);
+                        $NewMemberEmail->setMemberEmailsEmailAddress($validatedData['new_member']);
+                        $NewMemberEmail->setMemberEmailsVerificationSent(0);
+                        $NewMemberEmail->setMemberEmailsVerificationSentOn(0);
+                        $NewMemberEmail->setMemberEmailsVerified(0);
+                        $NewMemberEmail->setMemberEmailsVerifiedOn(0);
+                        $NewMemberEmail->setMemberEmailsCreationTime();
+                        $NewMemberEmail->setMemberEmailsLastUpdateTime();
+                        $NewMemberEmailObject   =   $this->getMemberEmailsTable()->getMemberEmails($this->getMemberEmailsTable()->saveMemberEmails($NewMemberEmail));
+
+                        if(!is_object($NewMemberEmailObject))
+                        {
+                            // todo: handle this better. Write an error, add fatal admin alert and a log entry
+                            $this->registerAccessAttempt($SubmittedFormName, 0);
+                            $this->_writeLog('info', $SubmittedFormName . " - Could not create a new member email object.");
+                            throw new \Exception("Could not create a new member email object.");
+                        }
+
+                        // Prepare an Email for Validation
+                        // setup SMTP options
+                        $verifyEmailLink    =   $this->getMemberEmailsTable()->getVerifyEmailLink($validatedData['new_member'], $NewMemberObject->id, 'verify-new-member');
+                        $this->sendEmail('verify-new-member', array('verifyEmailLink' => $verifyEmailLink), 'General', $NewMemberEmailObject->getMemberEmailsEmailAddress());
+
+                        // Update Member emails that verification was sent and at what time for this member
+                        $NewMemberEmailObject->setMemberEmailsVerified(0);
+                        $NewMemberEmailObject->setMemberEmailsVerifiedOn(0);
+                        $NewMemberEmailObject->setMemberEmailsVerificationSent(1);
+                        $NewMemberEmailObject->setMemberEmailsVerificationSentOn(strtotime('now'));
+                        $NewMemberEmailObject   =   $this->getMemberEmailsTable()->getMemberEmails($this->getMemberEmailsTable()->saveMemberEmails($NewMemberEmailObject));
+
+
+                        // Add the emailAddress status
+                        $this->addEmailStatus($NewMemberEmailObject->getMemberEmailsEmailAddress(), 'VerificationSent');
+
+                        // Store admin alert for new member
+                        // todo: Create a cron script that checks for new members since the last check and adds alerts and sends off emails to whomever needs to know plus other tasks. Call it process new members
+
+                        // Add
+
+                        // Redirect to Successful Signup Page that informs them of the need to validate the email before they can enjoy the free 90 day Premium membership
+                        $this->registerAccessAttempt($SubmittedFormName, 1);
+                        return $this->redirect()->toRoute('member-signup-success');
+                    }
+                    else
+                    {
+                        $SignupFormMessages     =   $validator->messages();
+                        $this->registerAccessAttempt($SubmittedFormName, 0);
+                    }
+                }
+                else
+                {
+                    $this->registerAccessAttempt($SubmittedFormName, 0);
+
+                    // todo : add an admin alert
+
+                    $this->_writeLog('info', $SubmittedFormName . " has invalid dummy variables passed.");
+                    return Redirect::route('custom-error',array('errorNumber' => 23));
+                }
             }
+        }
+        else
+        {
+            return Redirect::route('custom-error',array('errorNumber' => 23));
         }
     }
 
@@ -415,6 +474,122 @@ class AuthController extends BaseController
         }
 	}
 
+
+
+	/**
+	 * Checks if form has been populated by robots
+	 *
+	 * @param $formName
+	 * @param $formValues
+	 *
+	 * @return bool
+	 */
+	public function isFormClean($formName, $formValues)
+    {
+        $returnValue    =   FALSE;
+
+        if(is_array($formValues))
+        {
+            switch($formName)
+            {
+                case 'LoginForm'            					:   $dummyInput     =   array
+																						(
+																							'usr'           =>  '',
+																							'username'      =>  '',
+																							'email'         =>  '',
+																							'login_email'   =>  '',
+																						);
+																	break;
+
+                case 'SignupForm'     							:   $dummyInput     =   array
+																						(
+																							'usr'           =>  '',
+																							'username'      =>  '',
+																							'email'         =>  '',
+																							'login_email'   =>  '',
+																						);
+																	break;
+
+                case 'ForgotForm'     							:   $dummyInput     =   array
+																						(
+																							'usr'           =>  '',
+																							'username'      =>  '',
+																							'email'         =>  '',
+																							'login_email'   =>  '',
+																						);
+																	break;
+
+                case 'LoginCaptchaForm'     					:   $dummyInput     =   array
+																						(
+																							'usr'           =>  '',
+																							'username'      =>  '',
+																							'email'         =>  '',
+																							'login_email'   =>  '',
+																						);
+																	break;
+
+                case 'ChangePasswordWithVerifyLinkForm'     	:   $dummyInput     =   array
+																						(
+																							'usr'           =>  '',
+																							'username'      =>  '',
+																							'email'         =>  '',
+																							'login_email'   =>  '',
+																						);
+                                                					break;
+
+                case 'ChangePasswordWithOldPasswordForm'     	:   $dummyInput     =   array
+																						(
+																							'usr'           =>  '',
+																							'username'      =>  '',
+																							'email'         =>  '',
+																							'login_email'   =>  '',
+																						);
+																	break;
+
+
+                default  :   $dummyInput     =	array
+												(
+													'false'     =>  'FALSE',
+												);
+            }
+
+            foreach ($dummyInput as $dumbKey => $dumbValue)
+            {
+                if(array_key_exists($dumbKey, $formValues))
+                {
+                    if($dummyInput[$dumbKey] != 'FALSE')
+                    {
+                        if($formValues[$dumbKey] == $dummyInput[$dumbKey])
+                        {
+                            $returnValue    =   TRUE;
+                        }
+                        else
+                        {
+                            $this->_writeLog('info', "Form value for dummy input has incorrect value of [" . $formValues[$dumbKey]. "]. It should be [" . $dummyInput[$dumbKey]. "].");
+                            $returnValue    =   FALSE;
+                        }
+                    }
+                    else
+                    {
+                        $this->_writeLog('info', "Invalid formName. => dummyInput[" . $dumbValue . "]");
+                        $returnValue    =   FALSE;
+                    }
+                }
+                else
+                {
+                    $this->_writeLog('info', "Array key from variable dumbKey (" . $dumbKey . ") does not exist in variable array formValues.");
+                    $returnValue    =   FALSE;
+                }
+            }
+        }
+        else
+        {
+            $this->_writeLog('info', "Variable formValues is not an array.");
+            $returnValue    =   FALSE;
+        }
+
+        return $returnValue;
+    }
 
 
 
