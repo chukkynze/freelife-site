@@ -112,8 +112,8 @@ class SetupMainDb extends Migration
             $table->string('salt1', 32);
             $table->string('salt2', 32);
             $table->string('salt3', 32);
-            $table->integer('paused')->default(0);
-            $table->integer('cancelled')->default(0);
+            $table->tinyInteger('paused')->default(0);
+            $table->tinyInteger('cancelled')->default(0);
 
             $table->timestamps();
             $table->softDeletes();
@@ -321,6 +321,47 @@ class SetupMainDb extends Migration
             $table->index(array('member_id','cell_number')      , 'ndx4');
         });
 
+        /**
+         * Entity: EmailStatus
+         * Table: email_status
+         */
+		Schema::connection($this->connection)->dropIfExists('email_status');
+		Schema::connection($this->connection)->create('email_status', function($table)
+        {
+            // Parameters
+            $table->engine = 'InnoDB';
+
+            // Columns
+            $table->increments('id');
+            $table->string('email_address', 120);
+            $table->enum('email_address_status', array
+                                                (
+                                                    'AddedUnverified',
+                                                    'VerificationSent',
+                                                    'VerificationSentAgain',
+                                                    'Verified',
+                                                    'Forgot',
+                                                    'LostSignupVerification',
+                                                    'Remembered',
+                                                    'Paused',
+                                                    'MadeDefault',
+                                                    'Deleted',
+                                                    'ChangedPassword',
+                                                    'Locked:Excessive-Login-Attempts',
+                                                    'Locked:Excessive-Signup-Attempts',
+                                                    'Locked:Excessive-ForgotLogin-Attempts',
+                                                    'Locked:Excessive-ChangeVerifiedLinkPassword-Attempts',
+                                                    'Locked:Excessive-ChangeOldPassword-Attempts',
+                                                    'Locked:Excessive-LostSignupVerification-Attempts',
+                                                ));
+            $table->timestamps();
+
+            // Indexes
+            $table->index(array('email_address')                                        , 'ndx1');
+            $table->index(array('email_address','email_address_status')                 , 'ndx2');
+            $table->index(array('email_address','email_address_status' ,'created_at')   , 'ndx3');
+        });
+
 	}
 
 	/**
@@ -370,6 +411,11 @@ class SetupMainDb extends Migration
          * Table: member_details_contact_info
          */
 		Schema::connection($this->connection)->dropIfExists('member_details_contact_info');
+        /**
+         * Entity: EmailStatus
+         * Table: email_status
+         */
+		Schema::connection($this->connection)->dropIfExists('email_status');
 	}
 
 }

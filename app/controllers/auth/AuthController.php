@@ -174,6 +174,12 @@ class AuthController extends BaseController
 
     public function processSignup()
     {
+        $returnToRoute          =   array(
+            'name'  =>  FALSE,
+            'data'  =>  FALSE,
+        );
+        $SignupFormMessages     =   array();
+
         if(Request::isMethod('post'))
         {
             $AccessAttempt      =   new AccessAttempt();
@@ -183,12 +189,8 @@ class AuthController extends BaseController
                                                         array($this->getSiteUser()->id),
                                                         self::POLICY_AllowedAttemptsLookBackDuration
                                                     );
-            if($AttemptedSignups['total'] > self::POLICY_AllowedSignupAttempts)
-            {
-                $this->applyLock('Locked:Excessive-Signup-Attempts', '','excessive-signups');
-                return Redirect::route('custom-error',array('errorNumber' => 18));
-            }
-            else
+
+            if($AttemptedSignups['total'] < self::POLICY_AllowedSignupAttempts)
             {
                 $SubmittedPostValues    =   Input::all();
                 $SubmittedFormName      =   'SignupForm';
@@ -258,40 +260,19 @@ class AuthController extends BaseController
                     if ($validator->passes())
                     {
                         // Add the emailAddress
-                        $this->addEmailStatus($validatedData['new_member'], 'AddedUnverified');
+                        $this->addEmailStatus($formFields['new_member'], 'AddedUnverified');
 
                         // Get the Site User so you can associate this user behaviour with this new member
-                        $this->SiteUser         =   $this->getSiteUser();
-
-                        // todo: Check if member email already exists
-                        $doesMemberAlreadyExist =   $this->getMemberEmailsTable()->getMemberEmailsByEmail($validatedData['new_member']);
-                        if($doesMemberAlreadyExist != FALSE)
-                        {
-                            $this->registerAccessAttempt($SubmittedFormName, 0);
-                            return $this->redirect()->toRoute('member-already-exists');
-                        }
-
+                        $this->SiteUser     =   $this->getSiteUser();
 
                         // Create a Member Object
-                        $LoginCredentials   =   $this->getMemberTable()->generateLoginCredentials($validatedData['new_member'], $validatedData['password']);
-                        $NewMember          =   new Member();
-                        $NewMember->setMemberType('6');
-                        $NewMember->setMemberCreationTime();
-                        $NewMember->setMemberPauseTime(1);
-                        $NewMember->setMemberCancellationTime(1);
-                        $NewMember->setMemberLastUpdateTime();
-                        $NewMember->setMemberLoginCredentials($LoginCredentials[0]);
-                        $NewMember->setMemberLoginSalt1($LoginCredentials[1]);
-                        $NewMember->setMemberLoginSalt2($LoginCredentials[2]);
-                        $NewMember->setMemberLoginSalt3($LoginCredentials[3]);
-                        $NewMemberObject    =   $this->getMemberTable()->getMember($this->getMemberTable()->saveMember($NewMember));
+                        $NewMemberStatus    =   $this->addMember($formFields['new_member'], $formFields['password']);
 
-                        if(!is_object($NewMemberObject))
+                        if(!$NewMemberStatus)
                         {
                             // todo: handle this better. Write an error, add fatal admin alert and a log entry
-                            $this->registerAccessAttempt($SubmittedFormName, 0);
-                            $this->_writeLog('info', $SubmittedFormName . " - Could not create a new member object.");
-                            throw new \Exception("Could not create a new member object");
+                            $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 0);
+                            Log::info($SubmittedFormName . " - Could not create a new member object.");
                         }
 
                         // Update User with Member ID
@@ -316,7 +297,7 @@ class AuthController extends BaseController
                         if(!is_object($NewMemberEmailObject))
                         {
                             // todo: handle this better. Write an error, add fatal admin alert and a log entry
-                            $this->registerAccessAttempt($SubmittedFormName, 0);
+                            $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 0);
                             $this->_writeLog('info', $SubmittedFormName . " - Could not create a new member email object.");
                             throw new \Exception("Could not create a new member email object.");
                         }
@@ -343,29 +324,75 @@ class AuthController extends BaseController
                         // Add
 
                         // Redirect to Successful Signup Page that informs them of the need to validate the email before they can enjoy the free 90 day Premium membership
-                        $this->registerAccessAttempt($SubmittedFormName, 1);
+                        $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 1);
                         return $this->redirect()->toRoute('member-signup-success');
                     }
                     else
                     {
-                        $SignupFormMessages     =   $validator->messages();
-                        $this->registerAccessAttempt($SubmittedFormName, 0);
+                        $SignupFormErrors   =   $validator->messages()->toArray();
+                        $SignupFormMessages =   array();
+                        foreach($SignupFormErrors as $errors)
+                        {
+                            $SignupFormMessages[]   =   $errors[0];
+                        }
+
+                        $this->registerAccessAttempt($this->getSiteUser()->getID(),$SubmittedFormName, 0);
                     }
                 }
                 else
                 {
-                    $this->registerAccessAttempt($SubmittedFormName, 0);
-
-                    // todo : add an admin alert
-
-                    $this->_writeLog('info', $SubmittedFormName . " has invalid dummy variables passed.");
+                    $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 0);
+                    $this->addAdminAlert();
+                    Log::warning($SubmittedFormName . " has invalid dummy variables passed.");
                     return Redirect::route('custom-error',array('errorNumber' => 23));
                 }
+            }
+            else
+            {
+                $this->applyLock('Locked:Excessive-Signup-Attempts', '','excessive-signups');
+                $returnToRoute  =   array
+                                    (
+                                        'name'  =>  'custom-error',
+                                        'data'  =>  array('errorNumber' => 18),
+                                    );
             }
         }
         else
         {
-            return Redirect::route('custom-error',array('errorNumber' => 23));
+            $returnToRoute  =   array
+                                (
+                                    'name'  =>  'custom-error',
+                                    'data'  =>  array('errorNumber' => 23),
+                                );
+        }
+
+        if(isset($returnToRoute['name']))
+        {
+            return Redirect::route($returnToRoute['name'],$returnToRoute['data']);
+        }
+        else
+        {
+            $viewData   =   array(
+                'activity'                  =>  "signup",
+
+                'LoginFormMessages'         =>  array(),
+                'LoginAttemptMessage'       =>  array(),
+
+                'LoginCaptchaFormMessages'  =>  array(),
+                'LoginCaptchaAttemptMessage'=>  array(),
+
+                'reCaptcha'                 =>  NULL,
+                'reCaptchaError'            =>  NULL,
+                'PauseGifDisplaySeconds'    =>  0,
+
+                'SignupFormMessages'        =>  $SignupFormMessages,
+                'ForgotFormMessages'        =>  array(),
+                'LoginHeaderMessage'        =>  array()
+            );
+
+            return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
+                ?   Response::make(View::make('auth/login', $viewData))
+                :   Response::make(View::make('auth/login', $viewData))->withCookie($this->SiteUserCookie);
         }
     }
 
@@ -593,4 +620,78 @@ class AuthController extends BaseController
 
 
 
+
+	/**
+	 * Stores an access attempt
+	 *
+	 * @param $userID
+	 * @param $accessFormName
+	 * @param $attemptBoolean
+	 */
+	public function registerAccessAttempt($userID, $accessFormName, $attemptBoolean)
+    {
+        try
+        {
+             $AccessAttempt  =   new AccessAttempt();
+            $AccessAttempt->registerAccessAttempt($userID, $accessFormName, $attemptBoolean);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not add a new Access Attempt. " . $e);
+        }
+    }
+
+    public function addEmailStatus($emailAddress, $status)
+    {
+        try
+        {
+            $EmailStatus    =   new EmailStatus();
+            $EmailStatus->addEmailStatus($emailAddress, $status);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not add a new Email Status. " . $e);
+        }
+    }
+
+    public function generateLoginCredentials($newMemberEmail, $newMemberPassword)
+    {
+        $siteSalt           =   $_ENV['ENCRYPTION_KEY_SITE_default_salt'];
+        $memberSalt1        =   uniqid(mt_rand(0, 61), true);
+        $memberSalt2        =   uniqid(mt_rand(0, 61), true);
+        $memberSalt3        =   uniqid(mt_rand(0, 61), true);
+        $loginCredentials   =   $this->createHash
+                                (
+                                    $memberSalt1 . $newMemberEmail . $siteSalt . $newMemberPassword . $memberSalt2,
+                                    $siteSalt . $memberSalt3
+                                );
+        return  array
+                (
+                    $loginCredentials,
+                    $memberSalt1,
+                    $memberSalt2,
+                    $memberSalt3,
+                );
+    }
+
+    public function addMember($newMemberEmail, $newMemberPassword)
+    {
+        try
+        {
+            $LoginCredentials   =   $this->generateLoginCredentials($newMemberEmail, $newMemberPassword);
+            $NewMember          =   new Member();
+            $NewMember->addMember($LoginCredentials);
+            return TRUE;
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not add a new Email Status. " . $e);
+            return FALSE;
+        }
+    }
+
+    public function addAdminAlert()
+    {
+        // todo: Add an Admin Alert for certain issues
+    }
 }

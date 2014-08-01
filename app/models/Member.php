@@ -26,20 +26,54 @@ class Member extends Eloquent
 	 *
 	 * @var string
 	 */
-	protected $table = 'members';
+	protected $table        =   'members';
+    protected $primaryKey   =   'id';
+    protected $connection   =   'main_db';
+    protected $fillable     =   array
+                                (
+                                    'member_type',
+                                    'login_credentials',
+                                    'salt1',
+                                    'salt2',
+                                    'salt3',
+                                    'paused',
+                                    'cancelled',
+                                    'remember_token'
+                                );
+    protected $guarded      =   array
+                                (
+                                    'id',
+                                );
 
 	/**
 	 * The attributes excluded from the model's JSON form.
 	 *
 	 * @var array
 	 */
-	protected $hidden   =   array
-                            (
-                                'login_credentials',
-                                'salt1',
-                                'salt2',
-                                'salt3',
-                                'remember_token'
-                            );
+	protected $hidden       =   array
+                                (
+                                    'login_credentials',
+                                    'salt1',
+                                    'salt2',
+                                    'salt3',
+                                );
 
+    public function addMember($LoginCredentials)
+    {
+        $NewMember  =   Member::create
+                        (
+                            array
+                            (
+                                'member_type'       =>  'unknown',
+                                'login_credentials' =>  $LoginCredentials[0],
+                                'salt1'             =>  $LoginCredentials[1],
+                                'salt2'             =>  $LoginCredentials[2],
+                                'salt3'             =>  $LoginCredentials[3],
+                                'paused'            =>  0,
+                                'cancelled'         =>  0,
+                                'remember_token'    =>  '',
+                            )
+                        );
+        $NewMember->save();
+    }
 }

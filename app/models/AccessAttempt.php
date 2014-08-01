@@ -134,4 +134,22 @@ class AccessAttempt extends Eloquent
 										:	FALSE),
                 );
     }
+
+    public function registerAccessAttempt($userID=0, $accessFormName, $attemptBoolean)
+    {
+        $newAccessAttempt   =   AccessAttempt::create
+                                (
+                                    array
+                                    (
+                                        'user_id'       =>  $userID,
+                                        'attempt_type'  =>  $accessFormName,
+                                        'success'       =>  $attemptBoolean,
+                                        'attempted_at'  =>  strtotime('now'),
+                                    )
+                                );
+        $newAccessAttempt->save();
+
+
+        return TRUE;
+    }
 }

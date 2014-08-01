@@ -105,4 +105,10 @@ class BaseController extends Controller
 		}
 	}
 
+    protected function createHash($val,$key)
+    {
+        $hash   =   hash_hmac('sha512', $val, $key);
+        return $hash;
+    }
+
 }

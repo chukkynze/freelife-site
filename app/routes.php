@@ -32,17 +32,6 @@ Route::get('/privacy',      'HomeController@showPrivacy');
 
 
 
-// Entering Paywall Filters
-Route::filter('csrf', function()
-{
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'PUT')
-    {
-        if (Session::token() != Input::get('_token'))
-        {
-            return Redirect::route('custom-error',array('errorNumber' => 23));
-        }
-    }
-});
 
 // Entering Paywall Routes - Access Authorization
 Route::get('/login',                                                    array('as' =>  'login',                                 'uses'  =>  'AuthController@showAccess',                        ));

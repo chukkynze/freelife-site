@@ -81,6 +81,18 @@ Route::filter('guest', function()
 |
 */
 
+// Entering Paywall Filters
+Route::filter('csrf', function()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'PUT')
+    {
+        if (Session::token() != Input::get('_token'))
+        {
+            return Redirect::route('custom-error',array('errorNumber' => 23));
+        }
+    }
+});
+
 Route::filter('csrf', function()
 {
 	if (Session::token() != Input::get('_token'))

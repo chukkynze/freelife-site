@@ -24,12 +24,18 @@ $app = new Illuminate\Foundation\Application;
 |
 */
 
-$env = $app->detectEnvironment(array(
+/*
+ * $env = $app->detectEnvironment(array(
 
-	'local' => array('homestead'),
+	'development' => array('homestead'),
 
 ));
+ */
+$env = $app->detectEnvironment(function() {
 
+    return getenv('APPLICATION_ENV') ?: 'development';
+
+});
 /*
 |--------------------------------------------------------------------------
 | Bind Paths
