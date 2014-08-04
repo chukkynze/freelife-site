@@ -65,8 +65,8 @@ class HomeController extends AbstractLandingController
         // todo:  this can be stored in the database so we can track which errors occur the most and at what frequency and by which member and user
 
 		// Customer Service should be the first point of call not Tech support
-        $techSupport            =   "<a href='mailto:technicalsupport@ekinect.com?subject=Error:".$errorNumber."'>Technical Support</a>";
-        $customerService        =   "<a href='mailto:customersupport@ekinect.com?subject=Error:".$errorNumber."'>Customer Support</a>";
+        $techSupport            =   str_replace("[errorNumber]", $errorNumber, self::POLICY_LinkTechnicalSupport );
+        $customerService        =   str_replace("[errorNumber]", $errorNumber, self::POLICY_LinkCustomerService );
         $chooseSubscription     =   "<a href='/plans'>Choose a Plan</a>";
 
         switch($errorNumber)

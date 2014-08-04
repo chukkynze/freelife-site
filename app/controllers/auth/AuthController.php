@@ -17,7 +17,7 @@ class AuthController extends BaseController
 
 	const POLICY_AllowedLoginAttempts       					=   3;
     const POLICY_AllowedLoginCaptchaAttempts    				=   3;
-    const POLICY_AllowedSignupAttempts       					=   3;
+    const POLICY_AllowedSignupAttempts       					=   300;
     const POLICY_AllowedForgotAttempts       					=   3;
     const POLICY_AllowedChangeVerifiedMemberPasswordAttempts 	=   3;
     const POLICY_AllowedChangeOldMemberPasswordAttempts 		=   3;
@@ -60,10 +60,10 @@ class AuthController extends BaseController
         $SignupFormMessages         =   '';
         $ForgotFormMessages         =   '';
 
-        $LoginAttemptMessage        =   '';
-        $LoginCaptchaAttemptMessage =   '';
-        $SignupAttemptMessage       =   '';
-        $ForgotAttemptMessage       =   '';
+        $LoginAttemptMessages        =   '';
+        $LoginCaptchaAttemptMessages =   '';
+        $SignupAttemptMessages       =   '';
+        $ForgotAttemptMessages       =   '';
 
         if($activity == 'login')
 		{
@@ -89,21 +89,10 @@ class AuthController extends BaseController
                         (
                             'activity'                  =>  (isset($activeForm) ? $activeForm : $activity),
 
-                            #'LoginForm'                 =>  $LoginForm,
                             'LoginFormMessages'         =>  $LoginFormMessages,
-                            'LoginAttemptMessage'       =>  $LoginAttemptMessage,
+                            'LoginAttemptMessages'      =>  $LoginAttemptMessages,
 
-                            #'LoginCaptchaForm'          =>  $LoginCaptchaForm,
-                            'LoginCaptchaFormMessages'  =>  $LoginCaptchaFormMessages,
-                            'LoginCaptchaAttemptMessage'=>  $LoginCaptchaAttemptMessage,
-
-                            'reCaptcha'                 =>  (isset($reCaptcha)      ? $reCaptcha      : NULL),
-                            'reCaptchaError'            =>  (isset($reCaptchaError) ? $reCaptchaError : NULL),
-                            'PauseGifDisplaySeconds'    =>  0,
-
-                            #'SignupForm'                =>  $SignupForm,
                             'SignupFormMessages'        =>  $SignupFormMessages,
-                            #'ForgotForm'                =>  $ForgotForm,
                             'ForgotFormMessages'        =>  $ForgotFormMessages,
 
                             'LoginHeaderMessage'        =>  $LoginHeaderMessage
@@ -219,14 +208,11 @@ class AuthController extends BaseController
                                             'password'                  =>  array
                                                                             (
                                                                                 'required',
-                                                                                'confirmed',
-                                                                                'same:password_confirmation',
                                                                                 'between:10,256',
                                                                             ),
                                             'password_confirmation '    =>  array
                                                                             (
-                                                                                'required',
-                                                                                'between:10,256',
+                                                                                'same:password',
                                                                             ),
                                             'acceptTerms'               =>  array
                                                                             (
@@ -242,13 +228,11 @@ class AuthController extends BaseController
                                             'new_member.unique'     =>  "Please, check your inbox for previous sign up instructions.",
                                             'new_member.between'    =>  "Please, re-check your email address' size.",
 
-                                            'password.required'                     =>  "Please enter your password.",
-                                            'password.confirmed'                    =>  "A password confirmation is required.",
-                                            'password.same:password_confirmation'   =>  "Passwords do not match.",
-                                            'password.between'                      =>  "Passwords must be more than 10 digits. Valid characters only.",
+                                            'password.required'     =>  "Please enter your password.",
+                                            'password.confirmed'    =>  "A password confirmation is required.",
+                                            'password.between'      =>  "Passwords must be more than 10 digits. Valid characters only.",
 
-                                            'password_confirmation.required'    =>  "Password confirmation is required.",
-                                            'password_confirmation.between'     =>  "A confirmed passwords must be more than 10 digits. Valid characters only.",
+                                            'password_confirmation.same'    =>  "A password confirmation is required.",
 
                                             'acceptTerms.required'  =>  "Please indicate that you read our Terms & Privacy Policy.",
                                             'acceptTerms.boolean'   =>  "Please, indicate that you read our Terms & Privacy Policy.",
@@ -263,69 +247,81 @@ class AuthController extends BaseController
                         $this->addEmailStatus($formFields['new_member'], 'AddedUnverified');
 
                         // Get the Site User so you can associate this user behaviour with this new member
-                        $this->SiteUser     =   $this->getSiteUser();
+                        $this->SiteUser =   $this->getSiteUser();
 
                         // Create a Member Object
-                        $NewMemberStatus    =   $this->addMember($formFields['new_member'], $formFields['password']);
+                        $NewMemberID    =   $this->addMember($formFields['new_member'], $formFields['password']);
 
-                        if(!$NewMemberStatus)
+                        if($NewMemberID > 0)
                         {
-                            // todo: handle this better. Write an error, add fatal admin alert and a log entry
-                            $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 0);
-                            Log::info($SubmittedFormName . " - Could not create a new member object.");
+                            // Update User with Member ID
+                            $this->setSiteUserMemberID($this->getSiteUser()->getID(), $NewMemberID);
+
+                            // Create & Save a Member Status Object for the new Member
+                            $this->addMemberStatus($NewMemberID, 'Successful-Signup');
+
+                            // Create & Save a Member Emails Object
+                            $NewMemberEmailID   =   $this->addMemberEmail($formFields['new_member'], $NewMemberID);
+
+                            if($NewMemberEmailID > 0)
+                            {
+                                // Prepare an Email for Validation
+                                // setup SMTP options
+                                $verifyEmailLink    =   $this->generateVerifyEmailLink($formFields['new_member'], $NewMemberID, 'verify-new-member');
+                                $sendEmailStatus    =   $this->sendEmail('verify-new-member', array('verifyEmailLink' => $verifyEmailLink), 'General', $formFields['new_member']);
+
+                                if($sendEmailStatus)
+                                {
+                                    // Update Member emails that verification was sent and at what time for this member
+                                    $this->updateMemberEmail($NewMemberEmailID, array
+                                    (
+                                        'verification_sent'     =>  1,
+                                        'verification_sent_on'  =>  strtotime('now'),
+                                    ));
+
+                                    // Add the emailAddress status
+                                    $this->addEmailStatus($formFields['new_member'], 'VerificationSent');
+
+                                    // Redirect to Successful Signup Page that informs them of the need to validate the email before they can enjoy the free 90 day Premium membership
+                                    $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 1);
+                                    $viewData   =   array
+                                                    (
+                                                        'emailAddress'        =>  $formFields['new_member'],
+                                                    );
+
+                                    return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
+                                        ?   Response::make(View::make('auth/member-signup-success', $viewData))
+                                        :   Response::make(View::make('auth/member-signup-success', $viewData))->withCookie($this->SiteUserCookie);
+                                }
+                                else
+                                {
+                                    $this->addAdminAlert();
+                                    $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 0);
+                                    Log::info($SubmittedFormName . " - Could not send the new member email to [" . $formFields['new_member'] . "] for member id [" . $NewMemberID . "].");
+                                    $customerService        =   str_replace("[errorNumber]", "Could not send the new member email.", self::POLICY_LinkCustomerService );
+                                    $SignupFormMessages[]   =   "Sorry, we cannot complete the signup process at this time.
+                                                                Please refresh, and if the issue continues, contact " . $customerService . ".";
+                                }
+                            }
+                            else
+                            {
+                                $this->addAdminAlert();
+                                $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 0);
+                                Log::info($SubmittedFormName . " - Could not create a new member email.");
+                                $customerService        =   str_replace("[errorNumber]", "Could not create a new member email.", self::POLICY_LinkCustomerService );
+                                $SignupFormMessages[]   =   "Sorry, we cannot complete the signup process at this time.
+                                                            Please refresh, and if the issue continues, contact " . $customerService . ".";
+                            }
                         }
-
-                        // Update User with Member ID
-                        $this->SiteUser->setUserMemberID($NewMemberObject->id);
-                        $this->SiteUser     =   $this->getUserTable()->getUser($this->getUserTable()->saveUser($this->SiteUser));
-
-                        // Create & Save a Member Status Object
-                        $this->addMemberStatus($NewMemberObject->id, 'Successful-Signup');
-
-                        // Create & Save a Member Emails Object
-                        $NewMemberEmail         =   new MemberEmails();
-                        $NewMemberEmail->setMemberEmailsMemberID($NewMemberObject->id);
-                        $NewMemberEmail->setMemberEmailsEmailAddress($validatedData['new_member']);
-                        $NewMemberEmail->setMemberEmailsVerificationSent(0);
-                        $NewMemberEmail->setMemberEmailsVerificationSentOn(0);
-                        $NewMemberEmail->setMemberEmailsVerified(0);
-                        $NewMemberEmail->setMemberEmailsVerifiedOn(0);
-                        $NewMemberEmail->setMemberEmailsCreationTime();
-                        $NewMemberEmail->setMemberEmailsLastUpdateTime();
-                        $NewMemberEmailObject   =   $this->getMemberEmailsTable()->getMemberEmails($this->getMemberEmailsTable()->saveMemberEmails($NewMemberEmail));
-
-                        if(!is_object($NewMemberEmailObject))
+                        else
                         {
-                            // todo: handle this better. Write an error, add fatal admin alert and a log entry
+                            $this->addAdminAlert();
                             $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 0);
-                            $this->_writeLog('info', $SubmittedFormName . " - Could not create a new member email object.");
-                            throw new \Exception("Could not create a new member email object.");
+                            Log::info($SubmittedFormName . " - Could not create a new member.");
+                            $customerService        =   str_replace("[errorNumber]", "Could not create a new member.", self::POLICY_LinkCustomerService );
+                            $SignupFormMessages[]   =   "Sorry, we cannot complete the signup process at this time.
+                                                        Please refresh, and if the issue continues, contact " . $customerService . ".";
                         }
-
-                        // Prepare an Email for Validation
-                        // setup SMTP options
-                        $verifyEmailLink    =   $this->getMemberEmailsTable()->getVerifyEmailLink($validatedData['new_member'], $NewMemberObject->id, 'verify-new-member');
-                        $this->sendEmail('verify-new-member', array('verifyEmailLink' => $verifyEmailLink), 'General', $NewMemberEmailObject->getMemberEmailsEmailAddress());
-
-                        // Update Member emails that verification was sent and at what time for this member
-                        $NewMemberEmailObject->setMemberEmailsVerified(0);
-                        $NewMemberEmailObject->setMemberEmailsVerifiedOn(0);
-                        $NewMemberEmailObject->setMemberEmailsVerificationSent(1);
-                        $NewMemberEmailObject->setMemberEmailsVerificationSentOn(strtotime('now'));
-                        $NewMemberEmailObject   =   $this->getMemberEmailsTable()->getMemberEmails($this->getMemberEmailsTable()->saveMemberEmails($NewMemberEmailObject));
-
-
-                        // Add the emailAddress status
-                        $this->addEmailStatus($NewMemberEmailObject->getMemberEmailsEmailAddress(), 'VerificationSent');
-
-                        // Store admin alert for new member
-                        // todo: Create a cron script that checks for new members since the last check and adds alerts and sends off emails to whomever needs to know plus other tasks. Call it process new members
-
-                        // Add
-
-                        // Redirect to Successful Signup Page that informs them of the need to validate the email before they can enjoy the free 90 day Premium membership
-                        $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 1);
-                        return $this->redirect()->toRoute('member-signup-success');
                     }
                     else
                     {
@@ -337,6 +333,7 @@ class AuthController extends BaseController
                         }
 
                         $this->registerAccessAttempt($this->getSiteUser()->getID(),$SubmittedFormName, 0);
+                        Log::info($SubmittedFormName . " - form values did not pass.");
                     }
                 }
                 else
@@ -344,7 +341,11 @@ class AuthController extends BaseController
                     $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 0);
                     $this->addAdminAlert();
                     Log::warning($SubmittedFormName . " has invalid dummy variables passed.");
-                    return Redirect::route('custom-error',array('errorNumber' => 23));
+                    $returnToRoute  =   array
+                                        (
+                                            'name'  =>  'custom-error',
+                                            'data'  =>  array('errorNumber' => 23),
+                                        );
                 }
             }
             else
@@ -366,7 +367,7 @@ class AuthController extends BaseController
                                 );
         }
 
-        if(isset($returnToRoute['name']))
+        if(FALSE != $returnToRoute['name'])
         {
             return Redirect::route($returnToRoute['name'],$returnToRoute['data']);
         }
@@ -375,19 +376,13 @@ class AuthController extends BaseController
             $viewData   =   array(
                 'activity'                  =>  "signup",
 
-                'LoginFormMessages'         =>  array(),
-                'LoginAttemptMessage'       =>  array(),
+                'LoginAttemptMessages'      =>  '',
 
-                'LoginCaptchaFormMessages'  =>  array(),
-                'LoginCaptchaAttemptMessage'=>  array(),
+                'LoginFormMessages'         =>  '',
+                'SignupFormMessages'        =>  (count($SignupFormMessages) >= 1 ? $SignupFormMessages : ''),
+                'ForgotFormMessages'        =>  '',
 
-                'reCaptcha'                 =>  NULL,
-                'reCaptchaError'            =>  NULL,
-                'PauseGifDisplaySeconds'    =>  0,
-
-                'SignupFormMessages'        =>  $SignupFormMessages,
-                'ForgotFormMessages'        =>  array(),
-                'LoginHeaderMessage'        =>  array()
+                'LoginHeaderMessage'        =>  ''
             );
 
             return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
@@ -461,23 +456,26 @@ class AuthController extends BaseController
 	public function applyLock($lockStatus, $contactEmail='', $emailTemplateName='', $emailTemplateOptionsArray=array(), $emailTemplateSendFromTag='Customer Service')
 	{
 	    // Lock user status
-		$this->getSiteUser()->lockUserStatus($lockStatus, $this->getSiteUser()->getID());
+		$this->getSiteUser()->setUserStatus($lockStatus, $this->getSiteUser()->getID());
 
 		// Create an IP Block
 		$ipBin  =	new IPBin();
         $ipBin->blockIPAddress($this->getSiteUser()->getID(), $lockStatus, $this->getSiteUser()->getMemberID());
 
-		// Lock the user member
-		$this->getSiteUser()->lockMemberStatus($lockStatus, $this->getSiteUser()->getMemberID());
+		// Lock the user member status by adding a more current member status of $lockStatus
+		$this->addMemberStatus($lockStatus, $this->getSiteUser()->getMemberID());
 
-        $validator  =   Validator::make(
-            array(
-                'email' => $contactEmail
-            ),
-            array(
-                'email' => 'required|email|unique:member_emails'
-            )
-        );
+        $validator  =   Validator::make
+                        (
+                            array
+                            (
+                                'email' => $contactEmail
+                            ),
+                            array
+                            (
+                                'email' => 'required|email|unique:member_emails'
+                            )
+                        );
 
         if ($validator->passes())
         {
@@ -485,7 +483,7 @@ class AuthController extends BaseController
 			$MemberEmailsObject = 	$this->getMemberEmailsTable()->getMemberEmailsByEmail($contactEmail);
 			if(is_object($MemberEmailsObject))
 			{
-				// Lock the member associated with the email address
+				// Lock the member associated with the email address addMemberStatusaddMemberStatusaddMemberStatusaddMemberStatusaddMemberStatus
 				$MemberStatus 	=	$this->getMemberStatusTable()->getMemberStatusByMemberID($MemberEmailsObject->getMemberEmailsMemberID());
 				$MemberStatus->setMemberStatusStatus($lockStatus);
 				$this->getMemberStatusTable()->saveMemberStatus($MemberStatus);
@@ -674,20 +672,126 @@ class AuthController extends BaseController
                 );
     }
 
+    public function generateMemberLoginCredentials($newMemberEmail, $newMemberPassword, $memberSalt1, $memberSalt2, $memberSalt3)
+    {
+        $siteSalt           =   $_ENV['ENCRYPTION_KEY_SITE_default_salt'];
+        $loginCredentials   =   $this->createHash
+                                (
+                                     $memberSalt1 . $newMemberEmail . $siteSalt . $newMemberPassword . $memberSalt2,
+                                     $siteSalt . $memberSalt3
+                                );
+
+        return $loginCredentials;
+    }
+
+    public function generateVerifyEmailLink($memberEmail, $memberID, $emailTemplateName )
+    {
+        $siteSalt           =   $_ENV['ENCRYPTION_KEY_SITE_default_salt'];
+
+        $a                  =   base64_encode($this->twoWayCrypt('e',$memberEmail,$siteSalt));      // email address
+        $b                  =   base64_encode($this->createHash($memberID,$siteSalt));              // one-way hashed mid
+        $c                  =   base64_encode($this->twoWayCrypt('e',strtotime("now"),$siteSalt));  // vcode creation time
+        $addOn              =   str_replace("/", "--::--", $a . self::POLICY_EncryptedURLDelimiter . $b . self::POLICY_EncryptedURLDelimiter . $c);
+        $addOn              =   str_replace("+", "--:::--", $addOn);
+
+		switch($emailTemplateName)
+		{
+			case 'verify-new-member'		:	$router	=	'email-verification';
+												break;
+
+			case 'forgot-logins-success'	:	$router	=	'change-password-verification';
+												break;
+
+			default : throw new \Exception('Invalid Email route passed (' . $emailTemplateName . '.');
+		}
+        $verifyEmailLink    =   self::POLICY_CompanyURL_protocol . self::POLICY_CompanyURL_prd . $router . "/" . $addOn;
+
+        return $verifyEmailLink;
+    }
+
     public function addMember($newMemberEmail, $newMemberPassword)
     {
         try
         {
             $LoginCredentials   =   $this->generateLoginCredentials($newMemberEmail, $newMemberPassword);
             $NewMember          =   new Member();
-            $NewMember->addMember($LoginCredentials);
+            return $NewMember->addMember($LoginCredentials);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not add a new Member identified by this email address [" . $newMemberEmail . "]. " . $e);
+            return FALSE;
+        }
+    }
+
+    public function addMemberStatus($status, $memberID)
+    {
+        try
+        {
+            $NewMemberStatus    =   new MemberStatus();
+            return $NewMemberStatus->addMemberStatus($status, $memberID);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not add the new Member Status [" . $status . "] for Member [" . $memberID . "]. " . $e);
+            return FALSE;
+        }
+    }
+
+    public function addMemberEmail($memberEmail, $memberID)
+    {
+        try
+        {
+            $NewMemberEmail    =   new MemberEmails();
+            return $NewMemberEmail->addMemberEmail($memberEmail, $memberID);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not add email address [ " . $memberEmail . "] for Member ID [" . $memberID . "] - " . $e);
+            return FALSE;
+        }
+    }
+
+    public function updateMemberEmail($memberEmailsID, $fillableArray)
+    {
+        try
+        {
+            $MemberEmail    =   new MemberEmails();
+            return $MemberEmail->updateMemberEmail($memberEmailsID, $fillableArray);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not update MemberEmails ID [" . $memberEmailsID . "] - " . $e);
+            return FALSE;
+        }
+    }
+
+    public function setSiteUserMemberID($userID, $memberID)
+    {
+        try
+        {
+            $SiteUser    =   new SiteUser();
+            $SiteUser->setSiteUserMemberID($userID, $memberID);
             return TRUE;
         }
         catch(\Whoops\Example\Exception $e)
         {
-            Log::error("Could not add a new Email Status. " . $e);
+            Log::error("Could not set the User [" . $userID . "] with the new  Member ID [" . $memberID . "]. " . $e);
             return FALSE;
         }
+    }
+
+	/**
+	 * Sends an email
+	 *
+	 * @param $emailTemplateName
+	 * @param $emailTemplateArrayOptions
+	 * @param $sentFromTag
+	 * @param $sendToEmail
+	 */
+	public function sendEmail($emailTemplateName, $emailTemplateArrayOptions, $sentFromTag, $sendToEmail)
+	{
+        return TRUE;
     }
 
     public function addAdminAlert()

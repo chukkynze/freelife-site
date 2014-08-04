@@ -40,9 +40,9 @@ class SiteUser extends Eloquent
         return $this->member_id;
     }
 
-    public function lockUserStatus($lockStatus)
+    public function setUserStatus($lockStatus, $userID)
     {
-        $SiteUser   =   SiteUser::where("id","=", $this->getId())->first();
+        $SiteUser   =   SiteUser::where("id","=", $userID)->first();
         $newData    =   array
                         (
                             'user_status'   =>  $lockStatus,
@@ -51,17 +51,14 @@ class SiteUser extends Eloquent
         $SiteUser->save();
     }
 
-    public function lockMemberStatus($lockStatus, $memberID)
+    public function setSiteUserMemberID($userID, $memberID)
     {
-        if($memberID > 0)
-        {
-            $SiteUserMember     =   MemberStatus::where("member_id","=", $memberID)->first();
-            $newData            =   array
-                                    (
-                                        'status'   =>  $lockStatus,
-                                    );
-            $SiteUserMember->fill($newData);
-            $SiteUserMember->save();
-        }
+        $SiteUser   =   SiteUser::where("id","=", $userID)->first();
+        $newData    =   array
+                        (
+                            'member_id'   =>  $memberID,
+                        );
+        $SiteUser->fill($newData);
+        $SiteUser->save();
     }
 }

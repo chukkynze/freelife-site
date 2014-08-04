@@ -1,10 +1,10 @@
 <?php
 /**
  * filename:   login.php
- * 
+ *
  * @author      Chukwuma J. Nze <chukkynze@ekinect.com>
  * @since       7/13/14 1:27 AM
- * 
+ *
  * @copyright   Copyright (c) 2014 www.eKinect.com
  */
 ?>
@@ -75,27 +75,28 @@
 									?>
 								</h3>
 
-                                <?php if($LoginFormMessages != '' || $LoginAttemptMessage != ''): ?>
+                                <?php if( $LoginFormMessages != '' || $LoginAttemptMessages != ''): ?>
                                 <div class="alert alert-block alert-danger fade in">
+
                                     <a class="close" data-dismiss="alert" href="#" aria-hidden="true">×</a>
                                     <h4><i class="fa fa-times"></i> Oh snap! You got an error!</h4>
-                                    <?php
 
-                                        if($LoginFormMessages != '')
-                                        {
-                                            echo $this->formElementErrors()
-                                                    ->setMessageOpenFormat('<ul><li>')
-                                                    ->setMessageSeparatorString('</li><li>')
-                                                    ->setMessageCloseString('</li></ul>')
-                                                    ->render($LoginForm)
-                                            ;
-                                        }
+                                    <?php if( count($LoginFormMessages) >= 1 ): ?>
+                                    <ul>
+                                        <?php foreach($LoginFormMessages as $LoginFormMessage): ?>
+                                        <li><?php echo $LoginFormMessage; ?></li>
+                                        <?php endforeach ?>
+                                    </ul>
+                                    <?php endif; ?>
 
-                                        if($LoginAttemptMessage != '')
-                                        {
-                                            echo '<ul><li>' . $LoginAttemptMessage . '</li></ul>';
-                                        }
-                                    ?>
+                                    <?php if( count($LoginAttemptMessages) >= 1 ): ?>
+                                    <ul>
+                                         <?php foreach($LoginAttemptMessages as $LoginAttemptMessage): ?>
+                                        <li><?php echo $LoginAttemptMessage; ?></li>
+                                        <?php endforeach ?>
+                                    </ul>
+                                    <?php endif; ?>
+
                                 </div>
                                 <?php endif; ?>
 
@@ -103,10 +104,10 @@
 								<div class="divide-40"></div>
                                     {{ Form::open(array('action' => 'AuthController@showAccess')) }}
 
-                                        <input class="notarytoolzInput Input1" name="usr"          type="text"  value="">
-                                        <input class="notarytoolzInput Input2" name="username"     type="text"  value="">
-                                        <input class="notarytoolzInput Input3" name="email"        type="text"  value="">
-                                        <input class="notarytoolzInput Input4" name="login_email"  type="text"  value="">
+                                    <?php echo Form::text('usr'         , null, array('class' => "notarytoolzInput Input1", 'value' => '')); ?>
+                                    <?php echo Form::text('username'    , null, array('class' => "notarytoolzInput Input2", 'value' => '')); ?>
+                                    <?php echo Form::text('email'       , null, array('class' => "notarytoolzInput Input3", 'value' => '')); ?>
+                                    <?php echo Form::text('login_email' , null, array('class' => "notarytoolzInput Input4", 'value' => '')); ?>
 
                                         <div class="form-group">
                                             <?php echo Form::label('returning_member', 'E-Mail Address'); ?>
@@ -167,14 +168,11 @@
                                 <div class="alert alert-block alert-danger fade in">
                                     <a class="close" data-dismiss="alert" href="#" aria-hidden="true">×</a>
                                     <h4><i class="fa fa-times"></i> Oh snap! You got an error!</h4>
-                                    <?php
-                                        echo $this->formElementErrors()
-                                                ->setMessageOpenFormat('<ul><li>')
-                                                ->setMessageSeparatorString('</li><li>')
-                                                ->setMessageCloseString('</li></ul>')
-                                                ->render($SignupForm)
-                                        ;
-                                    ?>
+                                    <ul>
+                                        <?php foreach($SignupFormMessages as $SignupFormMessage): ?>
+                                        <li><?php echo $SignupFormMessage; ?></li>
+                                        <?php endforeach ?>
+                                    </ul>
                                 </div>
                                 <?php endif; ?>
 
@@ -199,7 +197,7 @@
                                         <?php echo Form::password('password'); ?>
                                     </div>
                                     <div class="form-group">
-                                        <?php echo Form::label('password_confirmation', 'Password'); ?>
+                                        <?php echo Form::label('password_confirmation', 'Confirmed Password'); ?>
                                         <i class="fa fa-check-square-o"></i>
                                         <?php echo Form::password('password_confirmation'); ?>
                                     </div>
@@ -252,14 +250,11 @@
                                 <div class="alert alert-block alert-danger fade in">
                                     <a class="close" data-dismiss="alert" href="#" aria-hidden="true">×</a>
                                     <h4><i class="fa fa-times"></i> Oh snap! You got an error!</h4>
-                                    <?php
-                                        echo $this->formElementErrors()
-                                                ->setMessageOpenFormat('<ul><li>')
-                                                ->setMessageSeparatorString('</li><li>')
-                                                ->setMessageCloseString('</li></ul>')
-                                                ->render($ForgotForm)
-                                        ;
-                                    ?>
+                                    <ul>
+                                         <?php foreach($ForgotFormMessages as $ForgotFormMessage): ?>
+                                        <li><?php echo $ForgotFormMessage; ?></li>
+                                        <?php endforeach ?>
+                                    </ul>
                                 </div>
                                 <?php endif; ?>
 
@@ -267,10 +262,10 @@
 
                                 {{ Form::open(array('action' => 'AuthController@showAccess')) }}
 
-                                    <input class="notarytoolzInput Input1" name="usr"          type="text"  value="">
-                                    <input class="notarytoolzInput Input2" name="username"     type="text"  value="">
-                                    <input class="notarytoolzInput Input3" name="email"        type="text"  value="">
-                                    <input class="notarytoolzInput Input4" name="login_email"  type="text"  value="">
+                                    <?php echo Form::text('usr'         , null, array('class' => "notarytoolzInput Input1", 'value' => '')); ?>
+                                    <?php echo Form::text('username'    , null, array('class' => "notarytoolzInput Input2", 'value' => '')); ?>
+                                    <?php echo Form::text('email'       , null, array('class' => "notarytoolzInput Input3", 'value' => '')); ?>
+                                    <?php echo Form::text('login_email' , null, array('class' => "notarytoolzInput Input4", 'value' => '')); ?>
 
 
                                     <div class="form-group">

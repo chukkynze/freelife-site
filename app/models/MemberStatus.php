@@ -27,4 +27,22 @@ class MemberStatus extends Eloquent
                                 );
 
 
+
+
+    public function addMemberStatus($newStatus, $memberID)
+    {
+        if($memberID > 0)
+        {
+            $newMemberStatus    =   MemberStatus::create
+                                    (
+                                        array
+                                        (
+                                            'member_id' =>  $memberID,
+                                            'status'    =>  $newStatus,
+                                        )
+                                    );
+            $newMemberStatus->save();
+            return TRUE;
+        }
+    }
 }

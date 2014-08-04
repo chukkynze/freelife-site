@@ -115,6 +115,7 @@ class SetupMainDb extends Migration
             $table->tinyInteger('paused')->default(0);
             $table->tinyInteger('cancelled')->default(0);
 
+            $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
 

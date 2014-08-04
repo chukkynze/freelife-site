@@ -75,5 +75,6 @@ class Member extends Eloquent
                             )
                         );
         $NewMember->save();
+        return $NewMember->id;
     }
 }
