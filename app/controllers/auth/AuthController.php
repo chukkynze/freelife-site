@@ -240,8 +240,9 @@ class AuthController extends BaseController
                                         );
 
                     $validator      =   Validator::make($formFields, $formRules, $formMessages);
+                    $passwordCheck  =   $this->checkPasswordStrength($formFields['password']);
 
-                    if ($validator->passes())
+                    if ($validator->passes() && $passwordCheck['status'])
                     {
                         // Add the emailAddress
                         $this->addEmailStatus($formFields['new_member'], 'AddedUnverified');
@@ -268,7 +269,23 @@ class AuthController extends BaseController
                                 // Prepare an Email for Validation
                                 // setup SMTP options
                                 $verifyEmailLink    =   $this->generateVerifyEmailLink($formFields['new_member'], $NewMemberID, 'verify-new-member');
-                                $sendEmailStatus    =   $this->sendEmail('verify-new-member', array('verifyEmailLink' => $verifyEmailLink), 'General', $formFields['new_member']);
+                                $sendEmailStatus    =   $this->sendEmail
+                                                        (
+                                                            'verify-new-member',
+                                                            array
+                                                            (
+                                                                'verifyEmailLink' => $verifyEmailLink
+                                                            ),
+                                                            array
+                                                            (
+                                                                'fromTag'       =>  'General',
+                                                                'sendToEmail'   =>  $formFields['new_member'],
+                                                                'sendToName'    =>  'Welcome to Ekinect',
+                                                                'subject'       =>  'Welcome to Ekinect',
+                                                                'ccArray'       =>  FALSE,
+                                                                'attachArray'   =>  FALSE,
+                                                            )
+                                                        );
 
                                 if($sendEmailStatus)
                                 {
@@ -330,6 +347,11 @@ class AuthController extends BaseController
                         foreach($SignupFormErrors as $errors)
                         {
                             $SignupFormMessages[]   =   $errors[0];
+                        }
+
+                        foreach($passwordCheck['errors'] as $errors)
+                        {
+                            $SignupFormMessages[]   =   $errors;
                         }
 
                         $this->registerAccessAttempt($this->getSiteUser()->getID(),$SubmittedFormName, 0);
@@ -781,17 +803,111 @@ class AuthController extends BaseController
         }
     }
 
+    public function checkPasswordStrength($password)
+    {
+        if( !preg_match("#[0-9]+#", $password) )
+        {
+            $error[]    =   "Password must include at least one number!";
+        }
+
+        if( !preg_match("#[a-z]+#", $password) )
+        {
+            $error[]    =   "Password must include at least one letter!";
+        }
+
+        if( !preg_match("#[A-Z]+#", $password) )
+        {
+            $error[]    =   "Password must include at least one CAPS!";
+        }
+
+        if( !preg_match("#\W+#", $password) )
+        {
+            $error[]    =   "Password must include at least one symbol!";
+        }
+
+        if(isset($error) && count($error) >= 1)
+        {
+            $output     =   array
+                            (
+                                'status' =>   FALSE,
+                                'errors' =>   $error,
+                            );
+        }
+        else
+        {
+            $output     =   array
+                            (
+                                'status' =>   TRUE,
+                            );
+        }
+
+        return $output;
+    }
+
 	/**
 	 * Sends an email
 	 *
 	 * @param $emailTemplateName
-	 * @param $emailTemplateArrayOptions
-	 * @param $sentFromTag
-	 * @param $sendToEmail
-	 */
-	public function sendEmail($emailTemplateName, $emailTemplateArrayOptions, $sentFromTag, $sendToEmail)
+     * @param $emailTemplateDataVariables
+     * @param $emailMessageVariables
+     *
+     * @return bool
+     */
+    public function sendEmail($emailTemplateName, $emailTemplateDataVariables, $emailMessageVariables)
 	{
-        return TRUE;
+        $EmailTemplate      =   new EmailUtility();
+		$emailContent       =   $EmailTemplate->getEmailTemplate($emailTemplateName, $emailTemplateDataVariables);
+
+        try
+        {
+            Mail::send(
+            array
+            (
+                $emailContent['htmlView'],
+                $emailContent['textView']
+            ),
+            $emailContent['templateVariables'],
+            function($message) use ($emailMessageVariables){
+                $message->from
+                            (
+                                $_ENV['EMAIL_OPTIONS_FromEmailAddresses_' . $emailMessageVariables['fromTag'] . '_email'],
+                                $_ENV['EMAIL_OPTIONS_FromEmailAddresses_' . $emailMessageVariables['fromTag'] . '_senderName']
+                            );
+                $message->to($emailMessageVariables['sendToEmail'],$emailMessageVariables['sendToName']);
+                $message->subject($emailMessageVariables['subject']);
+
+                if($emailMessageVariables['ccArray'])
+                {
+                    foreach($emailMessageVariables['ccArray'] as $ccArray)
+                    {
+                        $message->cc($ccArray['cc_email']);
+                    }
+                }
+
+                if($emailMessageVariables['attachArray'])
+                {
+                    foreach($emailMessageVariables['attachArray'] as $attachArray)
+                    {
+                        $message->attach
+                                    (
+                                        $attachArray['pathToFile'],
+                                        array
+                                        (
+                                            'as'    =>  $attachArray['display'],
+                                            'mime'  =>  $attachArray['mime']
+                                        )
+                                    );
+                    }
+                }
+            });
+
+            return TRUE;
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not send the email. " . $e);
+            return FALSE;
+        }
     }
 
     public function addAdminAlert()
