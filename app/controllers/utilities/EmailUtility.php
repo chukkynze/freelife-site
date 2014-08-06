@@ -50,6 +50,11 @@ class EmailUtility
 	private $mbr_type                       =   "Vendor";
 	private $email_subject                  =   "";
 
+	private $addThisEmail                   =   "welcome@ekinect.me";
+	private $companyName                    =   "Ekinect";
+	private $companySite                    =   "Ekinect.me";
+	private $companySignEmailAs             =   "The Ekinect Team";
+
     protected $serviceManager;
 
 
@@ -69,6 +74,7 @@ class EmailUtility
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
+																									'EMAIL_SUBJECT'             =>  $emailSubject,
 																									'EML_MAIN_LOGO'             =>  $this->eml_main_logo,
 																									'FB_LINK_LOGO'              =>  $this->fb_link_logo,
 																									'FB_LINK'                   =>  $this->fb_link,
@@ -78,6 +84,10 @@ class EmailUtility
 																									'TEXT_BREAK'                =>  $this->break_character,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
+																									'ADD_THIS_EMAIL'            =>  $this->$addThisEmail,
+																									'COMPANY_NAME'              =>  $this->companyName,
+																									'COMPANY_SITE'              =>  $this->companySite,
+																									'COMPANY_SIGN_EMAIL_AS'     =>  $this->companySignEmailAs,
 																								);
 																		break;
 
@@ -93,6 +103,7 @@ class EmailUtility
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
+                                                                                                    'EMAIL_SUBJECT'             =>  $emailSubject,
 																									'EML_MAIN_LOGO'             =>  $this->eml_main_logo,
 																									'FB_LINK_LOGO'              =>  $this->fb_link_logo,
 																									'FB_LINK'                   =>  $this->fb_link,
@@ -102,6 +113,10 @@ class EmailUtility
 																									'TEXT_BREAK'                =>  $this->break_character,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
+                                                                                                    'ADD_THIS_EMAIL'            =>  $this->$addThisEmail,
+                                                                                                    'COMPANY_NAME'              =>  $this->companyName,
+                                                                                                    'COMPANY_SITE'              =>  $this->companySite,
+                                                                                                    'COMPANY_SIGN_EMAIL_AS'     =>  $this->companySignEmailAs,
 																								);
 																		break;
 
@@ -112,6 +127,7 @@ class EmailUtility
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
+                                                                                                    'EMAIL_SUBJECT'             =>  $emailSubject,
 																									'EML_MAIN_LOGO'             =>  $this->eml_main_logo,
 																									'FB_LINK_LOGO'              =>  $this->fb_link_logo,
 																									'FB_LINK'                   =>  $this->fb_link,
@@ -121,6 +137,10 @@ class EmailUtility
 																									'TEXT_BREAK'                =>  $this->break_character,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
+                                                                                                    'ADD_THIS_EMAIL'            =>  $this->$addThisEmail,
+                                                                                                    'COMPANY_NAME'              =>  $this->companyName,
+                                                                                                    'COMPANY_SITE'              =>  $this->companySite,
+                                                                                                    'COMPANY_SIGN_EMAIL_AS'     =>  $this->companySignEmailAs,
 																								);
 																		break;
 
@@ -131,6 +151,7 @@ class EmailUtility
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
+                                                                                                    'EMAIL_SUBJECT'             =>  $emailSubject,
 																									'EML_MAIN_LOGO'             =>  $this->eml_main_logo,
 																									'FB_LINK_LOGO'              =>  $this->fb_link_logo,
 																									'FB_LINK'                   =>  $this->fb_link,
@@ -140,6 +161,10 @@ class EmailUtility
 																									'TEXT_BREAK'                =>  $this->break_character,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
+                                                                                                    'ADD_THIS_EMAIL'            =>  $this->$addThisEmail,
+                                                                                                    'COMPANY_NAME'              =>  $this->companyName,
+                                                                                                    'COMPANY_SITE'              =>  $this->companySite,
+                                                                                                    'COMPANY_SIGN_EMAIL_AS'     =>  $this->companySignEmailAs,
 																								);
 																		break;
 
@@ -150,6 +175,7 @@ class EmailUtility
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
+                                                                                                    'EMAIL_SUBJECT'             =>  $emailSubject,
 																									'EML_MAIN_LOGO'             =>  $this->eml_main_logo,
 																									'FB_LINK_LOGO'              =>  $this->fb_link_logo,
 																									'FB_LINK'                   =>  $this->fb_link,
@@ -159,6 +185,10 @@ class EmailUtility
 																									'TEXT_BREAK'                =>  $this->break_character,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
+                                                                                                    'ADD_THIS_EMAIL'            =>  $this->$addThisEmail,
+                                                                                                    'COMPANY_NAME'              =>  $this->companyName,
+                                                                                                    'COMPANY_SITE'              =>  $this->companySite,
+                                                                                                    'COMPANY_SIGN_EMAIL_AS'     =>  $this->companySignEmailAs,
 																								);
 																		break;
 
@@ -169,6 +199,7 @@ class EmailUtility
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
+                                                                                                    'EMAIL_SUBJECT'             =>  $emailSubject,
 																									'EML_MAIN_LOGO'             =>  $this->eml_main_logo,
 																									'FB_LINK_LOGO'              =>  $this->fb_link_logo,
 																									'FB_LINK'                   =>  $this->fb_link,
@@ -178,6 +209,10 @@ class EmailUtility
 																									'TEXT_BREAK'                =>  $this->break_character,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
+                                                                                                    'ADD_THIS_EMAIL'            =>  $this->$addThisEmail,
+                                                                                                    'COMPANY_NAME'              =>  $this->companyName,
+                                                                                                    'COMPANY_SITE'              =>  $this->companySite,
+                                                                                                    'COMPANY_SIGN_EMAIL_AS'     =>  $this->companySignEmailAs,
 																								);
 																		break;
 
@@ -188,6 +223,7 @@ class EmailUtility
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
+                                                                                                    'EMAIL_SUBJECT'             =>  $emailSubject,
 																									'EML_MAIN_LOGO'             =>  $this->eml_main_logo,
 																									'FB_LINK_LOGO'              =>  $this->fb_link_logo,
 																									'FB_LINK'                   =>  $this->fb_link,
@@ -197,6 +233,10 @@ class EmailUtility
 																									'TEXT_BREAK'                =>  $this->break_character,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
+                                                                                                    'ADD_THIS_EMAIL'            =>  $this->$addThisEmail,
+                                                                                                    'COMPANY_NAME'              =>  $this->companyName,
+                                                                                                    'COMPANY_SITE'              =>  $this->companySite,
+                                                                                                    'COMPANY_SIGN_EMAIL_AS'     =>  $this->companySignEmailAs,
 																								);
 																		break;
 
@@ -207,6 +247,7 @@ class EmailUtility
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
+                                                                                                    'EMAIL_SUBJECT'             =>  $emailSubject,
 																									'EML_MAIN_LOGO'             =>  $this->eml_main_logo,
 																									'FB_LINK_LOGO'              =>  $this->fb_link_logo,
 																									'FB_LINK'                   =>  $this->fb_link,
@@ -216,6 +257,10 @@ class EmailUtility
 																									'TEXT_BREAK'                =>  $this->break_character,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
+                                                                                                    'ADD_THIS_EMAIL'            =>  $this->$addThisEmail,
+                                                                                                    'COMPANY_NAME'              =>  $this->companyName,
+                                                                                                    'COMPANY_SITE'              =>  $this->companySite,
+                                                                                                    'COMPANY_SIGN_EMAIL_AS'     =>  $this->companySignEmailAs,
 																								);
 																		break;
 
@@ -241,6 +286,7 @@ class EmailUtility
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
+                                                                                                    'EMAIL_SUBJECT'             =>  $emailSubject,
 																									'EML_MAIN_LOGO'             =>  $this->eml_main_logo,
 																									'FB_LINK_LOGO'              =>  $this->fb_link_logo,
 																									'FB_LINK'                   =>  $this->fb_link,
@@ -251,6 +297,10 @@ class EmailUtility
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'VRFY_EML_LINK'             =>  $emailVariables['verifyEmailLink'],
 																									'CURR_YR'                   =>  date('Y'),
+                                                                                                    'ADD_THIS_EMAIL'            =>  $this->$addThisEmail,
+                                                                                                    'COMPANY_NAME'              =>  $this->companyName,
+                                                                                                    'COMPANY_SITE'              =>  $this->companySite,
+                                                                                                    'COMPANY_SIGN_EMAIL_AS'     =>  $this->companySignEmailAs,
 
 																									'FIRST_NAME'                =>  ucwords(strtolower($emailVariables['first_name'])),
 																									'LAST_NAME'                 =>  ucwords(strtolower($emailVariables['last_name'])),
@@ -275,6 +325,7 @@ class EmailUtility
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
+                                                                                                    'EMAIL_SUBJECT'             =>  $emailSubject,
 																									'EML_MAIN_LOGO'             =>  $this->eml_main_logo,
 																									'FB_LINK_LOGO'              =>  $this->fb_link_logo,
 																									'FB_LINK'                   =>  $this->fb_link,
@@ -284,6 +335,10 @@ class EmailUtility
 																									'TEXT_BREAK'                =>  $this->break_character,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
+                                                                                                    'ADD_THIS_EMAIL'            =>  $this->$addThisEmail,
+                                                                                                    'COMPANY_NAME'              =>  $this->companyName,
+                                                                                                    'COMPANY_SITE'              =>  $this->companySite,
+                                                                                                    'COMPANY_SIGN_EMAIL_AS'     =>  $this->companySignEmailAs,
 
 																									'FIRST_NAME'                =>  ucwords(strtolower($emailVariables['first_name'])),
 																									'LAST_NAME'                 =>  ucwords(strtolower($emailVariables['last_name'])),
@@ -308,6 +363,7 @@ class EmailUtility
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
+                                                                                                    'EMAIL_SUBJECT'             =>  $emailSubject,
 																									'EML_MAIN_LOGO'             =>  $this->eml_main_logo,
 																									'FB_LINK_LOGO'              =>  $this->fb_link_logo,
 																									'FB_LINK'                   =>  $this->fb_link,
@@ -317,6 +373,10 @@ class EmailUtility
 																									'TEXT_BREAK'                =>  $this->break_character,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
+                                                                                                    'ADD_THIS_EMAIL'            =>  $this->$addThisEmail,
+                                                                                                    'COMPANY_NAME'              =>  $this->companyName,
+                                                                                                    'COMPANY_SITE'              =>  $this->companySite,
+                                                                                                    'COMPANY_SIGN_EMAIL_AS'     =>  $this->companySignEmailAs,
 
 																									'FIRST_NAME'                =>  ucwords(strtolower($emailVariables['first_name'])),
 																									'LAST_NAME'                 =>  ucwords(strtolower($emailVariables['last_name'])),
@@ -329,8 +389,8 @@ class EmailUtility
 
         return  array
                 (
-                    'text'              =>  $emailTextLink,
-                    'html'              =>  $emailHTMLLink,
+                    'textView'          =>  $emailTextLink,
+                    'htmlView'          =>  $emailHTMLLink,
                     'subject'           =>  $emailSubject,
                     'templateVariables' =>  $templateVariables
                 );

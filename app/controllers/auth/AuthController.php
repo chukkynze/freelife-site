@@ -349,9 +349,12 @@ class AuthController extends BaseController
                             $SignupFormMessages[]   =   $errors[0];
                         }
 
-                        foreach($passwordCheck['errors'] as $errors)
+                        if(array_key_exists('errors', $passwordCheck))
                         {
-                            $SignupFormMessages[]   =   $errors;
+                            foreach($passwordCheck['errors'] as $errors)
+                            {
+                                $SignupFormMessages[]   =   $errors;
+                            }
                         }
 
                         $this->registerAccessAttempt($this->getSiteUser()->getID(),$SubmittedFormName, 0);
@@ -456,12 +459,136 @@ class AuthController extends BaseController
         // lostSignupVerificationAction
     }
 
-    public function verifyEmail($vcode)
+    /**
+     * Processes the Verification Details form
+     *
+     * @param $vCode
+     *
+     * @return ViewModel
+     */
+    public function verifyEmail($vCode)
     {
-        echo $vcode;
+        $returnToRoute          =   array
+                                    (
+                                        'name'  =>  FALSE,
+                                        'data'  =>  FALSE,
+                                    );
+
+        /**
+         * Must return both email and member id bc a member can have more than one email address
+         */
+        $verifiedMemberIDArray  =   $this->verifyEmailByLinkAndGetMemberIDArray($vCode, 'VerificationDetailsForm');
+        $vCodeCreateTime		=	(is_numeric($verifiedMemberIDArray['vCodeCreateTime'])
+                                        ?   (int) $verifiedMemberIDArray['vCodeCreateTime']
+                                        :   0);
+        $verificationDuration	=	( (strtotime("now") - $vCodeCreateTime) <= self::POLICY_AllowedVerificationSeconds_Signup
+                                        ?   TRUE
+                                        :   FALSE );
+
+        if($verificationDuration)
+        {
+            if (!isset($verifiedMemberIDArray['errorNbr']) && !isset($verifiedMemberIDArray['errorMsg']))
+            {
+                if (isset($verifiedMemberIDArray) && is_array($verifiedMemberIDArray))
+                {
+                    $verifiedMemberObject       =   $this->getMemberTable()->getMember($verifiedMemberIDArray['memberID']);
+                    $verifiedMemberEmailsObject =   $this->getMemberEmailsTable()->getMemberEmailsByEmail($verifiedMemberIDArray['email']);
+                    $verifiedMemberStatusObject =   $this->getMemberStatusTable()->getMemberStatusByMemberID($verifiedMemberIDArray['memberID']);
+
+                    if ($verifiedMemberIDArray['alreadyVerified'] === 0)
+                    {
+                        if (is_object($verifiedMemberObject) && is_object($verifiedMemberEmailsObject))
+                        {
+                            // Create New Member Status for this member identifying as verified and starting trial
+                            $NewMemberStatus        =   new MemberStatus();
+                            $NewMemberStatus->setMemberStatusStatus('VerifiedEmail');
+                            $NewMemberStatus->setMemberStatusMemberID($verifiedMemberObject->id);
+                            $NewMemberStatus->setMemberStatusCreationTime();
+                            $this->getMemberStatusTable()->saveMemberStatus($NewMemberStatus);
+
+
+                            // Update Member emails - verified is true verified on now
+                            $verifiedMemberEmailsObject->setMemberEmailsVerified(1);
+                            $verifiedMemberEmailsObject->setMemberEmailsVerifiedOn(strtotime('now'));
+                            $this->getMemberEmailsTable()->saveMemberEmails($verifiedMemberEmailsObject);
+                        }
+                        else
+                        {
+                            Log::info("Error #2 - Valid verifiedMemberObject and verifiedMemberEmailsObject could not be created.");
+                            return $this->redirect()->toRoute('custom-error-2');
+                        }
+                    }
+
+                    $this->addEmailStatus($verifiedMemberIDArray['email'], 'Verified');
+
+                    // Create Member Details Form - also force to add name, gender, customer type and zip code and time zone in form
+                    $VerificationDetailsForm         = new VerificationDetailsForm();
+                    $VerificationDetailsFormMessages = '';
+                    $VerificationDetailsForm->get('vCode')->setAttribute('value', $this->params('vCode'));
+
+                    $viewModel = new ViewModel
+                    (
+                        array
+                        (
+                            'vcode'                             =>  $vCode,
+                            'VerificationDetailsForm'           =>  $VerificationDetailsForm,
+                            'VerificationDetailsFormMessages'   =>  $VerificationDetailsFormMessages,
+                        )
+                    );
+                    $viewModel->setTemplate('auth/auth/verified-email-success.blade.php');
+
+                    return $viewModel;
+                }
+                else
+                {
+                    Log::info("Error #3 - returned value from verifiedMemberIDArray is not an array.");
+                    $returnToRoute  =   array
+                    (
+                        'name'  =>  'custom-error',
+                        'data'  =>  array('errorNumber' => 3),
+                    );
+                }
+            }
+            else
+            {
+                Log::info("Error #" . $verifiedMemberIDArray['errorNbr'] . " - " . $verifiedMemberIDArray['errorMsg'] . ".");
+                $returnToRoute  =   array
+                (
+                    'name'  =>  'custom-error',
+                    'data'  =>  array('errorNumber' => $verifiedMemberIDArray['errorNbr']),
+                );
+            }
+        }
+        else
+        {
+            Log::info("Error #22 - verification link has expired.");
+            $returnToRoute  =   array
+            (
+                'name'  =>  'custom-error',
+                'data'  =>  array('errorNumber' => 22),
+            );
+        }
+
+
+
+        if(FALSE != $returnToRoute['name'])
+        {
+            return Redirect::route($returnToRoute['name'],$returnToRoute['data']);
+        }
+        else
+        {
+            $viewData   =   array
+                            (
+                                'VerificationDetailsFormMessages' => (isset($VerificationDetailsFormMessages) && $VerificationDetailsFormMessages != '' ?: ''),
+                            );
+
+            return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
+                ?   Response::make(View::make('auth/verified-email-success', $viewData))
+                :   Response::make(View::make('auth/verified-email-success', $viewData))->withCookie($this->SiteUserCookie);
+        }
     }
 
-    public function changePasswordWithVerifyEmailLink($vcode)
+    public function changePasswordWithVerifyEmailLink($vCode)
     {
 
     }
@@ -612,26 +739,26 @@ class AuthController extends BaseController
                         }
                         else
                         {
-                            $this->_writeLog('info', "Form value for dummy input has incorrect value of [" . $formValues[$dumbKey]. "]. It should be [" . $dummyInput[$dumbKey]. "].");
+                            Log::info("Form value for dummy input has incorrect value of [" . $formValues[$dumbKey]. "]. It should be [" . $dummyInput[$dumbKey]. "].");
                             $returnValue    =   FALSE;
                         }
                     }
                     else
                     {
-                        $this->_writeLog('info', "Invalid formName. => dummyInput[" . $dumbValue . "]");
+                        Log::info("Invalid formName. => dummyInput[" . $dumbValue . "]");
                         $returnValue    =   FALSE;
                     }
                 }
                 else
                 {
-                    $this->_writeLog('info', "Array key from variable dumbKey (" . $dumbKey . ") does not exist in variable array formValues.");
+                    Log::info("Array key from variable dumbKey (" . $dumbKey . ") does not exist in variable array formValues.");
                     $returnValue    =   FALSE;
                 }
             }
         }
         else
         {
-            $this->_writeLog('info', "Variable formValues is not an array.");
+            Log::info("Variable formValues is not an array.");
             $returnValue    =   FALSE;
         }
 
@@ -712,7 +839,7 @@ class AuthController extends BaseController
 
         $a                  =   base64_encode($this->twoWayCrypt('e',$memberEmail,$siteSalt));      // email address
         $b                  =   base64_encode($this->createHash($memberID,$siteSalt));              // one-way hashed mid
-        $c                  =   base64_encode($this->twoWayCrypt('e',strtotime("now"),$siteSalt));  // vcode creation time
+        $c                  =   base64_encode($this->twoWayCrypt('e',strtotime("now"),$siteSalt));  // vCode creation time
         $addOn              =   str_replace("/", "--::--", $a . self::POLICY_EncryptedURLDelimiter . $b . self::POLICY_EncryptedURLDelimiter . $c);
         $addOn              =   str_replace("+", "--:::--", $addOn);
 
@@ -729,6 +856,106 @@ class AuthController extends BaseController
         $verifyEmailLink    =   self::POLICY_CompanyURL_protocol . self::POLICY_CompanyURL_prd . $router . "/" . $addOn;
 
         return $verifyEmailLink;
+    }
+
+    public function verifyEmailByLinkAndGetMemberIDArray($passedVCode, $verificationFormName='')
+    {
+        $siteSalt           =   $_ENV['ENCRYPTION_KEY_SITE_default_salt'];
+
+        $vCode              =   str_replace("--::--", "/", $passedVCode);
+        $vCode              =   str_replace("--:::--", "+", $vCode);
+        $getTokens          =   explode(self::POLICY_EncryptedURLDelimiter, $vCode);
+        $emailFromVcode     =   $this->twoWayCrypt('d',base64_decode($getTokens[0]),$siteSalt);
+        $vCodeCreateTime    =   $this->twoWayCrypt('d',base64_decode($getTokens[2]),$siteSalt);
+        $memberIDHash       =   base64_decode($getTokens[1]);
+
+        $memberID           =   $this->getMemberIDFromVerifyLink($emailFromVcode, $memberIDHash);
+
+        if(isset($memberID) && !is_bool($memberID) && $memberID >= 1)
+        {
+            switch($verificationFormName)
+            {
+                case 'VerificationDetailsForm'				:	// Check if email from vCode has already been validated and verified (user that clicks the link twice+)
+                    $emailIsAlreadyVerified     =   ($this->isEmailVerified($emailFromVcode) ? 1 : 0);
+                    break;
+
+                case 'ChangePasswordWithVerifyLinkForm'		:	// Check ... something
+                    $emailIsAlreadyVerified     =   1;
+                    break;
+
+
+                default :	throw new \Exception('Invalid verification link form.');
+            }
+
+
+            return  array
+            (
+                'statusMsg'         =>  '',
+                'memberID'          =>  $memberID,
+                'email'             =>  $emailFromVcode,
+                'vCodeCreateTime'   =>  $vCodeCreateTime,
+                'alreadyVerified'   =>  (int) $emailIsAlreadyVerified,
+            );
+        }
+        else
+        {
+            // custom error
+            $errorMsg   =   "Error #1 - MemberEmailsTable->isVerifyLinkValid returned an invalid member id.";
+            Log::info($errorMsg);
+            return  array
+            (
+                'errorNbr'  =>  '1',
+                'errorMsg'  =>  $errorMsg,
+            );
+        }
+    }
+
+    public function isEmailVerified($email)
+    {
+        try
+        {
+            $MemberEmails   =   new MemberEmails();
+            return $MemberEmails->isEmailVerified($email);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not verify this email address [" . $email . "]. " . $e);
+            return FALSE;
+        }
+    }
+
+    public function getMemberIDFromVerifyLink($emailAddress, $memberIDHash)
+    {
+        $MemberEmails               =   new MemberEmails();
+        $wasVerificationLinkSent    =   $MemberEmails->wasVerificationLinkSent($emailAddress);
+
+        if($wasVerificationLinkSent)
+        {
+            $memberID   =   $MemberEmails->getMemberIDFromEmailAddress($emailAddress);
+            if($memberID >= 1)
+            {
+                return ($this->isVerifyLinkValid($memberID, $memberIDHash)
+                        ?   $memberID
+                        :   FALSE);
+            }
+            else
+            {
+                Log::error("Retrieved an invalid member id from this email address.");
+                return FALSE;
+            }
+        }
+        else
+        {
+            Log::error("Verification link was not sent for this email address.");
+            return FALSE;
+        }
+    }
+
+    public function isVerifyLinkValid($memberID, $memberIDHash)
+    {
+        return  ($memberIDHash === $this->createHash($memberID, $_ENV['ENCRYPTION_KEY_SITE_default_salt'])
+                    ?   TRUE
+                    :   FALSE);
     }
 
     public function addMember($newMemberEmail, $newMemberPassword)
@@ -867,14 +1094,14 @@ class AuthController extends BaseController
                 $emailContent['textView']
             ),
             $emailContent['templateVariables'],
-            function($message) use ($emailMessageVariables){
+            function($message) use ($emailMessageVariables, $emailContent){
                 $message->from
                             (
                                 $_ENV['EMAIL_OPTIONS_FromEmailAddresses_' . $emailMessageVariables['fromTag'] . '_email'],
                                 $_ENV['EMAIL_OPTIONS_FromEmailAddresses_' . $emailMessageVariables['fromTag'] . '_senderName']
                             );
                 $message->to($emailMessageVariables['sendToEmail'],$emailMessageVariables['sendToName']);
-                $message->subject($emailMessageVariables['subject']);
+                $message->subject($emailContent['subject']);
 
                 if($emailMessageVariables['ccArray'])
                 {

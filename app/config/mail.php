@@ -28,7 +28,7 @@ return array(
 	|
 	*/
 
-	'host' => 'smtp.mailgun.org',
+	'host' => $_ENV['EMAIL_OPTIONS_smtpOptions_host'],
 
 	/*
 	|--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return array(
 	|
 	*/
 
-	'port' => 587,
+	'port' => $_ENV['EMAIL_OPTIONS_smtpOptions_port'],
 
 	/*
 	|--------------------------------------------------------------------------
@@ -67,7 +67,7 @@ return array(
 	|
 	*/
 
-	'encryption' => 'tls',
+	'encryption' => $_ENV['EMAIL_OPTIONS_smtpOptions_connection_config_ssl'],
 
 	/*
 	|--------------------------------------------------------------------------
@@ -80,7 +80,7 @@ return array(
 	|
 	*/
 
-	'username' => null,
+	'username' => $_ENV['EMAIL_OPTIONS_smtpOptions_connection_config_username'],
 
 	/*
 	|--------------------------------------------------------------------------
@@ -93,7 +93,7 @@ return array(
 	|
 	*/
 
-	'password' => null,
+	'password' => $_ENV['EMAIL_OPTIONS_smtpOptions_connection_config_password'],
 
 	/*
 	|--------------------------------------------------------------------------

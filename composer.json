@@ -13,6 +13,7 @@
 			"app/controllers",
 			"app/controllers/auth",
 			"app/controllers/landing_pages",
+			"app/controllers/utilities",
 			"app/models",
 			"app/database/migrations",
 			"app/database/seeds",

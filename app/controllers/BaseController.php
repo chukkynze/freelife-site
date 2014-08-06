@@ -6,7 +6,7 @@ class BaseController extends Controller
     const POLICY_CompanyURL_loc                 =   'local.freelife.com/';
     const POLICY_CompanyURL_dev                 =   'dev.freelife.com/';
     const POLICY_CompanyURL_stg                 =   'stg.freelife.com/';
-    const POLICY_CompanyURL_prd                 =   'www.ekinect.io/';
+    const POLICY_CompanyURL_prd                 =   'www.ekinect.me/';
 
     const POLICY_CookiePrefix                   =   'ekinect_';
     const POLICY_EncryptedURLDelimiter          =   ':ekt:';
