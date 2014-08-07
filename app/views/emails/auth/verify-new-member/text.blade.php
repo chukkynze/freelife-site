@@ -15,12 +15,12 @@ Your email address and contact information will not be shared with any third par
 <?php echo $TEXT_BREAK; ?>
 Sincerely, <?php echo $TEXT_BREAK; ?>
 
-The NotaryToolz Team <?php echo $TEXT_BREAK; ?>
+<?php echo $COMPANY_SIGN_EMAIL_AS; ?> <?php echo $TEXT_BREAK; ?>
 
 <?php echo $CUSTOMER_SERVICE_NUMBER; ?> <?php echo $TEXT_BREAK; ?>
 <?php echo $TEXT_BREAK; ?>
 
-P.S.: We are truly glad to have you as a member. Hope to see you at NotaryToolz.com very soon! <?php echo $TEXT_BREAK; ?>
+P.S.: We are truly glad to have you as a member. Hope to see you at <?php echo $COMPANY_NAME; ?> very soon! <?php echo $TEXT_BREAK; ?>
 <?php echo $TEXT_BREAK; ?>
 
 Twitter Page: <?php echo $TWT_LINK; ?>
@@ -29,4 +29,4 @@ Facebook Page: <?php echo $FB_LINK; ?>
 <?php echo $TEXT_BREAK; ?>
 <?php echo $TEXT_BREAK; ?>
 
-Copyright &copy; <?php echo $CURR_YR; ?> NotaryToolz, All rights reserved.<?php echo $TEXT_BREAK; ?>
+Copyright &copy; <?php echo $CURR_YR; ?> <?php echo $COMPANY_NAME; ?>, All rights reserved.<?php echo $TEXT_BREAK; ?>

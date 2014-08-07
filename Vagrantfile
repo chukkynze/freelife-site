@@ -5,6 +5,8 @@ dir = File.dirname(File.expand_path(__FILE__))
 configValues = YAML.load_file("#{dir}/puphpet/config.yaml")
 data = configValues['vagrantfile-local']
 
+Vagrant.require_version ">= 1.6.0"
+
 Vagrant.configure("2") do |config|
   config.vm.box = "#{data['vm']['box']}"
   config.vm.box_url = "#{data['vm']['box_url']}"
@@ -53,7 +55,7 @@ Vagrant.configure("2") do |config|
     end
 
     if hosts.any?
-      contents = File.open("#{dir}/puphpet/shell/hostsupdater-notice.txt", 'r'){ |file| file.read }
+      contents = File.open("#{dir}/puphpet/shell/ascii-art/hostsupdater-notice.txt", 'r'){ |file| file.read }
       puts "\n\033[34m#{contents}\033[0m\n"
 
       if config.vm.hostname.to_s.strip.length == 0
@@ -76,7 +78,7 @@ Vagrant.configure("2") do |config|
         rsync_exclude = !folder['rsync']['exclude'].nil? ? folder['rsync']['exclude'] : [".vagrant/"]
 
         config.vm.synced_folder "#{folder['source']}", "#{folder['target']}", id: "#{i}",
-            rsync__args: rsync_args, rsync__exclude: rsync_exclude, rsync__auto: rsync_auto, type: "rsync"
+          rsync__args: rsync_args, rsync__exclude: rsync_exclude, rsync__auto: rsync_auto, type: "rsync"
       else
         config.vm.synced_folder "#{folder['source']}", "#{folder['target']}", id: "#{i}",
           group: 'www-data', owner: 'www-data', mount_options: ["dmode=775", "fmode=764"]
@@ -84,7 +86,7 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.usable_port_range = (10200..10500)
+  config.vm.usable_port_range = (data['vm']['usable_port_range']['start'].to_i..data['vm']['usable_port_range']['stop'].to_i)
 
   if data['vm']['chosen_provider'].empty? || data['vm']['chosen_provider'] == "virtualbox"
     ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
@@ -92,6 +94,9 @@ Vagrant.configure("2") do |config|
     config.vm.provider :virtualbox do |virtualbox|
       data['vm']['provider']['virtualbox']['modifyvm'].each do |key, value|
         if key == "memory"
+          next
+        end
+        if key == "cpus"
           next
         end
 
@@ -103,6 +108,7 @@ Vagrant.configure("2") do |config|
       end
 
       virtualbox.customize ["modifyvm", :id, "--memory", "#{data['vm']['memory']}"]
+      virtualbox.customize ["modifyvm", :id, "--cpus", "#{data['vm']['cpus']}"]
 
       if data['vm']['hostname'].to_s.strip.length != 0
         virtualbox.customize ["modifyvm", :id, "--name", config.vm.hostname]
@@ -118,11 +124,15 @@ Vagrant.configure("2") do |config|
         if key == "memsize"
           next
         end
+        if key == "cpus"
+          next
+        end
 
         v.vmx["#{key}"] = "#{value}"
       end
 
       v.vmx["memsize"] = "#{data['vm']['memory']}"
+      v.vmx["numvcpus"] = "#{data['vm']['cpus']}"
 
       if data['vm']['hostname'].to_s.strip.length != 0
         v.vmx["displayName"] = config.vm.hostname
@@ -138,11 +148,15 @@ Vagrant.configure("2") do |config|
         if key == "memsize"
           next
         end
+        if key == "cpus"
+          next
+        end
 
         v.customize ["set", :id, "--#{key}", "#{value}"]
       end
 
       v.memory = "#{data['vm']['memory']}"
+      v.cpus = "#{data['vm']['cpus']}"
 
       if data['vm']['hostname'].to_s.strip.length != 0
         v.name = config.vm.hostname
@@ -223,6 +237,9 @@ Vagrant.configure("2") do |config|
     config.vagrant.host = data['vagrant']['host'].gsub(":", "").intern
   end
 
-end
+  if !data['vm']['post_up_message'].nil?
+    config.vm.post_up_message = "#{data['vm']['post_up_message']}"
+  end
 
+end
 

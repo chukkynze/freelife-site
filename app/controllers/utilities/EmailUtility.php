@@ -50,6 +50,7 @@ class EmailUtility
 	private $mbr_type                       =   "Vendor";
 	private $email_subject                  =   "";
 
+	private $customerServiceEmail           =   "customerservice@ekinect.me";
 	private $addThisEmail                   =   "welcome@ekinect.me";
 	private $companyName                    =   "Ekinect";
 	private $companySite                    =   "Ekinect.me";
@@ -80,6 +81,7 @@ class EmailUtility
 																									'TWT_LINK'                  =>  $this->twt_link,
 																									'VRFY_EML_LINK'             =>  $emailVariables['verifyEmailLink'],
 																									'TEXT_BREAK'                =>  $this->break_character,
+																									'CUSTOMER_SERVICE_EMAIL'    =>  $this->customerServiceEmail,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
 																									'ADD_THIS_EMAIL'            =>  $this->addThisEmail,
@@ -109,6 +111,7 @@ class EmailUtility
 																									'TWT_LINK'                  =>  $this->twt_link,
 																									'VRFY_EML_LINK'             =>  $emailVariables['verifyEmailLink'],
 																									'TEXT_BREAK'                =>  $this->break_character,
+																									'CUSTOMER_SERVICE_EMAIL'    =>  $this->customerServiceEmail,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
                                                                                                     'ADD_THIS_EMAIL'            =>  $this->addThisEmail,
@@ -133,6 +136,7 @@ class EmailUtility
 																									'TWT_LINK'                  =>  $this->twt_link,
 																									'RESET_PWD_LINK'            =>  $this->vrfy_pwd_link,
 																									'TEXT_BREAK'                =>  $this->break_character,
+																									'CUSTOMER_SERVICE_EMAIL'    =>  $this->customerServiceEmail,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
                                                                                                     'ADD_THIS_EMAIL'            =>  $this->addThisEmail,
@@ -157,6 +161,7 @@ class EmailUtility
 																									'TWT_LINK'                  =>  $this->twt_link,
 																									'RESET_PWD_LINK'            =>  $this->vrfy_pwd_link,
 																									'TEXT_BREAK'                =>  $this->break_character,
+																									'CUSTOMER_SERVICE_EMAIL'    =>  $this->customerServiceEmail,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
                                                                                                     'ADD_THIS_EMAIL'            =>  $this->addThisEmail,
@@ -181,6 +186,7 @@ class EmailUtility
 																									'TWT_LINK'                  =>  $this->twt_link,
 																									'RESET_PWD_LINK'            =>  $this->vrfy_pwd_link,
 																									'TEXT_BREAK'                =>  $this->break_character,
+																									'CUSTOMER_SERVICE_EMAIL'    =>  $this->customerServiceEmail,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
                                                                                                     'ADD_THIS_EMAIL'            =>  $this->addThisEmail,
@@ -205,6 +211,7 @@ class EmailUtility
 																									'TWT_LINK'                  =>  $this->twt_link,
 																									'RESET_PWD_LINK'            =>  $this->vrfy_pwd_link,
 																									'TEXT_BREAK'                =>  $this->break_character,
+																									'CUSTOMER_SERVICE_EMAIL'    =>  $this->customerServiceEmail,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
                                                                                                     'ADD_THIS_EMAIL'            =>  $this->addThisEmail,
@@ -229,6 +236,7 @@ class EmailUtility
 																									'TWT_LINK'                  =>  $this->twt_link,
 																									'RESET_PWD_LINK'            =>  $this->vrfy_pwd_link,
 																									'TEXT_BREAK'                =>  $this->break_character,
+																									'CUSTOMER_SERVICE_EMAIL'    =>  $this->customerServiceEmail,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
                                                                                                     'ADD_THIS_EMAIL'            =>  $this->addThisEmail,
@@ -253,6 +261,7 @@ class EmailUtility
 																									'TWT_LINK'                  =>  $this->twt_link,
 																									'RESET_PWD_LINK'            =>  $this->vrfy_pwd_link,
 																									'TEXT_BREAK'                =>  $this->break_character,
+																									'CUSTOMER_SERVICE_EMAIL'    =>  $this->customerServiceEmail,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
                                                                                                     'ADD_THIS_EMAIL'            =>  $this->addThisEmail,
@@ -292,6 +301,7 @@ class EmailUtility
 																									'TWT_LINK'                  =>  $this->twt_link,
 																									'RESET_PWD_LINK'            =>  $this->vrfy_pwd_link,
 																									'TEXT_BREAK'                =>  $this->break_character,
+																									'CUSTOMER_SERVICE_EMAIL'    =>  $this->customerServiceEmail,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'VRFY_EML_LINK'             =>  $emailVariables['verifyEmailLink'],
 																									'CURR_YR'                   =>  date('Y'),
@@ -320,6 +330,10 @@ class EmailUtility
 																		$emailTextLink      =   'auth/email/template/generic-profile-information-change/text';
 																		$emailHTMLLink      =   'auth/email/template/generic-profile-information-change/html';
 																		$emailSubject       =   'NotaryToolz.com Profile Change Notification';
+
+                                                                        $emailTextLink      =   'emails.auth.generic-profile-information-change.text';
+																		$emailHTMLLink      =   'emails.auth.generic-profile-information-change.html';
+																		$emailSubject       =   'Profile Change Notification';
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
@@ -331,6 +345,7 @@ class EmailUtility
 																									'TWT_LINK'                  =>  $this->twt_link,
 																									'RESET_PWD_LINK'            =>  $this->vrfy_pwd_link,
 																									'TEXT_BREAK'                =>  $this->break_character,
+																									'CUSTOMER_SERVICE_EMAIL'    =>  $this->customerServiceEmail,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
                                                                                                     'ADD_THIS_EMAIL'            =>  $this->addThisEmail,
@@ -369,6 +384,7 @@ class EmailUtility
 																									'TWT_LINK'                  =>  $this->twt_link,
 																									'RESET_PWD_LINK'            =>  $this->vrfy_pwd_link,
 																									'TEXT_BREAK'                =>  $this->break_character,
+																									'CUSTOMER_SERVICE_EMAIL'    =>  $this->customerServiceEmail,
 																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
 																									'CURR_YR'                   =>  date('Y'),
                                                                                                     'ADD_THIS_EMAIL'            =>  $this->addThisEmail,

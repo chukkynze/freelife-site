@@ -5,14 +5,15 @@ vagrantfile-local:
         box_url: puphpet/ubuntu1204-x64
         hostname: null
         memory: '512'
+        cpus: '1'
         chosen_provider: virtualbox
         network:
             private_network: 11.11.11.14
             forwarded_port:
-                RnKPotp2yMKL:
+                NmtnPoiQ86G4:
                     host: '6427'
                     guest: '22'
-                UIRKh4XX3jSI:
+                WWs8P3PpfluM:
                     host: '3314'
                     guest: '3306'
         provider:
@@ -28,20 +29,23 @@ vagrantfile-local:
         provision:
             puppet:
                 manifests_path: puphpet/puppet
-                manifest_file: manifest.pp
+                manifest_file: site.pp
                 module_path: puphpet/puppet/modules
                 options:
                     - '--verbose'
                     - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
                     - '--parser future'
         synced_folder:
-            s7hlKIA1s3Fp:
+            zEnSFJMkBsS6:
                 source: ../freelife-site
                 target: /var/www/freelife.local
                 sync_type: default
                 rsync:
                     auto: 'false'
-        usable_port_range: 2200..2250
+        usable_port_range:
+            start: 10200
+            stop: 10500
+        post_up_message: ''
     ssh:
         host: null
         port: null
@@ -55,26 +59,14 @@ vagrantfile-local:
     vagrant:
         host: detect
 server:
+    install: '1'
     packages:
         - vim
-    dot_files:
-        -
-            bash_aliases: null
-    _prevent_empty: ''
-mailcatcher:
-    install: 0
-    settings:
-        smtp_ip: 0.0.0.0
-        smtp_port: 1025
-        http_ip: 0.0.0.0
-        http_port: '1080'
-        mailcatcher_path: /usr/local/bin
-        log_path: /var/log/mailcatcher/mailcatcher.log
 firewall:
     install: '1'
     rules: null
 apache:
-    install: 0
+    install: '0'
     settings:
         user: www-data
         group: www-data
@@ -83,10 +75,9 @@ apache:
         manage_group: false
         sendfile: 0
     modules:
-        - php
         - rewrite
     vhosts:
-        fqTyVuirMXdJ:
+        bInN6cuENEYg:
             servername: vm.freelife.local
             serveraliases:
                 - vm.freelife.local
@@ -101,13 +92,13 @@ apache:
                 - Indexes
                 - FollowSymLinks
                 - MultiViews
+            engine: ''
             custom_fragment: ''
             ssl_cert: ''
             ssl_key: ''
             ssl_chain: ''
             ssl_certs_dir: ''
     mod_pagespeed: 0
-    mod_spdy: 0
 nginx:
     install: '1'
     settings:
@@ -115,18 +106,21 @@ nginx:
         proxy_buffer_size: 128k
         proxy_buffers: '4 256k'
     vhosts:
-        MlenNj3guQiV:
+        uhQCD0pd8XJk:
             server_name: vm.freelife.local
             server_aliases:
                 - vm.freelife.local
             www_root: /var/www/freelife.local/public_html
             listen_port: '80'
+            location: .php$
             index_files:
                 - index.html
                 - index.htm
                 - index.php
             envvars:
                 - 'APP_ENV dev'
+                - 'APPLICATION_ENV development'
+            engine: ''
             ssl_cert: ''
             ssl_key: ''
 php:
@@ -136,20 +130,20 @@ php:
     composer_home: ''
     modules:
         php:
+            - cgi
             - cli
-            - intl
-            - mcrypt
             - curl
             - gd
             - geoip
+            - intl
             - mbstring
+            - mcrypt
             - memcache
-            - mysqlnd
-            - mysql
             - memcached
-            - xsl
+            - mysql
+            - mysqlnd
             - xmlrpc
-            - cgi
+            - xsl
         pear: {  }
         pecl:
             - pecl_http
@@ -158,6 +152,17 @@ php:
         error_reporting: '-1'
         session.save_path: /var/lib/php/session
     timezone: America/Los_Angeles
+    mod_php: 0
+hhvm:
+    install: '0'
+    nightly: 0
+    composer: '1'
+    composer_home: ''
+    settings:
+        host: '0'
+        port: '0'
+    modules:
+        pear: {  }
 xdebug:
     install: '1'
     settings:
@@ -172,16 +177,23 @@ xdebug:
         xdebug.max_nesting_level: '300'
         xdebug.idekey: PHPSTORM
         xdebug.remote_autostart: '1'
+xhprof:
+    install: '0'
 drush:
-    install: 0
-    settings:
-        drush.tag_branch: 6.x
+    install: '0'
+    version: ''
+ruby:
+    install: '1'
+    versions: {  }
+nodejs:
+    install: '0'
+    npm_packages: {  }
 mysql:
     install: '1'
     root_password: freelife123
-    adminer: '0'
+    adminer: 0
     databases:
-        wgKyzFZh8Bty:
+        6WCcFCcwH00x:
             grant:
                 - ALL
             name: freelife_db
@@ -190,7 +202,7 @@ mysql:
             password: 'nL]Eoa!g,[4*'
             sql_file: /var/www/freelife.local/sql/mysqldump.sql
 postgresql:
-    install: 0
+    install: '0'
     settings:
         root_password: '123'
         user_group: postgres
@@ -199,23 +211,35 @@ postgresql:
     databases: {  }
     adminer: 0
 mariadb:
-    install: 0
+    install: '0'
     root_password: '123'
     adminer: 0
     databases: {  }
     version: '10.0'
+sqlite:
+    install: '0'
+    adminer: 0
+    databases: {  }
 mongodb:
-    install: 0
+    install: '0'
     settings:
         auth: 1
         port: '27017'
     databases: {  }
 redis:
-    install: 0
+    install: '0'
     settings:
         conf_port: '6379'
+mailcatcher:
+    install: '0'
+    settings:
+        smtp_ip: 0.0.0.0
+        smtp_port: 1025
+        http_ip: 0.0.0.0
+        http_port: '1080'
+        mailcatcher_path: /usr/local/rvm/wrappers/default
 beanstalkd:
-    install: 0
+    install: '0'
     settings:
         listenaddress: 0.0.0.0
         listenport: '13000'
@@ -227,7 +251,12 @@ beanstalkd:
     beanstalk_console: 0
     binlogdir: /var/lib/beanstalkd/binlog
 rabbitmq:
-    install: 0
+    install: '0'
     settings:
         port: '5672'
+elastic_search:
+    install: '0'
+    settings:
+        java_install: true
+        autoupgrade: true
 

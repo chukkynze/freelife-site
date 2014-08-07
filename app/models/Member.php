@@ -77,4 +77,26 @@ class Member extends Eloquent
         $NewMember->save();
         return $NewMember->id;
     }
+
+    public function updateMember($memberID, $fillableArray)
+    {
+        if($memberID > 0)
+        {
+            try
+            {
+                $Member =   Member::where("id","=", $memberID)->first();
+                $Member->fill($fillableArray);
+                $Member->save();
+                return TRUE;
+            }
+            catch(\Whoops\Example\Exception $e)
+            {
+                throw new \Whoops\Example\Exception($e);
+            }
+        }
+        else
+        {
+            throw new \Whoops\Example\Exception("Member ID is invalid.");
+        }
+    }
 }

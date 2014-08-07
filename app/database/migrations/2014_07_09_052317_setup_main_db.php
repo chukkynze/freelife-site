@@ -102,6 +102,7 @@ class SetupMainDb extends Migration
                                         (
                                             'unknown',
                                             'vendor',
+                                            'vendor-client',
                                             'freelancer',
                                             'employee',
                                             'report-viewer',
@@ -215,15 +216,15 @@ class SetupMainDb extends Migration
             // Columns
             $table->increments('id');
             $table->integer('member_id');
-            $table->string('prefix', 60);
+            $table->string('prefix', 60)->default("");
             $table->string('first_name', 60);
-            $table->string('mid_name1', 60);
-            $table->string('mid_name2', 60);
+            $table->string('mid_name1', 60)->default("");
+            $table->string('mid_name2', 60)->default("");
             $table->string('last_name', 60);
-            $table->string('display_name', 60);
-            $table->string('suffix', 60);
+            $table->string('display_name', 60)->default("");
+            $table->string('suffix', 60)->default("");
             $table->integer('gender');
-            $table->date('birth_date');
+            $table->date('birth_date')->default("0000-00-00");
             $table->string('zipcode', 8);
             $table->text('personal_summary');
             $table->text('profile_pic_url');

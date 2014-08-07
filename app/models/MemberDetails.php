@@ -43,4 +43,52 @@ class MemberDetails extends Eloquent
                                 );
 
 
+    public function doMemberDetailsExist($memberID)
+    {
+        $count  =   DB::connection($this->connection)->table($this->table)
+                        ->select('id')
+                        ->where('member_id'       , '=', $memberID)
+                        ->count();
+
+        return ($count == 1 ? TRUE : FALSE);
+    }
+
+    public function addMemberDetails($memberID, $fillableArray)
+    {
+        if($memberID > 0)
+        {
+            $newMemberDetail =   MemberDetails::create
+                                (
+                                    $fillableArray
+                                );
+            $newMemberDetail->save();
+            return $newMemberDetail->id;
+        }
+        else
+        {
+            throw new \Whoops\Example\Exception("Member ID is invalid.");
+        }
+    }
+
+    public function updateMemberDetails($memberID, $fillableArray)
+    {
+        if($memberID > 0)
+        {
+            try
+            {
+                $MemberDetail =   MemberDetails::where("member_id","=", $memberID)->first();
+                $MemberDetail->fill($fillableArray);
+                $MemberDetail->save();
+                return TRUE;
+            }
+            catch(\Whoops\Example\Exception $e)
+            {
+                throw new \Whoops\Example\Exception($e);
+            }
+        }
+        else
+        {
+            throw new \Whoops\Example\Exception("MemberDetails ID is invalid.");
+        }
+    }
 }
