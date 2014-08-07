@@ -82,9 +82,9 @@ class MemberEmails extends Eloquent
     {
         $count     =   DB::connection($this->connection)->table($this->table)
                         ->select('id')
-                        ->where(array('email_address'   , '=', $email))
-                        ->where(array('verified'        , '=', 1))
-                        ->where(array('verified_on'     , '>', 0))
+                        ->where('email_address'   , '=', $email)
+                        ->where('verified'        , '=', 1)
+                        ->where('verified_on'     , '>', 0)
                         ->count()
         ;
 
@@ -96,9 +96,9 @@ class MemberEmails extends Eloquent
     {
         $count  =   DB::connection($this->connection)->table($this->table)
                         ->select('id')
-                        ->where(array('email_address'       , '=', $emailAddress))
-                        ->where(array('verification_sent'   , '=', 1))
-                        ->where(array('verification_sent_on', '<', strtotime('now')))
+                        ->where('email_address'       , '=', $emailAddress)
+                        ->where('verification_sent'   , '=', 1)
+                        ->where('verification_sent_on', '<', strtotime('now'))
                         ->count();
 
         return ($count == 1 ? TRUE : FALSE);
@@ -108,12 +108,13 @@ class MemberEmails extends Eloquent
     {
         try
         {
-            $memberID   =   DB::connection($this->connection)->table($this->table)
+            $query   =   DB::connection($this->connection)->table($this->table)
                                 ->select('member_id')
-                                ->where(array('email_address'       , '=', $emailAddress))
+                                ->where('email_address'       , '=', $emailAddress)
                                 ->get();
 
-            return $memberID;
+            $result =   $query[0];
+            return $result->member_id;
         }
         catch(\Whoops\Example\Exception $e)
         {

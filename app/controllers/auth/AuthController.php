@@ -491,53 +491,19 @@ class AuthController extends BaseController
             {
                 if (isset($verifiedMemberIDArray) && is_array($verifiedMemberIDArray))
                 {
-                    $verifiedMemberObject       =   $this->getMemberTable()->getMember($verifiedMemberIDArray['memberID']);
-                    $verifiedMemberEmailsObject =   $this->getMemberEmailsTable()->getMemberEmailsByEmail($verifiedMemberIDArray['email']);
-                    $verifiedMemberStatusObject =   $this->getMemberStatusTable()->getMemberStatusByMemberID($verifiedMemberIDArray['memberID']);
-
                     if ($verifiedMemberIDArray['alreadyVerified'] === 0)
                     {
-                        if (is_object($verifiedMemberObject) && is_object($verifiedMemberEmailsObject))
-                        {
-                            // Create New Member Status for this member identifying as verified and starting trial
-                            $NewMemberStatus        =   new MemberStatus();
-                            $NewMemberStatus->setMemberStatusStatus('VerifiedEmail');
-                            $NewMemberStatus->setMemberStatusMemberID($verifiedMemberObject->id);
-                            $NewMemberStatus->setMemberStatusCreationTime();
-                            $this->getMemberStatusTable()->saveMemberStatus($NewMemberStatus);
+                        // Create New Member Status for this member identifying as verified and starting trial
+                        $this->addMemberStatus('VerifiedEmail', $verifiedMemberIDArray['memberID']);
 
-
-                            // Update Member emails - verified is true verified on now
-                            $verifiedMemberEmailsObject->setMemberEmailsVerified(1);
-                            $verifiedMemberEmailsObject->setMemberEmailsVerifiedOn(strtotime('now'));
-                            $this->getMemberEmailsTable()->saveMemberEmails($verifiedMemberEmailsObject);
-                        }
-                        else
-                        {
-                            Log::info("Error #2 - Valid verifiedMemberObject and verifiedMemberEmailsObject could not be created.");
-                            return $this->redirect()->toRoute('custom-error-2');
-                        }
+                        $this->updateMemberEmail($verifiedMemberIDArray['memberID'], array
+                        (
+                            'verified'     =>  1,
+                            'verified_on'  =>  strtotime('now'),
+                        ));
                     }
 
                     $this->addEmailStatus($verifiedMemberIDArray['email'], 'Verified');
-
-                    // Create Member Details Form - also force to add name, gender, customer type and zip code and time zone in form
-                    $VerificationDetailsForm         = new VerificationDetailsForm();
-                    $VerificationDetailsFormMessages = '';
-                    $VerificationDetailsForm->get('vCode')->setAttribute('value', $this->params('vCode'));
-
-                    $viewModel = new ViewModel
-                    (
-                        array
-                        (
-                            'vcode'                             =>  $vCode,
-                            'VerificationDetailsForm'           =>  $VerificationDetailsForm,
-                            'VerificationDetailsFormMessages'   =>  $VerificationDetailsFormMessages,
-                        )
-                    );
-                    $viewModel->setTemplate('auth/auth/verified-email-success.blade.php');
-
-                    return $viewModel;
                 }
                 else
                 {
@@ -577,9 +543,11 @@ class AuthController extends BaseController
         }
         else
         {
+            // Create Member Details Form - also force to add name, gender, customer type and zip code and time zone in form
             $viewData   =   array
                             (
-                                'VerificationDetailsFormMessages' => (isset($VerificationDetailsFormMessages) && $VerificationDetailsFormMessages != '' ?: ''),
+                                'vcode'                             =>  $vCode,
+                                'VerificationDetailsFormMessages'   => (isset($VerificationDetailsFormMessages) && $VerificationDetailsFormMessages != '' ?: ''),
                             );
 
             return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0

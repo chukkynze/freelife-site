@@ -1,17 +1,20 @@
 ---
 vagrantfile-local:
     vm:
-        box: puphpet/debian75-x64
-        box_url: puphpet/debian75-x64
+        box: puphpet/ubuntu1204-x64
+        box_url: puphpet/ubuntu1204-x64
         hostname: null
         memory: '512'
         chosen_provider: virtualbox
         network:
-            private_network: 11.11.11.11
+            private_network: 11.11.11.14
             forwarded_port:
-                3o5clGkBvV8i:
+                RnKPotp2yMKL:
                     host: '6427'
                     guest: '22'
+                UIRKh4XX3jSI:
+                    host: '3314'
+                    guest: '3306'
         provider:
             virtualbox:
                 modifyvm:
@@ -32,13 +35,11 @@ vagrantfile-local:
                     - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
                     - '--parser future'
         synced_folder:
-            gql43L6GCibO:
-                source: 'C:\\wamp\\www\\freelife'
-                target: /var/www/
+            s7hlKIA1s3Fp:
+                source: ../freelife-site
+                target: /var/www/freelife.local
                 sync_type: default
                 rsync:
-                    args: '-z'
-                    exclude: .vagrant/
                     auto: 'false'
         usable_port_range: 2200..2250
     ssh:
@@ -73,7 +74,7 @@ firewall:
     install: '1'
     rules: null
 apache:
-    install: '1'
+    install: 0
     settings:
         user: www-data
         group: www-data
@@ -85,7 +86,7 @@ apache:
         - php
         - rewrite
     vhosts:
-        t3OABXuOKWlN:
+        fqTyVuirMXdJ:
             servername: vm.freelife.local
             serveraliases:
                 - vm.freelife.local
@@ -108,13 +109,17 @@ apache:
     mod_pagespeed: 0
     mod_spdy: 0
 nginx:
-    install: 0
+    install: '1'
+    settings:
+        default_vhost: 1
+        proxy_buffer_size: 128k
+        proxy_buffers: '4 256k'
     vhosts:
-        45Wawab9xTYF:
-            server_name: awesome.dev
+        MlenNj3guQiV:
+            server_name: vm.freelife.local
             server_aliases:
-                - www.awesome.dev
-            www_root: /var/www/awesome.dev
+                - vm.freelife.local
+            www_root: /var/www/freelife.local/public_html
             listen_port: '80'
             index_files:
                 - index.html
@@ -134,6 +139,17 @@ php:
             - cli
             - intl
             - mcrypt
+            - curl
+            - gd
+            - geoip
+            - mbstring
+            - memcache
+            - mysqlnd
+            - mysql
+            - memcached
+            - xsl
+            - xmlrpc
+            - cgi
         pear: {  }
         pecl:
             - pecl_http
@@ -141,33 +157,38 @@ php:
         display_errors: On
         error_reporting: '-1'
         session.save_path: /var/lib/php/session
-    timezone: America/Chicago
+    timezone: America/Los_Angeles
 xdebug:
     install: '1'
     settings:
         xdebug.default_enable: '1'
-        xdebug.remote_autostart: '0'
         xdebug.remote_connect_back: '1'
         xdebug.remote_enable: '1'
         xdebug.remote_handler: dbgp
         xdebug.remote_port: '9000'
+        xdebug.cli_color: '1'
+        xdebug.remote_mode: req
+        xdebug.remote_host: 127.0.0.1
+        xdebug.max_nesting_level: '300'
+        xdebug.idekey: PHPSTORM
+        xdebug.remote_autostart: '1'
 drush:
     install: 0
     settings:
         drush.tag_branch: 6.x
 mysql:
     install: '1'
-    root_password: '123'
-    adminer: 0
+    root_password: freelife123
+    adminer: '0'
     databases:
-        bQpAB9csOdTp:
+        wgKyzFZh8Bty:
             grant:
                 - ALL
-            name: dbname
+            name: freelife_db
             host: localhost
-            user: dbuser
-            password: '123'
-            sql_file: ''
+            user: freelife_dba
+            password: 'nL]Eoa!g,[4*'
+            sql_file: /var/www/freelife.local/sql/mysqldump.sql
 postgresql:
     install: 0
     settings:
