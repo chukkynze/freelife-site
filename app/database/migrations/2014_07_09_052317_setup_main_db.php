@@ -69,7 +69,7 @@ class SetupMainDb extends Migration
             $table->increments('id');
             $table->integer('user_id')->default(0);
             $table->text('cookies');
-            $table->string('url_location', 255)->default('');
+            $table->text('url_location');
             $table->integer('client_time')->default(0);
             $table->integer('server_time')->default(0);
 
@@ -78,12 +78,10 @@ class SetupMainDb extends Migration
 
             // Indexes
             $table->index(array('user_id')                      , 'ndx1');
-            $table->index(array('url_location')                 , 'ndx2');
-            $table->index(array('client_time')                  , 'ndx3');
-            $table->index(array('server_time')                  , 'ndx4');
-            $table->index(array('client_time','server_time')    , 'ndx3_4');
-            $table->index(array('server_time','user_id')        , 'ndx4_1');
-            $table->index(array('server_time','url_location')   , 'ndx4_2');
+            $table->index(array('client_time')                  , 'ndx2');
+            $table->index(array('server_time')                  , 'ndx3');
+            $table->index(array('client_time','server_time')    , 'ndx2_3');
+            $table->index(array('server_time','user_id')        , 'ndx3_1');
             
             
         });

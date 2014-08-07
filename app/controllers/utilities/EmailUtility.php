@@ -55,8 +55,6 @@ class EmailUtility
 	private $companySite                    =   "Ekinect.me";
 	private $companySignEmailAs             =   "The Ekinect Team";
 
-    protected $serviceManager;
-
 
 
     public function getEmailTemplate($emailIdentifier, $emailVariables)
