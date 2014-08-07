@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="Freelife Dev Server">
+  <component name="PublishConfigData" serverName="PVM - Freelife">
     <serverData>
-      <paths name="Freelife Dev Server">
+      <paths name="PVM - Freelife">
         <serverdata>
           <mappings>
-            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/vagrant/public_html" local="$PROJECT_DIR$/public_html" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="VM - Canadian Club BOW">
+        <serverdata>
+          <mappings>
+            <mapping local="$USER_HOME$/PhpstormProjects/canadian-club-bow" web="/" />
+            <mapping local="" />
           </mappings>
         </serverdata>
       </paths>

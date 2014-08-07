@@ -468,12 +468,12 @@ class AuthController extends BaseController
      */
     public function verifyEmail($vCode)
     {
-        Log::info("vcode - " . $vCode);
         $returnToRoute          =   array
                                     (
                                         'name'  =>  FALSE,
                                         'data'  =>  FALSE,
                                     );
+
         /**
          * Must return both email and member id bc a member can have more than one email address
          */
@@ -495,6 +495,7 @@ class AuthController extends BaseController
                     {
                         // Create New Member Status for this member identifying as verified and starting trial
                         $this->addMemberStatus('VerifiedEmail', $verifiedMemberIDArray['memberID']);
+
                         $this->updateMemberEmail($verifiedMemberIDArray['memberID'], array
                         (
                             'verified'     =>  1,
@@ -502,7 +503,6 @@ class AuthController extends BaseController
                         ));
                     }
 
-                    // Members that click an active link multiple times will still reach here
                     $this->addEmailStatus($verifiedMemberIDArray['email'], 'Verified');
                 }
                 else
@@ -535,6 +535,8 @@ class AuthController extends BaseController
             );
         }
 
+
+
         if(FALSE != $returnToRoute['name'])
         {
             return Redirect::route($returnToRoute['name'],$returnToRoute['data']);
@@ -544,8 +546,8 @@ class AuthController extends BaseController
             // Create Member Details Form - also force to add name, gender, customer type and zip code and time zone in form
             $viewData   =   array
                             (
-                                'vcode'                           =>  $vCode,
-                                'VerificationDetailsFormMessages' => (isset($VerificationDetailsFormMessages) && $VerificationDetailsFormMessages != '' ?: ''),
+                                'vcode'                             =>  $vCode,
+                                'VerificationDetailsFormMessages'   => (isset($VerificationDetailsFormMessages) && $VerificationDetailsFormMessages != '' ?: ''),
                             );
 
             return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
@@ -1048,8 +1050,6 @@ class AuthController extends BaseController
      */
     public function sendEmail($emailTemplateName, $emailTemplateDataVariables, $emailMessageVariables)
 	{
-        return TRUE;
-
         $EmailTemplate      =   new EmailUtility();
 		$emailContent       =   $EmailTemplate->getEmailTemplate($emailTemplateName, $emailTemplateDataVariables);
 
