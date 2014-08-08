@@ -155,4 +155,11 @@ class BaseController extends Controller
         }
     }
 
+    public function makeResponseView($viewName, $viewData)
+    {
+        return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
+                    ?   Response::make(View::make($viewName, $viewData))
+                    :   Response::make(View::make($viewName, $viewData))->withCookie($this->SiteUserCookie);
+    }
+
 }

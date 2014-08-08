@@ -10,10 +10,10 @@ vagrantfile-local:
         network:
             private_network: 11.11.11.14
             forwarded_port:
-                1RRkqehSnmM8:
+                TUCoc7Y9Ecrq:
                     host: '6427'
                     guest: '22'
-                GG1TNptuoWtD:
+                KC0k07DH9eHd:
                     host: '3314'
                     guest: '3306'
         provider:
@@ -36,7 +36,7 @@ vagrantfile-local:
                     - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
                     - '--parser future'
         synced_folder:
-            C9RlCF4qfw1z:
+            6Jpqn1rf0UgH:
                 source: ../freelife-site
                 target: /var/www/freelife.local
                 sync_type: default
@@ -83,7 +83,7 @@ apache:
     modules:
         - rewrite
     vhosts:
-        fQgaJkbkkqj3:
+        BVstbEOzGAbQ:
             servername: vm.freelife.local
             serveraliases:
                 - vm.freelife.local
@@ -103,7 +103,7 @@ apache:
             ssl_key: ''
             ssl_chain: ''
             ssl_certs_dir: ''
-    mod_pagespeed: 0
+    mod_pagespeed: '0'
 nginx:
     install: '0'
     settings:
@@ -111,7 +111,7 @@ nginx:
         proxy_buffer_size: ''
         proxy_buffers: ''
     vhosts:
-        mPECaOmmo6J9:
+        Ta7Ic2rRkY8h:
             server_name: ''
             www_root: ''
             listen_port: ''
@@ -127,13 +127,16 @@ php:
     modules:
         php:
             - cli
+            - curl
             - intl
             - mcrypt
-            - curl
             - mysql
-            - xsl
             - mysqlnd
             - xmlrpc
+            - xsl
+            - common
+            - fpm
+            - odbc
         pear: {  }
         pecl:
             - pecl_http
@@ -142,7 +145,7 @@ php:
         error_reporting: '-1'
         session.save_path: /var/lib/php/session
     timezone: America/Chicago
-    mod_php: 0
+    mod_php: '1'
 hhvm:
     install: '0'
     nightly: 0
@@ -156,7 +159,7 @@ hhvm:
         error_reporting: '-1'
     timezone: null
 xdebug:
-    install: '0'
+    install: '1'
     settings:
         xdebug.remote_port: '9000'
         xdebug.remote_mode: req
@@ -177,7 +180,7 @@ drush:
 ruby:
     install: '1'
     versions:
-        189EHP1RGNH9:
+        Kzr022YihANv:
             version: ''
 nodejs:
     install: '0'
@@ -187,7 +190,7 @@ mysql:
     root_password: freelife123
     adminer: 0
     databases:
-        ggS0axSsVqGZ:
+        KXQFze2mzquO:
             grant:
                 - ALL
             name: freelife_db

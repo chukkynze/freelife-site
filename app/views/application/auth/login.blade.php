@@ -104,20 +104,20 @@
 								<div class="divide-40"></div>
                                     {{ Form::open(array('action' => 'AuthController@showAccess')) }}
 
-                                    <?php echo Form::text('usr'         , null, array('class' => "notarytoolzInput Input1", 'value' => '')); ?>
-                                    <?php echo Form::text('username'    , null, array('class' => "notarytoolzInput Input2", 'value' => '')); ?>
-                                    <?php echo Form::text('email'       , null, array('class' => "notarytoolzInput Input3", 'value' => '')); ?>
-                                    <?php echo Form::text('login_email' , null, array('class' => "notarytoolzInput Input4", 'value' => '')); ?>
+                                    <?php echo Form::text('usr'         , null, array('class' => "notarytoolzInput Input1")); ?>
+                                    <?php echo Form::text('username'    , null, array('class' => "notarytoolzInput Input2")); ?>
+                                    <?php echo Form::text('email'       , null, array('class' => "notarytoolzInput Input3")); ?>
+                                    <?php echo Form::text('login_email' , null, array('class' => "notarytoolzInput Input4")); ?>
 
                                         <div class="form-group">
                                             <?php echo Form::label('returning_member', 'E-Mail Address'); ?>
                                             <i class="fa fa-envelope"></i>
-                                            <?php echo Form::text('returning_member'); ?>
+                                            <?php echo Form::text('returning_member', null, array('class' => "form-control")); ?>
                                         </div>
                                         <div class="form-group">
                                             <?php echo Form::label('LoginFormPasswordField', 'Password'); ?>
                                             <i class="fa fa-lock"></i>
-                                            <?php echo Form::password('LoginFormPasswordField'); ?>
+                                            <?php echo Form::password('LoginFormPasswordField', array('class' => "form-control")); ?>
                                         </div>
                                         <div class="form-actions">
                                             <button type="submit" class="btn-lg btn-danger">Login</button>
@@ -181,25 +181,25 @@
 
                                 {{ Form::open(array('method' => 'POST', 'action' => 'AuthController@processSignup')) }}
 
-                                    <?php echo Form::text('usr'         , null, array('class' => "notarytoolzInput Input1", 'value' => '')); ?>
-                                    <?php echo Form::text('username'    , null, array('class' => "notarytoolzInput Input2", 'value' => '')); ?>
-                                    <?php echo Form::text('email'       , null, array('class' => "notarytoolzInput Input3", 'value' => '')); ?>
-                                    <?php echo Form::text('login_email' , null, array('class' => "notarytoolzInput Input4", 'value' => '')); ?>
+                                    <?php echo Form::text('usr'         , null, array('class' => "notarytoolzInput Input1")); ?>
+                                    <?php echo Form::text('username'    , null, array('class' => "notarytoolzInput Input2")); ?>
+                                    <?php echo Form::text('email'       , null, array('class' => "notarytoolzInput Input3")); ?>
+                                    <?php echo Form::text('login_email' , null, array('class' => "notarytoolzInput Input4")); ?>
 
                                     <div class="form-group">
                                         <?php echo Form::label('new_member', 'Email Address'); ?>
                                         <i class="fa fa-envelope"></i>
-                                        <?php echo Form::text('new_member'); ?>
+                                        <?php echo Form::text('new_member', '', array('class' => "form-control")); ?>
                                     </div>
                                     <div class="form-group">
                                         <?php echo Form::label('password', 'Password'); ?>
                                         <i class="fa fa-lock"></i>
-                                        <?php echo Form::password('password'); ?>
+                                        <?php echo Form::password('password', array('class' => "form-control")); ?>
                                     </div>
                                     <div class="form-group">
                                         <?php echo Form::label('password_confirmation', 'Confirmed Password'); ?>
                                         <i class="fa fa-check-square-o"></i>
-                                        <?php echo Form::password('password_confirmation'); ?>
+                                        <?php echo Form::password('password_confirmation', array('class' => "form-control")); ?>
                                     </div>
                                     <div class="form-actions">
                                         <label class="checkbox" for="SignupFormTermsBox">
@@ -262,16 +262,16 @@
 
                                 {{ Form::open(array('action' => 'AuthController@showAccess')) }}
 
-                                    <?php echo Form::text('usr'         , null, array('class' => "notarytoolzInput Input1", 'value' => '')); ?>
-                                    <?php echo Form::text('username'    , null, array('class' => "notarytoolzInput Input2", 'value' => '')); ?>
-                                    <?php echo Form::text('email'       , null, array('class' => "notarytoolzInput Input3", 'value' => '')); ?>
-                                    <?php echo Form::text('login_email' , null, array('class' => "notarytoolzInput Input4", 'value' => '')); ?>
+                                    <?php echo Form::text('usr'         , null, array('class' => "notarytoolzInput Input1")); ?>
+                                    <?php echo Form::text('username'    , null, array('class' => "notarytoolzInput Input2")); ?>
+                                    <?php echo Form::text('email'       , null, array('class' => "notarytoolzInput Input3")); ?>
+                                    <?php echo Form::text('login_email' , null, array('class' => "notarytoolzInput Input4")); ?>
 
 
                                     <div class="form-group">
                                             <?php echo Form::label('forgot_email', 'E-Mail Address'); ?>
                                         <i class="fa fa-envelope"></i>
-                                            <?php echo Form::text('forgot_email'); ?>
+                                            <?php echo Form::text('forgot_email', null, array('class' => "form-control")); ?>
                                     </div>
                                     <div class="form-actions">
                                         <button type="submit" class="btn-lg btn-info">Send Me Reset Instructions</button>

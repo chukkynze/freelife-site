@@ -23,7 +23,7 @@
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,800" rel="stylesheet" type="text/css">
     <!-- plugin css  -->
     <link rel="stylesheet" type="text/css" href="/landing/js-plugin/animation-framework/animate.css" />
-   
+
     <!-- icon fonts -->
     <link type="text/css" rel="stylesheet" href="/landing/font-icons/custom-icons/css/custom-icons.css">
     <link type="text/css" rel="stylesheet" href="/landing/font-icons/custom-icons/css/custom-icons-ie7.css">
@@ -75,7 +75,7 @@
             <div class="container">
                 <div class="row">
                     <div class="span12">
-                        <h1 class="bigTitle">Congratulations!!!</h1>
+                        <h1 class="bigTitle">Privacy Policy</h1>
                     </div>
                 </div>
             </div>
@@ -83,24 +83,43 @@
 
 
 
+
         <!-- main content -->
-        <section id="pageContent" class="slice">
-            <div class="container">
-                <div class="row">
-                    <div class="span12">
-                        <div class="hero-unit hero-color text-center">
-                            <h1>
-                                Welcome<br/>
-                                to eKinect.com
-                            </h1>
-                            <br> <br>
-                            <p>Your signup was successful and you should be receiving verification instructions at <?php echo $emailAddress ?: "your email address"; ?> very soon.</p>
-                            <a href="/" class="btn btn-large btn-inverse">Back to homepage</a>
+        <section class="content">
+
+            <section class="mb40">
+                <div class="container">
+                    <section>
+                        <div class="row">
+                            <div class="span12">
+                                <h2><span>Guidelines</span></h2>
+                            </div>
                         </div>
-                    </div>
+                    </section>
+
+                    <section>
+                        <div class="row">
+                            <div class="span12">
+                                <h3>Privacy Heading 1</h3>
+                            </div>
+                            <div class="span12">
+                                <p>Privacy Content 1 - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed pretium pretium rutrum. Donec sodales interdum blandit. Nullam volutpat, elit sed auctor condimentum, augue orci volutpat elit, eu ultrices nulla justo in dui. In aliquam semper metus, ut facilisis erat condimentum porta. Aliquam vel libero urna, ut suscipit quam. Vivamus condimentum sem ac justo commodo lacinia. Nulla facilisi.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div class="row">
+                            <div class="span12">
+                                <h3>Privacy Heading 2</h3>
+                            </div>
+                            <div class="span12">
+                                <p>Privacy Content 2 - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed pretium pretium rutrum. Donec sodales interdum blandit. Nullam volutpat, elit sed auctor condimentum, augue orci volutpat elit, eu ultrices nulla justo in dui. In aliquam semper metus, ut facilisis erat condimentum porta. Aliquam vel libero urna, ut suscipit quam. Vivamus condimentum sem ac justo commodo lacinia. Nulla facilisi.</p>
+                            </div>
+                        </div>
+                    </section>
                 </div>
-            </div>
-        </section>
+            </section>
         <!-- end main content -->
 
 
@@ -148,7 +167,6 @@
 
     </div>
     <!-- global wrapper -->
-
 <!-- End Document 
     ================================================== -->
     <script type="text/javascript" src="/landing/js-plugin/respond/respond.min.js"></script>

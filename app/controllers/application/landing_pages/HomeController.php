@@ -29,9 +29,7 @@ class HomeController extends AbstractLandingController
                             'activity'  =>  'login',
                         );
 
-		return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
-                    ?   Response::make(View::make('application/landing/home', $viewData))
-                    :   Response::make(View::make('application/landing/home', $viewData))->withCookie($this->SiteUserCookie);
+        return $this->makeResponseView('application/landing/home', $viewData);
 	}
 
 	public function showTerms()
@@ -41,10 +39,7 @@ class HomeController extends AbstractLandingController
                         (
                             'activity'  =>  'login',
                         );
-
-		return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
-                    ?   Response::make(View::make('application/landing/terms', $viewData))
-                    :   Response::make(View::make('application/landing/terms', $viewData))->withCookie($this->SiteUserCookie);
+        return $this->makeResponseView('application/landing/terms', $viewData);
 	}
 
 	public function showPrivacy()
@@ -54,10 +49,7 @@ class HomeController extends AbstractLandingController
                         (
                             'activity'  =>  'login',
                         );
-
-		return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
-                    ?   Response::make(View::make('application/landing/privacy', $viewData))
-                    :   Response::make(View::make('application/landing/privacy', $viewData))->withCookie($this->SiteUserCookie);
+        return $this->makeResponseView('application/landing/privacy', $viewData);
 	}
 
     public function processErrors($errorNumber)
@@ -165,10 +157,7 @@ class HomeController extends AbstractLandingController
                             'Exclamation'   =>  (isset($Exclamation) ?  $Exclamation : 'Uh Oh!' ),
                             'ErrorMsg'   	=>  $ErrorMsg,
                         );
-
-		return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
-                    ?   Response::make(View::make('application/landing/custom-error', $viewData))
-                    :   Response::make(View::make('application/landing/custom-error', $viewData))->withCookie($this->SiteUserCookie);
+        return $this->makeResponseView('application/landing/custom-error', $viewData);
     }
 
 }

@@ -97,10 +97,241 @@ class AuthController extends BaseController
 
                             'LoginHeaderMessage'        =>  $LoginHeaderMessage
                         );
+        return $this->makeResponseView('application/auth/login', $viewData);
+	}
 
-		return is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
-            ?   Response::make(View::make('application/auth/login', $viewData))
-            :   Response::make(View::make('application/auth/login', $viewData))->withCookie($this->SiteUserCookie);
+
+    public function resendSignupConfirmation()
+	{
+		// todo : make sure this email and the member attached to it haven't already signed up successfully
+
+		$FormName			=	"LostSignupVerificationForm";
+		$FormMessages		=	"";
+		$AttemptMessage		=	"";
+
+        $reCaptcha          =   $this->getServiceLocator()->get('ReCaptchaService');
+        $reCaptchaError     =   FALSE;
+		$AttemptedChanges   =   $this->getAccessAttemptTable()->getAccessAttemptByUserIDs('LostSignupVerificationForm', array($this->getUser()->id), self::POLICY_AllowedAttemptsLookBackDuration);
+
+        $myAuthSession      =   new Container('NotaryToolzAuthSession');
+
+		if($this->getRequest()->isPost())
+		{
+			$this->_writeLog('debug', "lostSignupVerificationAction form was posted successfully']");
+			// Check Attempts
+			if($AttemptedChanges['total'] > self::POLICY_AllowedLostSignupVerificationAttempts)
+			{
+				$this->applyLock('Locked:Excessive-LostSignupVerification-Attempts', '','excessive-lost-signup-verification');
+				return $this->redirect()->toRoute('custom-error-21');
+			}
+
+			$FormValues 	=   $this->getRequest()->getPost();
+            $Form->setData($FormValues);
+			$this->_writeLog('debug', "lostSignupVerificationAction form values set']");
+
+			if( $Form->isValid($FormValues) )
+			{
+				$this->_writeLog('debug', "lostSignupVerificationAction form is valid']");
+
+				if($_POST['recaptcha_challenge_field'] != '' && $_POST['recaptcha_response_field'] != '')
+				{
+					$this->_writeLog('debug', "lostSignupVerificationAction - You completed the ReCaptcha form.']");
+
+					$reCaptchaResult    =   $reCaptcha->verify
+														(
+															$_POST['recaptcha_challenge_field'],
+															$_POST['recaptcha_response_field']
+														);
+
+					if($reCaptchaResult->isValid())
+					{
+						$this->_writeLog('debug', "lostSignupVerificationAction - You completed the ReCaptcha form correctly.']");
+
+						// Get the form data
+						$validatedData      	=   $Form->getData();
+
+						// Get the member emails object which contains the member id
+						$MemberEmailsObject		=	$this->getMemberEmailsTable()->getMemberEmailsByEmail($validatedData['lost_signup_email']);
+
+						if(is_object($MemberEmailsObject))
+						{
+							// Prepare an Email for Validation
+							// setup SMTP options
+							$verifyEmailLink    =   $this->getMemberEmailsTable()->getVerifyEmailLink($validatedData['lost_signup_email'], $MemberEmailsObject->getMemberEmailsMemberID(), 'verify-new-member');
+							$this->sendEmail('verify-new-member-again', array('verifyEmailLink' => $verifyEmailLink), 'General', $validatedData['lost_signup_email']);
+
+							$this->addEmailStatus($validatedData['lost_signup_email'], 'VerificationSentAgain');
+
+							// Store admin alert for new member
+							// todo: Create a cron script that checks for new members since the last check and adds alerts and sends off emails to whomever needs to know plus other tasks. Call it process new members
+
+							// Add
+
+							// Redirect to Successful Signup Page that informs them of the need to validate the email before they can enjoy the free 90 day Premium membership
+							$this->registerAccessAttempt('LostSignupVerificationForm', 1);
+							return $this->redirect()->toRoute('member-signup-again-success');
+						}
+						else
+						{
+							$this->registerAccessAttempt('LostSignupVerificationForm', 0);
+							$this->_writeLog('debug', "lostSignupVerificationAction - MemberEmailsObject is not an object.']");
+							$AttemptMessage 	=	"No member was found with this email address. Please, recheck your email address or contact Customer Support.";
+						}
+					}
+					else
+					{
+						$this->registerAccessAttempt('LostSignupVerificationForm', 0);
+						$this->_writeLog('debug', "lostSignupVerificationAction - You completed the ReCaptcha form incorrectly.']");
+						$reCaptchaError     =   TRUE;
+					}
+				}
+				else
+				{
+					$this->registerAccessAttempt('LostSignupVerificationForm', 0);
+					$this->_writeLog('debug', "lostSignupVerificationAction - You forgot to complete the ReCaptcha form. Please, retry.']");
+					$AttemptMessage 	=	"You forgot to complete the ReCaptcha form. Please, retry.";
+				}
+			}
+			else
+			{
+				$this->registerAccessAttempt('LostSignupVerificationForm', 0);
+				$this->_writeLog('debug', "lostSignupVerificationAction form is not valid']");
+				$FormMessages 	= 	$Form->getMessages();
+			}
+
+		}
+
+		$viewModel  		=   new ViewModel
+								(
+									array
+									(
+										'Form'          			=>  $Form,
+										'FormMessages'         		=>  $FormMessages,
+										'AttemptMessage'       		=>  $AttemptMessage,
+
+										'reCaptcha'                 =>  (isset($reCaptcha)      ? $reCaptcha      : NULL),
+										'reCaptchaError'            =>  (isset($reCaptchaError) ? $reCaptchaError : NULL),
+										'PauseGifDisplaySeconds'    =>  0,
+									)
+								);
+        return $viewModel;
+	}
+
+    public function processResendSignupConfirmation()
+	{
+		// todo : make sure this email and the member attached to it haven't already signed up successfully
+
+		$Form				=	new LostSignupVerificationForm();
+		$FormName			=	"LostSignupVerificationForm";
+		$FormMessages		=	"";
+		$AttemptMessage		=	"";
+
+        $reCaptcha          =   $this->getServiceLocator()->get('ReCaptchaService');
+        $reCaptchaError     =   FALSE;
+		$AttemptedChanges   =   $this->getAccessAttemptTable()->getAccessAttemptByUserIDs('LostSignupVerificationForm', array($this->getUser()->id), self::POLICY_AllowedAttemptsLookBackDuration);
+
+        $myAuthSession      =   new Container('NotaryToolzAuthSession');
+
+		if($this->getRequest()->isPost())
+		{
+			$this->_writeLog('debug', "lostSignupVerificationAction form was posted successfully']");
+			// Check Attempts
+			if($AttemptedChanges['total'] > self::POLICY_AllowedLostSignupVerificationAttempts)
+			{
+				$this->applyLock('Locked:Excessive-LostSignupVerification-Attempts', '','excessive-lost-signup-verification');
+				return $this->redirect()->toRoute('custom-error-21');
+			}
+
+			$FormValues 	=   $this->getRequest()->getPost();
+            $Form->setData($FormValues);
+			$this->_writeLog('debug', "lostSignupVerificationAction form values set']");
+
+			if( $Form->isValid($FormValues) )
+			{
+				$this->_writeLog('debug', "lostSignupVerificationAction form is valid']");
+
+				if($_POST['recaptcha_challenge_field'] != '' && $_POST['recaptcha_response_field'] != '')
+				{
+					$this->_writeLog('debug', "lostSignupVerificationAction - You completed the ReCaptcha form.']");
+
+					$reCaptchaResult    =   $reCaptcha->verify
+														(
+															$_POST['recaptcha_challenge_field'],
+															$_POST['recaptcha_response_field']
+														);
+
+					if($reCaptchaResult->isValid())
+					{
+						$this->_writeLog('debug', "lostSignupVerificationAction - You completed the ReCaptcha form correctly.']");
+
+						// Get the form data
+						$validatedData      	=   $Form->getData();
+
+						// Get the member emails object which contains the member id
+						$MemberEmailsObject		=	$this->getMemberEmailsTable()->getMemberEmailsByEmail($validatedData['lost_signup_email']);
+
+						if(is_object($MemberEmailsObject))
+						{
+							// Prepare an Email for Validation
+							// setup SMTP options
+							$verifyEmailLink    =   $this->getMemberEmailsTable()->getVerifyEmailLink($validatedData['lost_signup_email'], $MemberEmailsObject->getMemberEmailsMemberID(), 'verify-new-member');
+							$this->sendEmail('verify-new-member-again', array('verifyEmailLink' => $verifyEmailLink), 'General', $validatedData['lost_signup_email']);
+
+							$this->addEmailStatus($validatedData['lost_signup_email'], 'VerificationSentAgain');
+
+							// Store admin alert for new member
+							// todo: Create a cron script that checks for new members since the last check and adds alerts and sends off emails to whomever needs to know plus other tasks. Call it process new members
+
+							// Add
+
+							// Redirect to Successful Signup Page that informs them of the need to validate the email before they can enjoy the free 90 day Premium membership
+							$this->registerAccessAttempt('LostSignupVerificationForm', 1);
+							return $this->redirect()->toRoute('member-signup-again-success');
+						}
+						else
+						{
+							$this->registerAccessAttempt('LostSignupVerificationForm', 0);
+							$this->_writeLog('debug', "lostSignupVerificationAction - MemberEmailsObject is not an object.']");
+							$AttemptMessage 	=	"No member was found with this email address. Please, recheck your email address or contact Customer Support.";
+						}
+					}
+					else
+					{
+						$this->registerAccessAttempt('LostSignupVerificationForm', 0);
+						$this->_writeLog('debug', "lostSignupVerificationAction - You completed the ReCaptcha form incorrectly.']");
+						$reCaptchaError     =   TRUE;
+					}
+				}
+				else
+				{
+					$this->registerAccessAttempt('LostSignupVerificationForm', 0);
+					$this->_writeLog('debug', "lostSignupVerificationAction - You forgot to complete the ReCaptcha form. Please, retry.']");
+					$AttemptMessage 	=	"You forgot to complete the ReCaptcha form. Please, retry.";
+				}
+			}
+			else
+			{
+				$this->registerAccessAttempt('LostSignupVerificationForm', 0);
+				$this->_writeLog('debug', "lostSignupVerificationAction form is not valid']");
+				$FormMessages 	= 	$Form->getMessages();
+			}
+
+		}
+
+		$viewModel  		=   new ViewModel
+								(
+									array
+									(
+										'Form'          			=>  $Form,
+										'FormMessages'         		=>  $FormMessages,
+										'AttemptMessage'       		=>  $AttemptMessage,
+
+										'reCaptcha'                 =>  (isset($reCaptcha)      ? $reCaptcha      : NULL),
+										'reCaptchaError'            =>  (isset($reCaptchaError) ? $reCaptchaError : NULL),
+										'PauseGifDisplaySeconds'    =>  0,
+									)
+								);
+        return $viewModel;
 	}
 
 
@@ -305,10 +536,7 @@ class AuthController extends BaseController
                                                     (
                                                         'emailAddress'        =>  $formFields['new_member'],
                                                     );
-
-                                    return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
-                                        ?   Response::make(View::make('application/auth/member-signup-success', $viewData))
-                                        :   Response::make(View::make('application/auth/member-signup-success', $viewData))->withCookie($this->SiteUserCookie);
+                                    return $this->makeResponseView('application/auth/member-signup-success', $viewData);
                                 }
                                 else
                                 {
@@ -409,10 +637,7 @@ class AuthController extends BaseController
 
                 'LoginHeaderMessage'        =>  ''
             );
-
-            return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
-                ?   Response::make(View::make('application/auth/login', $viewData))
-                :   Response::make(View::make('application/auth/login', $viewData))->withCookie($this->SiteUserCookie);
+            return $this->makeResponseView('application/auth/login', $viewData);
         }
     }
 
@@ -773,10 +998,7 @@ class AuthController extends BaseController
                                 'zipCode'       =>  '',
                                 'VerificationDetailsFormMessages'   => (isset($VerificationDetailsFormMessages) && $VerificationDetailsFormMessages != '' ?: ''),
                             );
-
-            return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
-                ?   Response::make(View::make('application/auth/verified_email_success', $viewData))
-                :   Response::make(View::make('application/auth/verified_email_success', $viewData))->withCookie($this->SiteUserCookie);
+            return $this->makeResponseView('application/auth/verified_email_success', $viewData);
         }
     }
 
@@ -1023,13 +1245,6 @@ class AuthController extends BaseController
         }
 
         return $returnValue;
-    }
-
-    public function makeResponseView($viewName, $viewData)
-    {
-        return  is_int($this->SiteUserCookie) && $this->SiteUserCookie > 0
-                    ?   Response::make(View::make($viewName, $viewData))
-                    :   Response::make(View::make($viewName, $viewData))->withCookie($this->SiteUserCookie);
     }
 
 
