@@ -182,6 +182,7 @@ class SetupMainDb extends Migration
             // Columns
             $table->increments('id');
             $table->integer('member_id');
+            $table->tinyInteger('is_primary')->default(1);
             $table->string('email_address', 120);
             $table->tinyInteger('verification_sent');
             $table->integer('verification_sent_on');

@@ -20,6 +20,7 @@ class MemberEmails extends Eloquent
                                 (
                                     'member_id',
                                     'email_address',
+                                    'is_primary',
                                     'verification_sent',
                                     'verification_sent_on',
                                     'verified',
@@ -41,6 +42,7 @@ class MemberEmails extends Eloquent
                                     (
                                         'member_id'             =>  $memberID,
                                         'email_address'         =>  $memberEmail,
+                                        'is_primary'            =>  1,
                                         'verification_sent'     =>  0,
                                         'verification_sent_on'  =>  0,
                                         'verified'              =>  0,
@@ -84,13 +86,12 @@ class MemberEmails extends Eloquent
                         ->select('id')
                         ->where('email_address'   , '=', $email)
                         ->where('verified'        , '=', 1)
-                        ->where('verified_on'     , '>', 0)
+                        ->where('verified_on'     , '<', strtotime("now"))
                         ->count()
         ;
 
         return ($count == 1 ? TRUE : FALSE);
     }
-
 
     public function wasVerificationLinkSent($emailAddress)
     {
@@ -115,6 +116,30 @@ class MemberEmails extends Eloquent
 
             $result =   $query[0];
             return $result->member_id;
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            throw new \Whoops\Example\Exception($e);
+        }
+    }
+
+    public function getEmailAddressesFromMemberID()
+    {
+
+    }
+
+    public function getPrimaryEmailAddressFromMemberID($member_id)
+    {
+        try
+        {
+            $query   =   DB::connection($this->connection)->table($this->table)
+                ->select('email_address')
+                ->where('member_id' , '=', $member_id)
+                ->where('is_primary', '=', 1)
+                ->get();
+
+            $result =   $query[0];
+            return $result->email_address;
         }
         catch(\Whoops\Example\Exception $e)
         {

@@ -23,6 +23,13 @@ App::missing(function($exception){
 Route::get('/there-was-a-problem/{errorNumber}',         array('as' =>  'custom-error',     'uses'  =>  'HomeController@processErrors',));
 
 
+// Employee Admin Dashboards
+Route::group(array('prefix' => 'admin'), function()
+{
+    Route::get('/login',                                                array('as' =>  'adminlogin',                            'uses'  =>  'AdminAuthController@showAccess',                   ));
+
+});
+
 
 
 // Outside Paywall Routes - Landing Pages

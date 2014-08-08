@@ -124,7 +124,7 @@ class EmailUtility
 
             case 'excessive-logins'  								:   $emailTextLink      =   'auth/email/template/excessive-logins/text';
 																		$emailHTMLLink      =   'auth/email/template/excessive-logins/html';
-																		$emailSubject       =   'NotaryToolz.com Access Issues';
+																		$emailSubject       =   $this->companySite . ' Access Issue';
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
@@ -147,9 +147,9 @@ class EmailUtility
 																		break;
 
 
-            case 'excessive-signups'  								:   $emailTextLink      =   'auth/email/template/excessive-signups/text';
-																		$emailHTMLLink      =   'auth/email/template/excessive-signups/html';
-																		$emailSubject       =   'NotaryToolz.com Access Issues';
+            case 'excessive-signups'  								:   $emailTextLink      =   'emails.auth.excessive-signups.text';
+																		$emailHTMLLink      =   'emails.auth.excessive-signups.html';
+																		$emailSubject       =   $this->companySite . ' Access Issues';
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
@@ -174,7 +174,7 @@ class EmailUtility
 
             case 'excessive-forgot-logins'  						:   $emailTextLink      =   'auth/email/template/excessive-forgot-logins/text';
 																		$emailHTMLLink      =   'auth/email/template/excessive-forgot-logins/html';
-																		$emailSubject       =   'NotaryToolz.com Access Issues';
+																		$emailSubject       =   $this->companySite . ' Access Issue';
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
@@ -199,7 +199,7 @@ class EmailUtility
 
             case 'excessive-change-verified-member-password' 		:   $emailTextLink      =   'auth/email/template/excessive-change-verified-member-password/text';
 																		$emailHTMLLink      =   'auth/email/template/excessive-change-verified-member-password/html';
-																		$emailSubject       =   'NotaryToolz.com Access Issues';
+																		$emailSubject       =   $this->companySite . ' Access Issue';
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
@@ -224,7 +224,7 @@ class EmailUtility
 
             case 'excessive-change-old-member-password' 			:   $emailTextLink      =   'auth/email/template/excessive-change-old-member-password/text';
 																		$emailHTMLLink      =   'auth/email/template/excessive-change-old-member-password/html';
-																		$emailSubject       =   'NotaryToolz.com Access Issues';
+																		$emailSubject       =   $this->companySite . ' Access Issue';
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
@@ -249,7 +249,7 @@ class EmailUtility
 
             case 'excessive-lost-signup-verification' 				:   $emailTextLink      =   'auth/email/template/excessive-lost-signup-verification/text';
 																		$emailHTMLLink      =   'auth/email/template/excessive-lost-signup-verification/html';
-																		$emailSubject       =   'NotaryToolz.com Access Issues';
+																		$emailSubject       =   $this->companySite . ' Access Issue';
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
@@ -289,7 +289,7 @@ class EmailUtility
 
 																		$emailTextLink      =   'auth/email/template/forgot-logins-success/text';
 																		$emailHTMLLink      =   'auth/email/template/forgot-logins-success/html';
-																		$emailSubject       =   'NotaryToolz.com Access Issues';
+																		$emailSubject       =   $this->companySite . ' Access Issue';
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
@@ -327,13 +327,9 @@ class EmailUtility
 																			throw new \Exception('missing last_name key for ' . $emailIdentifier . ' template');
 																		}
 
-																		$emailTextLink      =   'auth/email/template/generic-profile-information-change/text';
-																		$emailHTMLLink      =   'auth/email/template/generic-profile-information-change/html';
-																		$emailSubject       =   'NotaryToolz.com Profile Change Notification';
-
-                                                                        $emailTextLink      =   'emails.auth.generic-profile-information-change.text';
+																		$emailTextLink      =   'emails.auth.generic-profile-information-change.text';
 																		$emailHTMLLink      =   'emails.auth.generic-profile-information-change.html';
-																		$emailSubject       =   'Profile Change Notification';
+                                                                        $emailSubject       =   $this->companySite . ' Profile Change Notification';
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,
@@ -372,7 +368,7 @@ class EmailUtility
 
 																		$emailTextLink      =   'auth/email/template/generic-password-change/text';
 																		$emailHTMLLink      =   'auth/email/template/generic-password-change/html';
-																		$emailSubject       =   'NotaryToolz.com Password Change Notification';
+																		$emailSubject       =   $this->companySite . ' Password Change Notification';
 																		$templateVariables  =   array
 																								(
 																									'FB_OGS'                    =>  $this->fb_ogs,

@@ -45,4 +45,26 @@ class MemberStatus extends Eloquent
             return TRUE;
         }
     }
+
+    public function updateMemberStatus($memberID, $fillableArray)
+    {
+        if($memberID > 0)
+        {
+            try
+            {
+                $MemberStatus =   MemberStatus::where("member_id","=", $memberID)->first();
+                $MemberStatus->fill($fillableArray);
+                $MemberStatus->save();
+                return TRUE;
+            }
+            catch(\Whoops\Example\Exception $e)
+            {
+                throw new \Whoops\Example\Exception($e);
+            }
+        }
+        else
+        {
+            throw new \Whoops\Example\Exception("MemberStatus ID is invalid.");
+        }
+    }
 }

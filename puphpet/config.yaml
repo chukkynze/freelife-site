@@ -10,10 +10,10 @@ vagrantfile-local:
         network:
             private_network: 11.11.11.14
             forwarded_port:
-                NmtnPoiQ86G4:
+                1RRkqehSnmM8:
                     host: '6427'
                     guest: '22'
-                WWs8P3PpfluM:
+                GG1TNptuoWtD:
                     host: '3314'
                     guest: '3306'
         provider:
@@ -36,11 +36,17 @@ vagrantfile-local:
                     - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
                     - '--parser future'
         synced_folder:
-            zEnSFJMkBsS6:
+            C9RlCF4qfw1z:
                 source: ../freelife-site
                 target: /var/www/freelife.local
                 sync_type: default
                 rsync:
+                    args:
+                        - '--verbose'
+                        - '--archive'
+                        - '-z'
+                    exclude:
+                        - .vagrant/
                     auto: 'false'
         usable_port_range:
             start: 10200
@@ -66,7 +72,7 @@ firewall:
     install: '1'
     rules: null
 apache:
-    install: '0'
+    install: '1'
     settings:
         user: www-data
         group: www-data
@@ -77,22 +83,21 @@ apache:
     modules:
         - rewrite
     vhosts:
-        bInN6cuENEYg:
+        fQgaJkbkkqj3:
             servername: vm.freelife.local
             serveraliases:
                 - vm.freelife.local
-            docroot: /var/www/public
+            docroot: /var/www/freelife.local/public_html
             port: '80'
             setenv:
                 - 'APP_ENV dev'
-                - 'APP_ENV development'
             override:
                 - All
             options:
                 - Indexes
                 - FollowSymLinks
                 - MultiViews
-            engine: ''
+            engine: php
             custom_fragment: ''
             ssl_cert: ''
             ssl_key: ''
@@ -100,50 +105,35 @@ apache:
             ssl_certs_dir: ''
     mod_pagespeed: 0
 nginx:
-    install: '1'
+    install: '0'
     settings:
         default_vhost: 1
-        proxy_buffer_size: 128k
-        proxy_buffers: '4 256k'
+        proxy_buffer_size: ''
+        proxy_buffers: ''
     vhosts:
-        uhQCD0pd8XJk:
-            server_name: vm.freelife.local
-            server_aliases:
-                - vm.freelife.local
-            www_root: /var/www/freelife.local/public_html
-            listen_port: '80'
-            location: .php$
-            index_files:
-                - index.html
-                - index.htm
-                - index.php
-            envvars:
-                - 'APP_ENV dev'
-                - 'APPLICATION_ENV development'
-            engine: ''
+        mPECaOmmo6J9:
+            server_name: ''
+            www_root: ''
+            listen_port: ''
+            location: ''
+            engine: none
             ssl_cert: ''
             ssl_key: ''
 php:
     install: '1'
-    version: '54'
+    version: '55'
     composer: '1'
     composer_home: ''
     modules:
         php:
-            - cgi
             - cli
-            - curl
-            - gd
-            - geoip
             - intl
-            - mbstring
             - mcrypt
-            - memcache
-            - memcached
+            - curl
             - mysql
+            - xsl
             - mysqlnd
             - xmlrpc
-            - xsl
         pear: {  }
         pecl:
             - pecl_http
@@ -151,7 +141,7 @@ php:
         display_errors: On
         error_reporting: '-1'
         session.save_path: /var/lib/php/session
-    timezone: America/Los_Angeles
+    timezone: America/Chicago
     mod_php: 0
 hhvm:
     install: '0'
@@ -159,32 +149,36 @@ hhvm:
     composer: '1'
     composer_home: ''
     settings:
-        host: '0'
-        port: '0'
-    modules:
-        pear: {  }
+        host: 127.0.0.1
+        port: '9000'
+    ini:
+        display_errors: On
+        error_reporting: '-1'
+    timezone: null
 xdebug:
-    install: '1'
+    install: '0'
     settings:
-        xdebug.default_enable: '1'
-        xdebug.remote_connect_back: '1'
-        xdebug.remote_enable: '1'
-        xdebug.remote_handler: dbgp
         xdebug.remote_port: '9000'
-        xdebug.cli_color: '1'
         xdebug.remote_mode: req
         xdebug.remote_host: 127.0.0.1
-        xdebug.max_nesting_level: '300'
-        xdebug.idekey: PHPSTORM
+        xdebug.remote_handler: dbgp
+        xdebug.remote_connect_back: '1'
+        xdebug.remote_enable: '1'
         xdebug.remote_autostart: '1'
+        xdebug.max_nesting_level: '400'
+        xdebug.idekey: PHPSTORM
+        xdebug.default_enable: '1'
+        xdebug.cli_color: '1'
 xhprof:
     install: '0'
 drush:
     install: '0'
-    version: ''
+    version: 6.3.0
 ruby:
     install: '1'
-    versions: {  }
+    versions:
+        189EHP1RGNH9:
+            version: ''
 nodejs:
     install: '0'
     npm_packages: {  }
@@ -193,7 +187,7 @@ mysql:
     root_password: freelife123
     adminer: 0
     databases:
-        6WCcFCcwH00x:
+        ggS0axSsVqGZ:
             grant:
                 - ALL
             name: freelife_db

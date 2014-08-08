@@ -11,8 +11,10 @@
 		"classmap": [
 			"app/commands",
 			"app/controllers",
-			"app/controllers/auth",
-			"app/controllers/landing_pages",
+			"app/controllers/admin/auth",
+			"app/controllers/admin/dashboard",
+			"app/controllers/application/auth",
+			"app/controllers/application/landing_pages",
 			"app/controllers/utilities",
 			"app/models",
 			"app/database/migrations",
