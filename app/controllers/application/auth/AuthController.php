@@ -224,8 +224,8 @@ class AuthController extends BaseController
                                 Log::info($FormName . " - Could not resend verification email to [" . $formFields['lost_signup_email'] . "] for member id [" . $NewMemberID . "]. Member is already verified.");
                                 $customerService    =   str_replace("[errorNumber]", "Could not resend verification email.", self::POLICY_LinkCustomerService );
                                 $FormMessages       =   array();
-                                $FormMessages[]     =   "Sorry, we cannot complete the signup process at this time.
-                                                         Please refresh, and if the issue continues, contact " . $customerService . ".";
+                                $FormMessages[]     =   "It appears that you have already verified your email address. There is no need to resend a verification.
+                                                         Check your inbox for instructions and, if you still require assistance, contact " . $customerService . ".";
                             }
                         }
                         else
@@ -790,16 +790,18 @@ class AuthController extends BaseController
                             );
 
 
+                            $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 1);
                             $viewData   =   array
                                             (
                                                 'firstName'     =>  $formFields['first_name'],
                                                 'emailAddress'  =>  $verifiedMemberIDArray['email'],
                                             );
 
-                            return  $this->makeResponseView('auth/verification-details-success', $viewData);
+                            return  $this->makeResponseView('application/auth/verification-details-success', $viewData);
                         }
                         else
                         {
+                            $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 0);
                             $VerificationDetailsFormErrors   =   $validator->messages()->toArray();
                             $VerificationDetailsFormMessages =   array();
                             foreach($VerificationDetailsFormErrors as $errors)
@@ -812,6 +814,7 @@ class AuthController extends BaseController
                     }
                     else
                     {
+                        $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 0);
                         Log::info("Error #3 - returned value from verifiedMemberIDArray is not an array.");
                         $returnToRoute  =   array
                         (
@@ -822,6 +825,7 @@ class AuthController extends BaseController
                 }
                 else
                 {
+                    $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 0);
                     Log::info("Error #" . $verifiedMemberIDArray['errorNbr'] . " - " . $verifiedMemberIDArray['errorMsg'] . ".");
                     $returnToRoute  =   array
                     (
@@ -844,6 +848,7 @@ class AuthController extends BaseController
         }
         else
         {
+            $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 0);
             Log::warning($SubmittedFormName . " is not being correctly posted to.");
             $returnToRoute  =   array
                                 (
@@ -868,7 +873,7 @@ class AuthController extends BaseController
                                 'zipCode'       =>  Input::get('zipcode'),
                                 'VerificationDetailsFormMessages'   => $VerificationDetailsFormMessages,
                             );
-            return  $this->makeResponseView('auth/verified_email_success', $viewData);
+            return  $this->makeResponseView('application/auth/verified_email_success', $viewData);
         }
     }
 
@@ -1127,6 +1132,24 @@ class AuthController extends BaseController
 																	break;
 
                 case 'SignupForm'     							:   $dummyInput     =   array
+																						(
+																							'usr'           =>  '',
+																							'username'      =>  '',
+																							'email'         =>  '',
+																							'login_email'   =>  '',
+																						);
+																	break;
+
+                case 'VerificationDetailsForm'     	            :   $dummyInput     =   array
+																						(
+																							'usr'           =>  '',
+																							'username'      =>  '',
+																							'email'         =>  '',
+																							'login_email'   =>  '',
+																						);
+																	break;
+
+                case 'LostSignupVerificationForm'     	        :   $dummyInput     =   array
 																						(
 																							'usr'           =>  '',
 																							'username'      =>  '',

@@ -97,8 +97,8 @@ class EmailUtility
 																			throw new \Exception('missing verifyEmailLink key for ' . $emailIdentifier . ' template');
 																		}
 
-																		$emailTextLink      =   'auth/email/template/verify-new-member-again/text';
-																		$emailHTMLLink      =   'auth/email/template/verify-new-member-again/html';
+																		$emailTextLink      =   'emails.auth.verify-new-member-again.text';
+																		$emailHTMLLink      =   'emails.auth.verify-new-member-again.html';
 																		$emailSubject       =   'Verify Your Email Address';
 																		$templateVariables  =   array
 																								(
@@ -122,8 +122,8 @@ class EmailUtility
 																		break;
 
 
-            case 'excessive-logins'  								:   $emailTextLink      =   'auth/email/template/excessive-logins/text';
-																		$emailHTMLLink      =   'auth/email/template/excessive-logins/html';
+            case 'excessive-logins'  								:   $emailTextLink      =   'emails.auth.excessive-logins.text';
+																		$emailHTMLLink      =   'emails.auth.excessive-logins.html';
 																		$emailSubject       =   $this->companySite . ' Access Issue';
 																		$templateVariables  =   array
 																								(
@@ -172,8 +172,8 @@ class EmailUtility
 																		break;
 
 
-            case 'excessive-forgot-logins'  						:   $emailTextLink      =   'auth/email/template/excessive-forgot-logins/text';
-																		$emailHTMLLink      =   'auth/email/template/excessive-forgot-logins/html';
+            case 'excessive-forgot-logins'  						:   $emailTextLink      =   'emails.auth.excessive-forgot-logins.text';
+																		$emailHTMLLink      =   'emails.auth.excessive-forgot-logins.html';
 																		$emailSubject       =   $this->companySite . ' Access Issue';
 																		$templateVariables  =   array
 																								(
@@ -197,8 +197,8 @@ class EmailUtility
 																		break;
 
 
-            case 'excessive-change-verified-member-password' 		:   $emailTextLink      =   'auth/email/template/excessive-change-verified-member-password/text';
-																		$emailHTMLLink      =   'auth/email/template/excessive-change-verified-member-password/html';
+            case 'excessive-change-verified-member-password' 		:   $emailTextLink      =   'emails.auth.excessive-change-verified-member-password.text';
+																		$emailHTMLLink      =   'emails.auth.excessive-change-verified-member-password.html';
 																		$emailSubject       =   $this->companySite . ' Access Issue';
 																		$templateVariables  =   array
 																								(
@@ -222,8 +222,8 @@ class EmailUtility
 																		break;
 
 
-            case 'excessive-change-old-member-password' 			:   $emailTextLink      =   'auth/email/template/excessive-change-old-member-password/text';
-																		$emailHTMLLink      =   'auth/email/template/excessive-change-old-member-password/html';
+            case 'excessive-change-old-member-password' 			:   $emailTextLink      =   'emails.auth.excessive-change-old-member-password.text';
+																		$emailHTMLLink      =   'emails.auth.excessive-change-old-member-password.html';
 																		$emailSubject       =   $this->companySite . ' Access Issue';
 																		$templateVariables  =   array
 																								(
@@ -247,8 +247,8 @@ class EmailUtility
 																		break;
 
 
-            case 'excessive-lost-signup-verification' 				:   $emailTextLink      =   'auth/email/template/excessive-lost-signup-verification/text';
-																		$emailHTMLLink      =   'auth/email/template/excessive-lost-signup-verification/html';
+            case 'excessive-lost-signup-verification' 				:   $emailTextLink      =   'emails.auth.excessive-lost-signup-verification.text';
+																		$emailHTMLLink      =   'emails.auth.excessive-lost-signup-verification.html';
 																		$emailSubject       =   $this->companySite . ' Access Issue';
 																		$templateVariables  =   array
 																								(
@@ -287,8 +287,8 @@ class EmailUtility
 																			throw new \Exception('missing last_name key for ' . $emailIdentifier . ' template');
 																		}
 
-																		$emailTextLink      =   'auth/email/template/forgot-logins-success/text';
-																		$emailHTMLLink      =   'auth/email/template/forgot-logins-success/html';
+																		$emailTextLink      =   'emails.auth.forgot-logins-success.text';
+																		$emailHTMLLink      =   'emails.auth.forgot-logins-success.html';
 																		$emailSubject       =   $this->companySite . ' Access Issue';
 																		$templateVariables  =   array
 																								(
@@ -366,8 +366,8 @@ class EmailUtility
 																			throw new \Exception('missing last_name key for ' . $emailIdentifier . ' template');
 																		}
 
-																		$emailTextLink      =   'auth/email/template/generic-password-change/text';
-																		$emailHTMLLink      =   'auth/email/template/generic-password-change/html';
+																		$emailTextLink      =   'emails.auth.generic-password-change.text';
+																		$emailHTMLLink      =   'emails.auth.generic-password-change.html';
 																		$emailSubject       =   $this->companySite . ' Password Change Notification';
 																		$templateVariables  =   array
 																								(

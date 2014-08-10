@@ -37,6 +37,7 @@ class SetupUtilsDb extends Migration
                                             'LoginForm',
                                             'LoginCaptchaForm',
                                             'SignupForm',
+                                            'VerificationDetailsForm',
                                             'ForgotForm',
                                             'LostSignupVerificationForm',
                                             'ChangePasswordWithVerifyLinkForm',
