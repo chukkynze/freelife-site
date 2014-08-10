@@ -39,4 +39,16 @@ class EmailStatus extends Eloquent
                             );
         $newEmailStatus->save();
     }
+
+    public function checkForPreviousEmailStatus($emailAddress, $status)
+    {
+        $count  =   DB::connection($this->connection)->table($this->table)
+                        ->select('id')
+                        ->where('email_address'         , '='   , $emailAddress)
+                        ->where('email_address_status'  , '='   , $status)
+                        ->where('created_at'            , '<='  , date("Y-m-d H:i:s"))
+                        ->count();
+
+        return ($count == 1 ? TRUE : FALSE);
+    }
 }

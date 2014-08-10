@@ -104,10 +104,10 @@
 								<div class="divide-40"></div>
                                     {{ Form::open(array('action' => 'AuthController@showAccess')) }}
 
-                                    <?php echo Form::text('usr'         , null, array('class' => "notarytoolzInput Input1")); ?>
-                                    <?php echo Form::text('username'    , null, array('class' => "notarytoolzInput Input2")); ?>
-                                    <?php echo Form::text('email'       , null, array('class' => "notarytoolzInput Input3")); ?>
-                                    <?php echo Form::text('login_email' , null, array('class' => "notarytoolzInput Input4")); ?>
+                                    <?php echo Form::text('usr'         , null, array('class' => "siteInput Input1")); ?>
+                                    <?php echo Form::text('username'    , null, array('class' => "siteInput Input2")); ?>
+                                    <?php echo Form::text('email'       , null, array('class' => "siteInput Input3")); ?>
+                                    <?php echo Form::text('login_email' , null, array('class' => "siteInput Input4")); ?>
 
                                         <div class="form-group">
                                             <?php echo Form::label('returning_member', 'E-Mail Address'); ?>
@@ -157,10 +157,10 @@
 
                                 {{ Form::open(array('action' => 'AuthController@showAccess')) }}
 
-                                    <?php echo Form::text('usr'         , null, array('class' => "notarytoolzInput Input1")); ?>
-                                    <?php echo Form::text('username'    , null, array('class' => "notarytoolzInput Input2")); ?>
-                                    <?php echo Form::text('email'       , null, array('class' => "notarytoolzInput Input3")); ?>
-                                    <?php echo Form::text('login_email' , null, array('class' => "notarytoolzInput Input4")); ?>
+                                    <?php echo Form::text('usr'         , null, array('class' => "siteInput Input1")); ?>
+                                    <?php echo Form::text('username'    , null, array('class' => "siteInput Input2")); ?>
+                                    <?php echo Form::text('email'       , null, array('class' => "siteInput Input3")); ?>
+                                    <?php echo Form::text('login_email' , null, array('class' => "siteInput Input4")); ?>
 
 
                                     <div class="form-group">

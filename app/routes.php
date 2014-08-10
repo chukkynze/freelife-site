@@ -57,6 +57,7 @@ Route::get('/reset-password',                                           array('a
 Route::get('/password-change',                                          array('as' =>  'changePasswordWithOldPassword',         'uses'  =>  'AuthController@changePasswordWithOldPassword',     ));
 Route::post('/verification-details',                                    array('as' =>  'processVerificationDetails',            'uses'  =>  'AuthController@processVerificationDetails',        ));
 Route::get('/resend-signup-confirmation',                               array('as' =>  'resendSignupConfirmation',              'uses'  =>  'AuthController@resendSignupConfirmation',          ));
+Route::post('/resend-signup-confirmation',                              array('as' =>  'processResendSignupConfirmation',       'uses'  =>  'AuthController@processResendSignupConfirmation',   ));
 Route::get('/email-verification/{vcode}',                               array('as' =>  'verifyEmail',                           'uses'  =>  'AuthController@verifyEmail',                       ));
 Route::get('/change-password-verification/{vcode}',                     array('as' =>  'changePasswordWithVerifyEmailLink',     'uses'  =>  'AuthController@changePasswordWithVerifyEmailLink', ));
 

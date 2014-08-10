@@ -123,6 +123,24 @@ class MemberEmails extends Eloquent
         }
     }
 
+    public function getMemberEmailIDFromEmailAddress($emailAddress)
+    {
+        try
+        {
+            $query   =   DB::connection($this->connection)->table($this->table)
+                                ->select('id')
+                                ->where('email_address'       , '=', $emailAddress)
+                                ->get();
+
+            $result =   $query[0];
+            return $result->id;
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            throw new \Whoops\Example\Exception($e);
+        }
+    }
+
     public function getEmailAddressesFromMemberID()
     {
 

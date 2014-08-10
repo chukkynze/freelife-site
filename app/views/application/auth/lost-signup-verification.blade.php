@@ -40,87 +40,56 @@
 				<!--/NAV-BAR -->
 			</header>
 			<!--/HEADER -->
-			<!-- LOGIN -->
-			<section id="verification-details" class="visible">
+			<!-- FORGOT PASSWORD -->
+			<section id="forgot" class="visible">
 				<div class="container">
 					<div class="row">
 						<div class="col-md-4 col-md-offset-4">
 							<div class="login-box-plain">
-								<h2 class="bigintro">Verification Details</h2>
-								<div class="center">
-									<strong>Your Email Address is Verified.</strong><br>
-									<strong>Please, personalize your account to access your Member Section.</strong>
-								</div>
+								<h2 class="bigintro">Resend Your Signup Verification</h2>
 
-                                <?php if($VerificationDetailsFormMessages != ''): ?>
+                                <?php if($FormMessages != ''): ?>
                                 <div class="alert alert-block alert-danger fade in">
                                     <a class="close" data-dismiss="alert" href="#" aria-hidden="true">×</a>
                                     <h4><i class="fa fa-times"></i> Oh snap! You got an error!</h4>
                                     <ul>
-                                        <?php foreach($VerificationDetailsFormMessages as $VerificationDetailsFormMessage): ?>
-                                        <li><?php echo $VerificationDetailsFormMessage; ?></li>
+                                        <?php foreach($FormMessages as $FormMessage): ?>
+                                        <li><?php echo $FormMessage; ?></li>
                                         <?php endforeach ?>
                                     </ul>
                                 </div>
                                 <?php endif; ?>
 
 
+
 								<div class="divide-40"></div>
 
-                                {{ Form::open(array('method' => 'POST', 'action' => 'AuthController@processVerificationDetails')) }}
+                                {{ Form::open(array('method' => 'POST', 'action' => 'AuthController@processResendSignupConfirmation')) }}
 
                                     <?php echo Form::text('usr'         , null, array('class' => "siteInput Input1")); ?>
                                     <?php echo Form::text('username'    , null, array('class' => "siteInput Input2")); ?>
                                     <?php echo Form::text('email'       , null, array('class' => "siteInput Input3")); ?>
                                     <?php echo Form::text('login_email' , null, array('class' => "siteInput Input4")); ?>
 
-                                    <?php echo Form::hidden('vcode', $vcode); ?>
-
                                     <div class="form-group">
-                                        <?php echo Form::label('first_name', 'First Name'); ?>
-                                        <?php echo Form::text('first_name', $firstName, array('class' => "form-control")); ?>
-                                    </div>
-                                    <div class="form-group">
-                                        <?php echo Form::label('last_name', 'Last Name'); ?>
-                                        <?php echo Form::text('last_name', $lastName, array('class' => "form-control")); ?>
-                                    </div>
-                                    <div class="form-group">
-                                        <?php echo Form::label('gender', 'Gender'); ?>
-                                        <?php echo Form::select('gender',   array
-                                                                            (
-                                                                                '0' => 'Please choose...',
-                                                                                '1' => 'Female',
-                                                                                '2' => 'Male'
-                                                                            ),  $gender, array('class' => "form-control"));
-                                        ?>
-                                    </div>
-                                    <div class="form-group">
-                                        <?php echo Form::label('member_type', 'Which are you?'); ?>
-                                        <?php echo Form::select('member_type',  array
-                                                                                (
-                                                                                    '0' => 'Please choose...',
-                                                                                    '1' => 'Vendor',
-                                                                                    '2' => 'Freelancer',
-                                                                                    '3' => 'Vendor Client',
-                                                                                ),  $memberType, array('class' => "form-control"));
-                                        ?>
-                                    </div>
-                                    <div class="form-group">
-                                        <?php echo Form::label('zipcode', 'ZipCode'); ?>
-                                        <?php echo Form::text('zipcode', $zipCode, array('class' => "form-control")); ?>
+                                        <?php echo Form::label('lost_signup_email', 'E-Mail Address'); ?>
+                                        <i class="fa fa-envelope"></i>
+                                        <?php echo Form::text('lost_signup_email', null, array('class' => "form-control")); ?>
                                     </div>
                                     <div class="form-actions">
-                                        <button type="submit" class="btn-lg btn-primary">Personalize</button>
+                                        <?php echo Form::captcha(array('theme' => 'blackglass')); ?>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn-lg btn-info">Send Me My Verification Link ... again</button>
                                     </div>
 
                                 {{ Form::close() }}
-
 							</div>
 						</div>
 					</div>
 				</div>
 			</section>
-			<!--/LOGIN -->
+			<!-- FORGOT PASSWORD -->
 	</section>
 	<!--/PAGE -->
 
@@ -134,8 +103,8 @@
     <!--[if lt IE 9]><script type="text/javascript" src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script><![endif]-->
 
     <script>
-		jQuery(document).ready(function() {
-			App.setPage("verification-details");  //Set current page
+		jQuery(document).ready(function() {		
+			App.setPage("login");  //Set current page
 			App.init(); //Initialise plugins and elements
 		});
 	</script>

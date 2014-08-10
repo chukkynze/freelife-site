@@ -40,30 +40,11 @@ class AuthController extends BaseController
         $activity   =   ( isset($this->activity)    ?   $this->activity :   'login');
         $reason     =   ( isset($this->reason)      ?   $this->reason   :   '');
 
-        // Auth Forms
-        #$LoginForm          =   new LoginForm();
-        #$LoginCaptchaForm   =   new LoginCaptchaForm();
-        #$SignupForm         =   new SignupForm();
-        #$ForgotForm         =   new ForgotForm();
-
-        #$reCaptcha          =   $this->getServiceLocator()->get('ReCaptchaService');
-        #$reCaptchaError     =   FALSE;
-
-        #$myAuthSession      =   new Container('NotaryToolzAuthSession');
-
-        #$AttemptedLogins           =   $this->getAccessAttemptTable()->getAccessAttemptByUserIDs('LoginForm',          array($this->getUser()->id), self::POLICY_AllowedAttemptsLookBackDuration);
-        #$AttemptedLoginCaptchas    =   $this->getAccessAttemptTable()->getAccessAttemptByUserIDs('LoginCaptchaForm',   array($this->getUser()->id), self::POLICY_AllowedAttemptsLookBackDuration);
-        #$AttemptedForgots          =   $this->getAccessAttemptTable()->getAccessAttemptByUserIDs('ForgotForm',         array($this->getUser()->id), self::POLICY_AllowedAttemptsLookBackDuration);
-
-		$LoginFormMessages          =   '';
-        $LoginCaptchaFormMessages   =   '';
+        $LoginFormMessages          =   '';
         $SignupFormMessages         =   '';
         $ForgotFormMessages         =   '';
 
         $LoginAttemptMessages        =   '';
-        $LoginCaptchaAttemptMessages =   '';
-        $SignupAttemptMessages       =   '';
-        $ForgotAttemptMessages       =   '';
 
         if($activity == 'login')
 		{
@@ -80,10 +61,6 @@ class AuthController extends BaseController
 		{
 			$LoginHeaderMessage     =   '';
 		}
-
-        $LoginCaptchaHeaderMessage 	=   '';
-        $SignupHeaderMessage       	=   '';
-        $ForgotHeaderMessage       	=   '';
 
         $viewData   =   array
                         (
@@ -103,235 +80,222 @@ class AuthController extends BaseController
 
     public function resendSignupConfirmation()
 	{
-		// todo : make sure this email and the member attached to it haven't already signed up successfully
-
-		$FormName			=	"LostSignupVerificationForm";
-		$FormMessages		=	"";
-		$AttemptMessage		=	"";
-
-        $reCaptcha          =   $this->getServiceLocator()->get('ReCaptchaService');
-        $reCaptchaError     =   FALSE;
-		$AttemptedChanges   =   $this->getAccessAttemptTable()->getAccessAttemptByUserIDs('LostSignupVerificationForm', array($this->getUser()->id), self::POLICY_AllowedAttemptsLookBackDuration);
-
-        $myAuthSession      =   new Container('NotaryToolzAuthSession');
-
-		if($this->getRequest()->isPost())
-		{
-			$this->_writeLog('debug', "lostSignupVerificationAction form was posted successfully']");
-			// Check Attempts
-			if($AttemptedChanges['total'] > self::POLICY_AllowedLostSignupVerificationAttempts)
-			{
-				$this->applyLock('Locked:Excessive-LostSignupVerification-Attempts', '','excessive-lost-signup-verification');
-				return $this->redirect()->toRoute('custom-error-21');
-			}
-
-			$FormValues 	=   $this->getRequest()->getPost();
-            $Form->setData($FormValues);
-			$this->_writeLog('debug', "lostSignupVerificationAction form values set']");
-
-			if( $Form->isValid($FormValues) )
-			{
-				$this->_writeLog('debug', "lostSignupVerificationAction form is valid']");
-
-				if($_POST['recaptcha_challenge_field'] != '' && $_POST['recaptcha_response_field'] != '')
-				{
-					$this->_writeLog('debug', "lostSignupVerificationAction - You completed the ReCaptcha form.']");
-
-					$reCaptchaResult    =   $reCaptcha->verify
-														(
-															$_POST['recaptcha_challenge_field'],
-															$_POST['recaptcha_response_field']
-														);
-
-					if($reCaptchaResult->isValid())
-					{
-						$this->_writeLog('debug', "lostSignupVerificationAction - You completed the ReCaptcha form correctly.']");
-
-						// Get the form data
-						$validatedData      	=   $Form->getData();
-
-						// Get the member emails object which contains the member id
-						$MemberEmailsObject		=	$this->getMemberEmailsTable()->getMemberEmailsByEmail($validatedData['lost_signup_email']);
-
-						if(is_object($MemberEmailsObject))
-						{
-							// Prepare an Email for Validation
-							// setup SMTP options
-							$verifyEmailLink    =   $this->getMemberEmailsTable()->getVerifyEmailLink($validatedData['lost_signup_email'], $MemberEmailsObject->getMemberEmailsMemberID(), 'verify-new-member');
-							$this->sendEmail('verify-new-member-again', array('verifyEmailLink' => $verifyEmailLink), 'General', $validatedData['lost_signup_email']);
-
-							$this->addEmailStatus($validatedData['lost_signup_email'], 'VerificationSentAgain');
-
-							// Store admin alert for new member
-							// todo: Create a cron script that checks for new members since the last check and adds alerts and sends off emails to whomever needs to know plus other tasks. Call it process new members
-
-							// Add
-
-							// Redirect to Successful Signup Page that informs them of the need to validate the email before they can enjoy the free 90 day Premium membership
-							$this->registerAccessAttempt('LostSignupVerificationForm', 1);
-							return $this->redirect()->toRoute('member-signup-again-success');
-						}
-						else
-						{
-							$this->registerAccessAttempt('LostSignupVerificationForm', 0);
-							$this->_writeLog('debug', "lostSignupVerificationAction - MemberEmailsObject is not an object.']");
-							$AttemptMessage 	=	"No member was found with this email address. Please, recheck your email address or contact Customer Support.";
-						}
-					}
-					else
-					{
-						$this->registerAccessAttempt('LostSignupVerificationForm', 0);
-						$this->_writeLog('debug', "lostSignupVerificationAction - You completed the ReCaptcha form incorrectly.']");
-						$reCaptchaError     =   TRUE;
-					}
-				}
-				else
-				{
-					$this->registerAccessAttempt('LostSignupVerificationForm', 0);
-					$this->_writeLog('debug', "lostSignupVerificationAction - You forgot to complete the ReCaptcha form. Please, retry.']");
-					$AttemptMessage 	=	"You forgot to complete the ReCaptcha form. Please, retry.";
-				}
-			}
-			else
-			{
-				$this->registerAccessAttempt('LostSignupVerificationForm', 0);
-				$this->_writeLog('debug', "lostSignupVerificationAction form is not valid']");
-				$FormMessages 	= 	$Form->getMessages();
-			}
-
-		}
-
-		$viewModel  		=   new ViewModel
-								(
-									array
-									(
-										'Form'          			=>  $Form,
-										'FormMessages'         		=>  $FormMessages,
-										'AttemptMessage'       		=>  $AttemptMessage,
-
-										'reCaptcha'                 =>  (isset($reCaptcha)      ? $reCaptcha      : NULL),
-										'reCaptchaError'            =>  (isset($reCaptchaError) ? $reCaptchaError : NULL),
-										'PauseGifDisplaySeconds'    =>  0,
-									)
-								);
-        return $viewModel;
+		$FormMessages       =   "";
+        $viewData           =   array
+                                (
+                                    'FormMessages'         		=>  $FormMessages,
+                                );
+        return $this->makeResponseView('application/auth/lost-signup-verification', $viewData);
 	}
 
     public function processResendSignupConfirmation()
 	{
 		// todo : make sure this email and the member attached to it haven't already signed up successfully
 
-		$Form				=	new LostSignupVerificationForm();
 		$FormName			=	"LostSignupVerificationForm";
-		$FormMessages		=	"";
-		$AttemptMessage		=	"";
+        $returnToRoute      =   array
+                                (
+                                    'name'  =>  FALSE,
+                                    'data'  =>  FALSE,
+                                );
+        $FormMessages       =   "";
 
-        $reCaptcha          =   $this->getServiceLocator()->get('ReCaptchaService');
-        $reCaptchaError     =   FALSE;
-		$AttemptedChanges   =   $this->getAccessAttemptTable()->getAccessAttemptByUserIDs('LostSignupVerificationForm', array($this->getUser()->id), self::POLICY_AllowedAttemptsLookBackDuration);
+        if(Request::isMethod('post'))
+        {
+            $Attempts       =   $this->getAccessAttemptByUserIDs
+                                        (
+                                            'LostSignupVerificationForm',
+                                            array($this->getSiteUser()->id),
+                                            self::POLICY_AllowedAttemptsLookBackDuration
+                                        );
 
-        $myAuthSession      =   new Container('NotaryToolzAuthSession');
+            if($Attempts['total'] < self::POLICY_AllowedLostSignupVerificationAttempts)
+            {
+                if($this->isFormClean($FormName, Input::all()))
+                {
 
-		if($this->getRequest()->isPost())
-		{
-			$this->_writeLog('debug', "lostSignupVerificationAction form was posted successfully']");
-			// Check Attempts
-			if($AttemptedChanges['total'] > self::POLICY_AllowedLostSignupVerificationAttempts)
-			{
-				$this->applyLock('Locked:Excessive-LostSignupVerification-Attempts', '','excessive-lost-signup-verification');
-				return $this->redirect()->toRoute('custom-error-21');
-			}
+                    $formFields     =   array
+                                        (
+                                            'lost_signup_email'         =>  Input::get('lost_signup_email'),
+                                            'recaptcha_response_field'  =>  Input::get('recaptcha_response_field'),
+                                        );
+                    $formRules      =   array
+                                        (
+                                            'lost_signup_email'         =>  array
+                                                                            (
+                                                                                'required',
+                                                                                'email',
+                                                                                'exists:email_status,email_address',
+                                                                                'between:5,120',
+                                                                            ),
+                                            'recaptcha_response_field'  =>  array
+                                                                            (
+                                                                                'required',
+                                                                                'recaptcha',
+                                                                            ),
+                                        );
+                    $formMessages   =   array
+                                        (
+                                            'lost_signup_email.required'            =>  "An email address is required and can not be empty.",
+                                            'lost_signup_email.email'               =>  "Your email address format is invalid.",
+                                            'lost_signup_email.exists'              =>  "Are you sure you've already <a href='/signup'>signed up</a>?",
+                                            'lost_signup_email.between'             =>  "Please, re-check your email address' size.",
 
-			$FormValues 	=   $this->getRequest()->getPost();
-            $Form->setData($FormValues);
-			$this->_writeLog('debug', "lostSignupVerificationAction form values set']");
+                                            'recaptcha_response_field.required'     =>  "Please enter the reCaptcha value.",
+                                            'recaptcha_response_field.recaptcha'    =>  "Your reCaptcha entry is incorrect.",
+                                        );
 
-			if( $Form->isValid($FormValues) )
-			{
-				$this->_writeLog('debug', "lostSignupVerificationAction form is valid']");
+                    $validator      =   Validator::make($formFields, $formRules, $formMessages);
 
-				if($_POST['recaptcha_challenge_field'] != '' && $_POST['recaptcha_response_field'] != '')
-				{
-					$this->_writeLog('debug', "lostSignupVerificationAction - You completed the ReCaptcha form.']");
+                    if ($validator->passes())
+                    {
+                        $NewMemberID    =   $this->getMemberIDFromEmailAddress($formFields['lost_signup_email']);
 
-					$reCaptchaResult    =   $reCaptcha->verify
-														(
-															$_POST['recaptcha_challenge_field'],
-															$_POST['recaptcha_response_field']
-														);
+                        if($NewMemberID > 0)
+                        {
+                            // Check to see if this email has already received an EmailStatus of 'Verified' or 'VerificationSentAgain'
+                            $decisions  =   2;
+                            ($this->checkForPreviousEmailStatus($formFields['lost_signup_email'],'Verified')                ?   $decisions : $decisions--);
+                            ($this->checkForPreviousEmailStatus($formFields['lost_signup_email'],'VerificationSentAgain')   ?   $decisions : $decisions--);
 
-					if($reCaptchaResult->isValid())
-					{
-						$this->_writeLog('debug', "lostSignupVerificationAction - You completed the ReCaptcha form correctly.']");
+                            // todo: Check how far back email validation was sent (and if member email exists)
 
-						// Get the form data
-						$validatedData      	=   $Form->getData();
+                            $isAlreadyVerified  =   ($decisions == 0 ? TRUE : FALSE);
+                            if($isAlreadyVerified)
+                            {
+                                // ReSend an Email for Validation
+                                $verifyEmailLink    =   $this->generateVerifyEmailLink($formFields['lost_signup_email'], $NewMemberID, 'verify-new-member');
+                                $sendEmailStatus    =   $this->sendEmail
+                                                        (
+                                                            'verify-new-member',
+                                                            array
+                                                            (
+                                                                'verifyEmailLink' => $verifyEmailLink
+                                                            ),
+                                                            array
+                                                            (
+                                                                'fromTag'       =>  'General',
+                                                                'sendToEmail'   =>  $formFields['lost_signup_email'],
+                                                                'sendToName'    =>  'Welcome to Ekinect',
+                                                                'subject'       =>  'Welcome to Ekinect',
+                                                                'ccArray'       =>  FALSE,
+                                                                'attachArray'   =>  FALSE,
+                                                            )
+                                                        );
 
-						// Get the member emails object which contains the member id
-						$MemberEmailsObject		=	$this->getMemberEmailsTable()->getMemberEmailsByEmail($validatedData['lost_signup_email']);
+                                if($sendEmailStatus)
+                                {
+                                    // Update Member emails that verification was sent and at what time for this member
+                                    $this->updateMemberEmail
+                                            (
+                                                $this->getMemberEmailIDFromEmailAddress($formFields['lost_signup_email']),
+                                                array
+                                                (
+                                                    'verification_sent'     =>  1,
+                                                    'verification_sent_on'  =>  strtotime('now'),
+                                                )
+                                            );
 
-						if(is_object($MemberEmailsObject))
-						{
-							// Prepare an Email for Validation
-							// setup SMTP options
-							$verifyEmailLink    =   $this->getMemberEmailsTable()->getVerifyEmailLink($validatedData['lost_signup_email'], $MemberEmailsObject->getMemberEmailsMemberID(), 'verify-new-member');
-							$this->sendEmail('verify-new-member-again', array('verifyEmailLink' => $verifyEmailLink), 'General', $validatedData['lost_signup_email']);
+                                    // Redirect to Successful Signup Page that informs them of the need to validate the email before they can enjoy the free 90 day Premium membership
+                                    // Update status
+                                    $this->addEmailStatus($formFields['lost_signup_email'], 'VerificationSentAgain');
+                                    $this->registerAccessAttempt('LostSignupVerificationForm', $FormName, 1);
+                                    $viewData   =   array
+                                                    (
+                                                        'emailAddress' => $formFields['lost_signup_email'],
+                                                    );
+                                    return $this->makeResponseView('application/auth/member-signup-success', $viewData);
+                                }
+                                else
+                                {
+                                    $this->addAdminAlert();
+                                    $this->registerAccessAttempt($this->getSiteUser()->getID(), $FormName, 0);
+                                    Log::info($FormName . " - Could not resend the new member email to [" . $formFields['lost_signup_email'] . "] for member id [" . $NewMemberID . "].");
+                                    $customerService    =   str_replace("[errorNumber]", "Could not resend the new member email.", self::POLICY_LinkCustomerService );
+                                    $FormMessages       =   array();
+                                    $FormMessages[]     =   "Sorry, we cannot complete the signup process at this time.
+                                                             Please refresh, and if the issue continues, contact " . $customerService . ".";
+                                }
+                            }
+                            else
+                            {
+                                $this->addAdminAlert();
+                                $this->registerAccessAttempt($this->getSiteUser()->getID(), $FormName, 0);
+                                Log::info($FormName . " - Could not resend verification email to [" . $formFields['lost_signup_email'] . "] for member id [" . $NewMemberID . "]. Member is already verified.");
+                                $customerService    =   str_replace("[errorNumber]", "Could not resend verification email.", self::POLICY_LinkCustomerService );
+                                $FormMessages       =   array();
+                                $FormMessages[]     =   "Sorry, we cannot complete the signup process at this time.
+                                                         Please refresh, and if the issue continues, contact " . $customerService . ".";
+                            }
+                        }
+                        else
+                        {
+                            $this->addAdminAlert();
+                            $this->registerAccessAttempt($this->getSiteUser()->getID(), $FormName, 0);
+                            Log::info($FormName . " - Could not get new member id from email provided [" . $formFields['lost_signup_email'] . "].");
+                            $customerService    =   str_replace("[errorNumber]", "Could not resend verification for new member.", self::POLICY_LinkCustomerService );
+                            $FormMessages       =   array();
+                            $FormMessages[]     =   "Sorry, we cannot complete the signup and verification process at this time.
+                                                    Please refresh, and if the issue continues, contact " . $customerService . ".";
+                        }
+                    }
+                    else
+                    {
+                        $FormErrors   =   $validator->messages()->toArray();
+                        $FormMessages =   array();
+                        foreach($FormErrors as $errors)
+                        {
+                            $FormMessages[]   =   $errors[0];
+                        }
 
-							$this->addEmailStatus($validatedData['lost_signup_email'], 'VerificationSentAgain');
+                        $this->registerAccessAttempt($this->getSiteUser()->getID(),$FormName, 0);
+                        Log::info($FormName . " - form values did not pass.");
+                    }
+                }
+                else
+                {
+                    $this->registerAccessAttempt($this->getSiteUser()->getID(), $FormName, 0);
+                    $this->addAdminAlert();
+                    Log::warning($FormName . " has invalid dummy variables passed.");
+                    $returnToRoute  =   array
+                                        (
+                                            'name'  =>  'custom-error',
+                                            'data'  =>  array('errorNumber' => 23),
+                                        );
+                }
+            }
+            else
+            {
+                $this->applyLock('Locked:Excessive-LostSignupVerification-Attempts', 'cjunze@gmail.com','excessive-lost-signup-verification', []);
+                $returnToRoute  =   array
+                                    (
+                                        'name'  =>  'custom-error',
+                                        'data'  =>  array('errorNumber' => 18),
+                                    );
+            }
+        }
+        else
+        {
+            Log::warning($FormName . " is not being correctly posted to.");
+            $returnToRoute  =   array
+                                (
+                                    'name'  =>  'custom-error',
+                                    'data'  =>  array('errorNumber' => 23),
+                                );
+        }
 
-							// Store admin alert for new member
-							// todo: Create a cron script that checks for new members since the last check and adds alerts and sends off emails to whomever needs to know plus other tasks. Call it process new members
-
-							// Add
-
-							// Redirect to Successful Signup Page that informs them of the need to validate the email before they can enjoy the free 90 day Premium membership
-							$this->registerAccessAttempt('LostSignupVerificationForm', 1);
-							return $this->redirect()->toRoute('member-signup-again-success');
-						}
-						else
-						{
-							$this->registerAccessAttempt('LostSignupVerificationForm', 0);
-							$this->_writeLog('debug', "lostSignupVerificationAction - MemberEmailsObject is not an object.']");
-							$AttemptMessage 	=	"No member was found with this email address. Please, recheck your email address or contact Customer Support.";
-						}
-					}
-					else
-					{
-						$this->registerAccessAttempt('LostSignupVerificationForm', 0);
-						$this->_writeLog('debug', "lostSignupVerificationAction - You completed the ReCaptcha form incorrectly.']");
-						$reCaptchaError     =   TRUE;
-					}
-				}
-				else
-				{
-					$this->registerAccessAttempt('LostSignupVerificationForm', 0);
-					$this->_writeLog('debug', "lostSignupVerificationAction - You forgot to complete the ReCaptcha form. Please, retry.']");
-					$AttemptMessage 	=	"You forgot to complete the ReCaptcha form. Please, retry.";
-				}
-			}
-			else
-			{
-				$this->registerAccessAttempt('LostSignupVerificationForm', 0);
-				$this->_writeLog('debug', "lostSignupVerificationAction form is not valid']");
-				$FormMessages 	= 	$Form->getMessages();
-			}
-
-		}
-
-		$viewModel  		=   new ViewModel
-								(
-									array
-									(
-										'Form'          			=>  $Form,
-										'FormMessages'         		=>  $FormMessages,
-										'AttemptMessage'       		=>  $AttemptMessage,
-
-										'reCaptcha'                 =>  (isset($reCaptcha)      ? $reCaptcha      : NULL),
-										'reCaptchaError'            =>  (isset($reCaptchaError) ? $reCaptchaError : NULL),
-										'PauseGifDisplaySeconds'    =>  0,
-									)
-								);
-        return $viewModel;
+        if(FALSE != $returnToRoute['name'])
+        {
+            return Redirect::route($returnToRoute['name'],$returnToRoute['data']);
+        }
+        else
+        {
+            $viewData           =   array
+                                (
+                                    'FormMessages'  =>  $FormMessages,
+                                );
+            return $this->makeResponseView('application/auth/lost-signup-verification', $viewData);
+        }
 	}
 
 
@@ -394,6 +358,7 @@ class AuthController extends BaseController
 
     public function processSignup()
     {
+        $SubmittedFormName      =   'SignupForm';
         $returnToRoute          =   array(
             'name'  =>  FALSE,
             'data'  =>  FALSE,
@@ -402,8 +367,7 @@ class AuthController extends BaseController
 
         if(Request::isMethod('post'))
         {
-            $AccessAttempt      =   new AccessAttempt();
-            $AttemptedSignups   =   $AccessAttempt->getAccessAttemptByUserIDs
+            $AttemptedSignups   =   $this->getAccessAttemptByUserIDs
                                                     (
                                                         'SignupForm',
                                                         array($this->getSiteUser()->id),
@@ -412,13 +376,7 @@ class AuthController extends BaseController
 
             if($AttemptedSignups['total'] < self::POLICY_AllowedSignupAttempts)
             {
-                $SubmittedPostValues    =   Input::all();
-                $SubmittedFormName      =   'SignupForm';
-
-                /**
-                 * Check for robot entries against dummy variables
-                 */
-                if($this->isFormClean($SubmittedFormName, $SubmittedPostValues))
+                if($this->isFormClean($SubmittedFormName, Input::all()))
                 {
                     $formFields     =   array
                                         (
@@ -498,7 +456,6 @@ class AuthController extends BaseController
                             if($NewMemberEmailID > 0)
                             {
                                 // Prepare an Email for Validation
-                                // setup SMTP options
                                 $verifyEmailLink    =   $this->generateVerifyEmailLink($formFields['new_member'], $NewMemberID, 'verify-new-member');
                                 $sendEmailStatus    =   $this->sendEmail
                                                         (
@@ -603,7 +560,7 @@ class AuthController extends BaseController
             }
             else
             {
-                $this->applyLock('Locked:Excessive-Signup-Attempts', 'cjunze@gmail.com','excessive-signups', []);
+                $this->applyLock('Locked:Excessive-Signup-Attempts', '','excessive-signups', []);
                 $returnToRoute  =   array
                                     (
                                         'name'  =>  'custom-error',
@@ -613,6 +570,7 @@ class AuthController extends BaseController
         }
         else
         {
+            Log::warning($SubmittedFormName . " is not being correctly posted to.");
             $returnToRoute  =   array
                                 (
                                     'name'  =>  'custom-error',
@@ -678,6 +636,7 @@ class AuthController extends BaseController
     {
         // Please use your info to login to your free trial
         // success needs to be on the landing pages so the login button is right on top
+        $SubmittedFormName                  =   'VerificationDetailsForm';
         $returnToRoute                      =   array
                                                 (
                                                     'name'  =>  FALSE,
@@ -687,190 +646,205 @@ class AuthController extends BaseController
 
         if(Request::isMethod('post'))
         {
-            // Validate vcode
-            $verifiedMemberIDArray  =   $this->verifyEmailByLinkAndGetMemberIDArray(Input::get('vcode'), 'VerificationDetailsForm');
-
-            if (!isset($verifiedMemberIDArray['errorNbr']) && !isset($verifiedMemberIDArray['errorMsg']))
+            if($this->isFormClean($SubmittedFormName, Input::all()))
             {
-                if (isset($verifiedMemberIDArray) && is_array($verifiedMemberIDArray))
+                // Validate vcode
+                $verifiedMemberIDArray  =   $this->verifyEmailByLinkAndGetMemberIDArray(Input::get('vcode'), 'VerificationDetailsForm');
+
+                if (!isset($verifiedMemberIDArray['errorNbr']) && !isset($verifiedMemberIDArray['errorMsg']))
                 {
-                    // Validate Form
-                    $formFields     =   array
-                                        (
-                                            'first_name'    =>  Input::get('first_name'),
-                                            'last_name'     =>  Input::get('last_name'),
-                                            'gender'        =>  Input::get('gender'),
-                                            'member_type'   =>  Input::get('member_type'),
-                                            'zipcode'       =>  Input::get('zipcode'),
-                                        );
-                    $formRules      =   array
-                                        (
-                                            'first_name'    =>  array
-                                                                (
-                                                                    'required',
-                                                                    'alpha',
-                                                                    'between:2,60',
-                                                                ),
-                                            'last_name'     =>  array
-                                                                (
-                                                                    'required',
-                                                                    'alpha',
-                                                                    'between:2,60',
-                                                                ),
-                                            'gender'        =>  array
-                                                                (
-                                                                    'required',
-                                                                    'numeric',
-                                                                    'digits:1',
-                                                                    'min:1',
-                                                                    'max:2',
-                                                                ),
-                                            'member_type'   =>  array
-                                                                (
-                                                                    'required',
-                                                                    'numeric',
-                                                                    'digits:1',
-                                                                    'min:1',
-                                                                    'max:3',
-                                                                ),
-                                            'zipcode'       =>  array
-                                                                (
-                                                                    'required',
-                                                                    'numeric',
-                                                                    'digits:5',
-                                                                    #'exists:freelife_utils.location_data,postal_code',
-                                                                ),
-                                        );
-                    $formMessages   =   array
-                                        (
-                                            'first_name.required'   =>  "Please, enter your first name.",
-                                            'first_name.alpha'      =>  "Please, use only the alphabet for your first name.",
-                                            'first_name.between'    =>  "Please, re-check the length of your first name.",
-
-                                            'last_name.required'    =>  "Please, enter your last name.",
-                                            'last_name.alpha'       =>  "Please, use only the alphabet for your last name.",
-                                            'last_name.between'     =>  "Please, re-check the length of your last name.",
-
-                                            'gender.required'       =>  "Please, select your gender.",
-                                            'gender.numeric'        =>  "Please, choose a gender.",
-                                            'gender.digits'         =>  "Please, choose a gender.",
-                                            'gender.min'            =>  "Please, choose a gender.",
-                                            'gender.max'            =>  "Please, choose a gender.",
-
-                                            'member_type.required'  =>  "Please, select your Membership Type.",
-                                            'member_type.numeric'   =>  "Please, choose a Membership Type.",
-                                            'member_type.digits'    =>  "Please, choose a Membership Type.",
-                                            'member_type.min'       =>  "Please, choose a Membership Type.",
-                                            'member_type.max'       =>  "Please, choose a Membership Type.",
-
-                                            'zipcode.required'      =>  "Please, enter your zipcode.",
-                                            'zipcode.numeric'       =>  "Please, use only numbers for your zipcode.",
-                                            'zipcode.digits'        =>  "Please, enter a zipcode.",
-                                        );
-
-                    $validator      =   Validator::make($formFields, $formRules, $formMessages);
-
-                    if ($validator->passes())
+                    if (isset($verifiedMemberIDArray) && is_array($verifiedMemberIDArray))
                     {
-                        $memberDetailsExist     =   $this->doMemberDetailsExist($verifiedMemberIDArray['memberID']);
+                        // Validate Form
+                        $formFields     =   array
+                                            (
+                                                'first_name'    =>  Input::get('first_name'),
+                                                'last_name'     =>  Input::get('last_name'),
+                                                'gender'        =>  Input::get('gender'),
+                                                'member_type'   =>  Input::get('member_type'),
+                                                'zipcode'       =>  Input::get('zipcode'),
+                                            );
+                        $formRules      =   array
+                                            (
+                                                'first_name'    =>  array
+                                                                    (
+                                                                        'required',
+                                                                        'alpha',
+                                                                        'between:2,60',
+                                                                    ),
+                                                'last_name'     =>  array
+                                                                    (
+                                                                        'required',
+                                                                        'alpha',
+                                                                        'between:2,60',
+                                                                    ),
+                                                'gender'        =>  array
+                                                                    (
+                                                                        'required',
+                                                                        'numeric',
+                                                                        'digits:1',
+                                                                        'min:1',
+                                                                        'max:2',
+                                                                    ),
+                                                'member_type'   =>  array
+                                                                    (
+                                                                        'required',
+                                                                        'numeric',
+                                                                        'digits:1',
+                                                                        'min:1',
+                                                                        'max:3',
+                                                                    ),
+                                                'zipcode'       =>  array
+                                                                    (
+                                                                        'required',
+                                                                        'numeric',
+                                                                        'digits:5',
+                                                                        #'exists:freelife_utils.location_data,postal_code',
+                                                                    ),
+                                            );
+                        $formMessages   =   array
+                                            (
+                                                'first_name.required'   =>  "Please, enter your first name.",
+                                                'first_name.alpha'      =>  "Please, use only the alphabet for your first name.",
+                                                'first_name.between'    =>  "Please, re-check the length of your first name.",
 
-                        // Add Member Details
-                        $detailsFillableArray   =   array
-                                                    (
-                                                        'member_id'             =>  $verifiedMemberIDArray['memberID'],
-                                                        'first_name'            =>  $formFields['first_name'],
-                                                        'last_name'             =>  $formFields['last_name'],
-                                                        'gender'                =>  $formFields['gender'],
-                                                        'zipcode'               =>  $formFields['zipcode'],
-                                                        'personal_summary'      =>  '',
-                                                        'profile_pic_url'       =>  '',
-                                                        'personal_website_url'  =>  '',
-                                                        'linkedin_url'          =>  '',
-                                                        'google_plus_url'       =>  '',
-                                                        'twitter_url'           =>  '',
-                                                        'facebook_url'          =>  '',
-                                                    );
-                        if($memberDetailsExist)
+                                                'last_name.required'    =>  "Please, enter your last name.",
+                                                'last_name.alpha'       =>  "Please, use only the alphabet for your last name.",
+                                                'last_name.between'     =>  "Please, re-check the length of your last name.",
+
+                                                'gender.required'       =>  "Please, select your gender.",
+                                                'gender.numeric'        =>  "Please, choose a gender.",
+                                                'gender.digits'         =>  "Please, choose a gender.",
+                                                'gender.min'            =>  "Please, choose a gender.",
+                                                'gender.max'            =>  "Please, choose a gender.",
+
+                                                'member_type.required'  =>  "Please, select your Membership Type.",
+                                                'member_type.numeric'   =>  "Please, choose a Membership Type.",
+                                                'member_type.digits'    =>  "Please, choose a Membership Type.",
+                                                'member_type.min'       =>  "Please, choose a Membership Type.",
+                                                'member_type.max'       =>  "Please, choose a Membership Type.",
+
+                                                'zipcode.required'      =>  "Please, enter your zipcode.",
+                                                'zipcode.numeric'       =>  "Please, use only numbers for your zipcode.",
+                                                'zipcode.digits'        =>  "Please, enter a zipcode.",
+                                            );
+
+                        $validator      =   Validator::make($formFields, $formRules, $formMessages);
+
+                        if ($validator->passes())
                         {
-                            $this->updateMemberDetails($verifiedMemberIDArray['memberID'], $detailsFillableArray);
+                            $memberDetailsExist     =   $this->doMemberDetailsExist($verifiedMemberIDArray['memberID']);
+
+                            // Add Member Details
+                            $detailsFillableArray   =   array
+                                                        (
+                                                            'member_id'             =>  $verifiedMemberIDArray['memberID'],
+                                                            'first_name'            =>  $formFields['first_name'],
+                                                            'last_name'             =>  $formFields['last_name'],
+                                                            'gender'                =>  $formFields['gender'],
+                                                            'zipcode'               =>  $formFields['zipcode'],
+                                                            'personal_summary'      =>  '',
+                                                            'profile_pic_url'       =>  '',
+                                                            'personal_website_url'  =>  '',
+                                                            'linkedin_url'          =>  '',
+                                                            'google_plus_url'       =>  '',
+                                                            'twitter_url'           =>  '',
+                                                            'facebook_url'          =>  '',
+                                                        );
+                            if($memberDetailsExist)
+                            {
+                                $this->updateMemberDetails($verifiedMemberIDArray['memberID'], $detailsFillableArray);
+                            }
+                            else
+                            {
+                                $this->addMemberDetails($verifiedMemberIDArray['memberID'], $detailsFillableArray);
+                            }
+
+                            // Update Member Object with Member Type
+                            $memberFillableArray    =   array
+                                                        (
+                                                            'member_type'   =>  strtolower($formFields['member_type']),
+                                                        );
+                            $this->updateMember($verifiedMemberIDArray['memberID'], $memberFillableArray);
+                            $this->addMemberStatus('VerifiedStartupDetails', $verifiedMemberIDArray['memberID']);
+                            $this->addMemberStatus('ValidMember', $verifiedMemberIDArray['memberID']);
+
+                            // Successful Verification Notification Email
+                            $this->sendEmail
+                            (
+                                'genericProfileInformationChange',
+                                array
+                                (
+                                    'first_name'    =>  $formFields['first_name'],
+                                    'last_name'     =>  $formFields['last_name'],
+                                ),
+                                array
+                                (
+                                    'fromTag'       =>  'General',
+                                    'sendToEmail'   =>  $verifiedMemberIDArray['email'],
+                                    'sendToName'    =>  $formFields['first_name'] . ' ' . $formFields['last_name'],
+                                    'subject'       =>  'Profile Change Notification',
+                                    'ccArray'       =>  FALSE,
+                                    'attachArray'   =>  FALSE,
+                                )
+                            );
+
+
+                            $viewData   =   array
+                                            (
+                                                'firstName'     =>  $formFields['first_name'],
+                                                'emailAddress'  =>  $verifiedMemberIDArray['email'],
+                                            );
+
+                            return  $this->makeResponseView('auth/verification-details-success', $viewData);
                         }
                         else
                         {
-                            $this->addMemberDetails($verifiedMemberIDArray['memberID'], $detailsFillableArray);
+                            $VerificationDetailsFormErrors   =   $validator->messages()->toArray();
+                            $VerificationDetailsFormMessages =   array();
+                            foreach($VerificationDetailsFormErrors as $errors)
+                            {
+                                $VerificationDetailsFormMessages[]   =   $errors[0];
+                            }
+
+                            Log::info("VerificationDetails form values did not pass.");
                         }
-
-                        // Update Member Object with Member Type
-                        $memberFillableArray    =   array
-                                                    (
-                                                        'member_type'   =>  strtolower($formFields['member_type']),
-                                                    );
-                        $this->updateMember($verifiedMemberIDArray['memberID'], $memberFillableArray);
-                        $this->addMemberStatus('VerifiedStartupDetails', $verifiedMemberIDArray['memberID']);
-                        $this->addMemberStatus('ValidMember', $verifiedMemberIDArray['memberID']);
-
-                        // Successful Verification Notification Email
-                        $this->sendEmail
-                        (
-                            'genericProfileInformationChange',
-                            array
-                            (
-                                'first_name'    =>  $formFields['first_name'],
-                                'last_name'     =>  $formFields['last_name'],
-                            ),
-                            array
-                            (
-                                'fromTag'       =>  'General',
-                                'sendToEmail'   =>  $verifiedMemberIDArray['email'],
-                                'sendToName'    =>  $formFields['first_name'] . ' ' . $formFields['last_name'],
-                                'subject'       =>  'Profile Change Notification',
-                                'ccArray'       =>  FALSE,
-                                'attachArray'   =>  FALSE,
-                            )
-                        );
-
-
-                        $viewData   =   array
-                                        (
-                                            'firstName'     =>  $formFields['first_name'],
-                                            'emailAddress'  =>  $verifiedMemberIDArray['email'],
-                                        );
-
-                        return  $this->makeResponseView('auth/verification-details-success', $viewData);
                     }
                     else
                     {
-                        $VerificationDetailsFormErrors   =   $validator->messages()->toArray();
-                        $VerificationDetailsFormMessages =   array();
-                        foreach($VerificationDetailsFormErrors as $errors)
-                        {
-                            $VerificationDetailsFormMessages[]   =   $errors[0];
-                        }
-
-                        Log::info("VerificationDetails form values did not pass.");
+                        Log::info("Error #3 - returned value from verifiedMemberIDArray is not an array.");
+                        $returnToRoute  =   array
+                        (
+                            'name'  =>  'custom-error',
+                            'data'  =>  array('errorNumber' => 3),
+                        );
                     }
                 }
                 else
                 {
-                    Log::info("Error #3 - returned value from verifiedMemberIDArray is not an array.");
+                    Log::info("Error #" . $verifiedMemberIDArray['errorNbr'] . " - " . $verifiedMemberIDArray['errorMsg'] . ".");
                     $returnToRoute  =   array
                     (
                         'name'  =>  'custom-error',
-                        'data'  =>  array('errorNumber' => 3),
+                        'data'  =>  array('errorNumber' => $verifiedMemberIDArray['errorNbr']),
                     );
                 }
             }
             else
             {
-                Log::info("Error #" . $verifiedMemberIDArray['errorNbr'] . " - " . $verifiedMemberIDArray['errorMsg'] . ".");
+                $this->registerAccessAttempt($this->getSiteUser()->getID(), $SubmittedFormName, 0);
+                $this->addAdminAlert();
+                Log::warning($SubmittedFormName . " has invalid dummy variables passed.");
                 $returnToRoute  =   array
-                (
-                    'name'  =>  'custom-error',
-                    'data'  =>  array('errorNumber' => $verifiedMemberIDArray['errorNbr']),
-                );
+                                    (
+                                        'name'  =>  'custom-error',
+                                        'data'  =>  array('errorNumber' => 23),
+                                    );
             }
         }
         else
         {
+            Log::warning($SubmittedFormName . " is not being correctly posted to.");
             $returnToRoute  =   array
                                 (
                                     'name'  =>  'custom-error',
@@ -898,17 +872,12 @@ class AuthController extends BaseController
         }
     }
 
-    public function resendSignupConfirmation()
-    {
-        // lostSignupVerificationAction
-    }
-
     /**
      * Processes the Verification Details form
      *
      * @param $vCode
      *
-     * @return ViewModel
+     * @return $this|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
     public function verifyEmail($vCode)
     {
@@ -1248,6 +1217,21 @@ class AuthController extends BaseController
     }
 
 
+    public function getAccessAttemptByUserIDs($accessFormName, $userIDArray, $timeFrame)
+    {
+        try
+        {
+            $AccessAttempt      =   new AccessAttempt();
+            return $AccessAttempt->getAccessAttemptByUserIDs($accessFormName, $userIDArray, $timeFrame);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not get Access Attempt data. " . $e);
+            return FALSE;
+        }
+    }
+
+
 	/**
 	 * Stores an access attempt
 	 *
@@ -1278,6 +1262,20 @@ class AuthController extends BaseController
         catch(\Whoops\Example\Exception $e)
         {
             Log::error("Could not add a new Email Status. " . $e);
+        }
+    }
+
+    public function checkForPreviousEmailStatus($emailAddress, $status)
+    {
+        try
+        {
+            $EmailStatus    =   new EmailStatus();
+            return $EmailStatus->checkForPreviousEmailStatus($emailAddress, $status);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not check for previous Email Status. " . $e);
+            return FALSE;
         }
     }
 
@@ -1400,6 +1398,34 @@ class AuthController extends BaseController
         catch(\Whoops\Example\Exception $e)
         {
             Log::error("Could not verify this email address [" . $email . "]. " . $e);
+            return FALSE;
+        }
+    }
+
+    public function getMemberIDFromEmailAddress($emailAddress)
+    {
+        try
+        {
+            $MemberEmails   =   new MemberEmails();
+            return $MemberEmails->getMemberIDFromEmailAddress($emailAddress);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not get member id from this email address [" . $emailAddress . "]. " . $e);
+            return FALSE;
+        }
+    }
+
+    public function getMemberEmailIDFromEmailAddress($emailAddress)
+    {
+        try
+        {
+            $MemberEmails   =   new MemberEmails();
+            return $MemberEmails->getMemberEmailIDFromEmailAddress($emailAddress);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not get id from this email address [" . $emailAddress . "]. " . $e);
             return FALSE;
         }
     }
