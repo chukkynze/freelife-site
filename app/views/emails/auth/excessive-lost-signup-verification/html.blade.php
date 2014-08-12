@@ -297,7 +297,7 @@ h4, .h4{
                                                                             It appears that you may be having problems resending your signup verification link email from <?php echo $COMPANY_NAME; ?>.
                                                                             <br />
                                                                             <br />
-                                                                            We detected multiple attempts to resend your verification email on our site using this email address. If this was you, we advise that you contact us at <?php echo $CUSTOMER_SERVICE_EMAIL; ?> so we can make sure your account is properly setup and secured.
+                                                                            We detected multiple attempts to resend your verification email on our site using this email address. If this was not you, we advise that you contact us at <?php echo $CUSTOMER_SERVICE_EMAIL; ?> so we can make sure your account is properly setup and secured.
                                                                             <br />
                                                                             <br />
                                                                             <br />

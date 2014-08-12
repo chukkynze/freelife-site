@@ -101,25 +101,25 @@ class EmailUtility
 																		$emailHTMLLink      =   'emails.auth.verify-new-member-again.html';
 																		$emailSubject       =   'Verify Your Email Address';
 																		$templateVariables  =   array
-																								(
-																									'FB_OGS'                    =>  $this->fb_ogs,
+                                                                                                (
+                                                                                                    'FB_OGS'                    =>  $this->fb_ogs,
                                                                                                     'EMAIL_SUBJECT'             =>  $emailSubject,
-																									'EML_MAIN_LOGO'             =>  $this->eml_main_logo,
-																									'FB_LINK_LOGO'              =>  $this->fb_link_logo,
-																									'FB_LINK'                   =>  $this->fb_link,
-																									'TWT_LINK_LOGO'             =>  $this->twt_link_logo,
-																									'TWT_LINK'                  =>  $this->twt_link,
-																									'VRFY_EML_LINK'             =>  $emailVariables['verifyEmailLink'],
-																									'TEXT_BREAK'                =>  $this->break_character,
-																									'CUSTOMER_SERVICE_EMAIL'    =>  $this->customerServiceEmail,
-																									'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
-																									'CURR_YR'                   =>  date('Y'),
+                                                                                                    'EML_MAIN_LOGO'             =>  $this->eml_main_logo,
+                                                                                                    'FB_LINK_LOGO'              =>  $this->fb_link_logo,
+                                                                                                    'FB_LINK'                   =>  $this->fb_link,
+                                                                                                    'TWT_LINK_LOGO'             =>  $this->twt_link_logo,
+                                                                                                    'TWT_LINK'                  =>  $this->twt_link,
+                                                                                                    'VRFY_EML_LINK'             =>  $emailVariables['verifyEmailLink'],
+                                                                                                    'TEXT_BREAK'                =>  $this->break_character,
+                                                                                                    'CUSTOMER_SERVICE_EMAIL'    =>  $this->customerServiceEmail,
+                                                                                                    'CUSTOMER_SERVICE_NUMBER'   =>  $this->customer_service_number,
+                                                                                                    'CURR_YR'                   =>  date('Y'),
                                                                                                     'ADD_THIS_EMAIL'            =>  $this->addThisEmail,
                                                                                                     'COMPANY_NAME'              =>  $this->companyName,
                                                                                                     'COMPANY_SITE'              =>  $this->companySite,
                                                                                                     'COMPANY_SIGN_EMAIL_AS'     =>  $this->companySignEmailAs,
-																								);
-																		break;
+                                                                                                );
+                                                                                                break;
 
 
             case 'excessive-logins'  								:   $emailTextLink      =   'emails.auth.excessive-logins.text';

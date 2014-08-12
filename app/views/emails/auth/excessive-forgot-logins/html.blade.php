@@ -294,10 +294,10 @@ h4, .h4{
                                                                             <h1 class="h1">We Apologize</h1>
                                                                             <h2 class="h2">For The Inconvenience.</h2>
                                                                             <br />
-                                                                            It appears that you may be having problems signing up with <?php echo $COMPANY_NAME; ?>.
+                                                                            It appears that you may be having problems resetting your password with <?php echo $COMPANY_NAME; ?>.
                                                                             <br />
                                                                             <br />
-                                                                            We detected multiple attempts to signup to our site using this or an associated email address. If this was not you, we advise that you contact us at <?php echo $CUSTOMER_SERVICE_EMAIL; ?> so we can make sure your account is properly setup and secured.
+                                                                            We detected multiple attempts to reset your password on our site using this email address. If this was not you, we advise that you contact us at <?php echo $CUSTOMER_SERVICE_EMAIL; ?> so we can make sure your account is properly setup and secured.
                                                                             <br />
                                                                             <br />
                                                                             <br />
@@ -313,6 +313,8 @@ h4, .h4{
                                                                             <br />
                                                                             <?php echo $CUSTOMER_SERVICE_NUMBER; ?>
                                                                             <br />
+                                                                            <br />
+                                                                            P.S.: We are truly sorry that you are having issues with our site. We will do all that is possible to get you up and running. Thank you for your business.
                                                                             <br />
 			                                                                <br />
 			                                                            </div>

@@ -90,8 +90,6 @@ class AuthController extends BaseController
 
     public function processResendSignupConfirmation()
 	{
-		// todo : make sure this email and the member attached to it haven't already signed up successfully
-
 		$FormName			=	"LostSignupVerificationForm";
         $returnToRoute      =   array
                                 (
@@ -167,7 +165,7 @@ class AuthController extends BaseController
                                 $verifyEmailLink    =   $this->generateVerifyEmailLink($formFields['lost_signup_email'], $NewMemberID, 'verify-new-member');
                                 $sendEmailStatus    =   $this->sendEmail
                                                         (
-                                                            'verify-new-member',
+                                                            'verify-new-member-again',
                                                             array
                                                             (
                                                                 'verifyEmailLink' => $verifyEmailLink
@@ -620,11 +618,146 @@ class AuthController extends BaseController
         return $this->showAccess();
     }
 
-    public function resetPassword()
+    public function processForgotPassword()
     {
-        $this->activity     =   "forgot";
-        $this->reason       =   "";
-        return $this->showAccess();
+        $FormName			=	"ForgotForm";
+        $returnToRoute      =   array
+                                (
+                                    'name'  =>  FALSE,
+                                    'data'  =>  FALSE,
+                                );
+        $FormMessages       =   "";
+
+        if(Request::isMethod('post'))
+        {
+            $Attempts       =   $this->getAccessAttemptByUserIDs
+                (
+                    'ForgotForm',
+                    array($this->getSiteUser()->id),
+                    self::POLICY_AllowedAttemptsLookBackDuration
+                );
+
+            if($Attempts['total'] < self::POLICY_AllowedForgotAttempts)
+            {
+                if($this->isFormClean($FormName, Input::all()))
+                {
+
+                    $formFields     =   array
+                                        (
+                                            'forgot_email'  =>  Input::get('forgot_email'),
+                                        );
+                    $formRules      =   array
+                                        (
+                                            'forgot_email'  =>  array
+                                                                (
+                                                                    'required',
+                                                                    'email',
+                                                                    'exists:member_emails,email_address',
+                                                                    'between:5,120',
+                                                                ),
+                                        );
+                    $formMessages   =   array
+                                        (
+                                            'forgot_email.required'            =>  "Your email address is required and can not be empty.",
+                                            'forgot_email.email'               =>  "Your email address format is invalid.",
+                                            'forgot_email.exists'              =>  "Are you sure you've <a href='/signup'>signed up</a>?",
+                                            'forgot_email.between'             =>  "Please, re-check your email address' size.",
+                                        );
+
+                    $validator      =   Validator::make($formFields, $formRules, $formMessages);
+
+                    if ($validator->passes())
+                    {
+                        $this->addEmailStatus($formFields['forgot_email'], 'Forgot');
+
+                        $NewMemberID    =   $this->getMemberIDFromEmailAddress($formFields['forgot_email']);
+
+                        // Send an Email for Validation
+                        $verifyEmailLink    =   $this->generateVerifyEmailLink($formFields['forgot_email'], $NewMemberID, 'forgot-logins-success');
+                        $MemberDetailsObject=   $this->getMemberDetailsObject($NewMemberID);
+                        $sendEmailStatus    =   $this->sendEmail
+                            (
+                                'forgot-logins-success',
+                                array
+                                (
+                                    'verifyEmailLink'   => $verifyEmailLink,
+                                    'first_name'	    =>	$MemberDetailsObject->first_name,
+                                    'last_name'			=>	$MemberDetailsObject->last_name,
+                                ),
+                                array
+                                (
+                                    'fromTag'           =>  'General',
+                                    'sendToEmail'       =>  $formFields['forgot_email'],
+                                    'sendToName'        =>  $MemberDetailsObject->first_name . ' ' . $MemberDetailsObject->last_name,
+                                    'subject'           =>  'Access Issues',
+                                    'ccArray'           =>  FALSE,
+                                    'attachArray'       =>  FALSE,
+                                )
+                            );
+                        $this->registerAccessAttempt($FormName, $FormName, 1);
+                        $viewData   =   array
+                        (
+                            'emailAddress' => $formFields['forgot_email'],
+                        );
+                        return $this->makeResponseView('application/auth/forgot-success', $viewData);
+                    }
+                    else
+                    {
+                        $FormErrors   =   $validator->messages()->toArray();
+                        $FormMessages =   array();
+                        foreach($FormErrors as $errors)
+                        {
+                            $FormMessages[]   =   $errors[0];
+                        }
+
+                        $this->registerAccessAttempt($this->getSiteUser()->getID(),$FormName, 0);
+                        Log::info($FormName . " - form values did not pass.");
+                    }
+                }
+                else
+                {
+                    $this->registerAccessAttempt($this->getSiteUser()->getID(), $FormName, 0);
+                    $this->addAdminAlert();
+                    Log::warning($FormName . " has invalid dummy variables passed.");
+                    $returnToRoute  =   array
+                    (
+                        'name'  =>  'custom-error',
+                        'data'  =>  array('errorNumber' => 23),
+                    );
+                }
+            }
+            else
+            {
+                $this->applyLock('Locked:Excessive-ForgotLogin-Attempts', Input::get('forgot_email'),'excessive-forgot-logins', []);
+                $returnToRoute  =   array
+                (
+                    'name'  =>  'custom-error',
+                    'data'  =>  array('errorNumber' => 20),
+                );
+            }
+        }
+        else
+        {
+            Log::warning($FormName . " is not being correctly posted to.");
+            $returnToRoute  =   array
+            (
+                'name'  =>  'custom-error',
+                'data'  =>  array('errorNumber' => 23),
+            );
+        }
+
+        if(FALSE != $returnToRoute['name'])
+        {
+            return Redirect::route($returnToRoute['name'],$returnToRoute['data']);
+        }
+        else
+        {
+            $viewData           =   array
+                                    (
+                                        'FormMessages'  =>  $FormMessages,
+                                    );
+            return $this->makeResponseView('application/auth/forgot-success', $viewData);
+        }
     }
 
     public function changePasswordWithOldPassword()

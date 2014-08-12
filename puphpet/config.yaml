@@ -10,18 +10,17 @@ vagrantfile-local:
         network:
             private_network: 11.11.11.14
             forwarded_port:
-                TUCoc7Y9Ecrq:
+                pf1cDmYTPH3G:
                     host: '6427'
                     guest: '22'
-                KC0k07DH9eHd:
+                3VghPispi7Wm:
                     host: '3314'
                     guest: '3306'
+        post_up_message: ''
         provider:
             virtualbox:
                 modifyvm:
                     natdnshostresolver1: on
-                setextradata:
-                    VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root: 1
             vmware:
                 numvcpus: 1
             parallels:
@@ -36,7 +35,7 @@ vagrantfile-local:
                     - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
                     - '--parser future'
         synced_folder:
-            6Jpqn1rf0UgH:
+            NgBHkACJObSZ:
                 source: ../freelife-site
                 target: /var/www/freelife.local
                 sync_type: default
@@ -51,7 +50,6 @@ vagrantfile-local:
         usable_port_range:
             start: 10200
             stop: 10500
-        post_up_message: ''
     ssh:
         host: null
         port: null
@@ -83,7 +81,7 @@ apache:
     modules:
         - rewrite
     vhosts:
-        BVstbEOzGAbQ:
+        6rDxjmtw7p5o:
             servername: vm.freelife.local
             serveraliases:
                 - vm.freelife.local
@@ -91,19 +89,20 @@ apache:
             port: '80'
             setenv:
                 - 'APP_ENV dev'
+                - 'APPLICATION_ENV development'
             override:
                 - All
             options:
                 - Indexes
                 - FollowSymLinks
                 - MultiViews
-            engine: php
+            engine: none
             custom_fragment: ''
             ssl_cert: ''
             ssl_key: ''
             ssl_chain: ''
             ssl_certs_dir: ''
-    mod_pagespeed: '0'
+    mod_pagespeed: 0
 nginx:
     install: '0'
     settings:
@@ -111,7 +110,7 @@ nginx:
         proxy_buffer_size: ''
         proxy_buffers: ''
     vhosts:
-        Ta7Ic2rRkY8h:
+        yT6XdFwm8HsO:
             server_name: ''
             www_root: ''
             listen_port: ''
@@ -121,7 +120,7 @@ nginx:
             ssl_key: ''
 php:
     install: '1'
-    version: '55'
+    version: '54'
     composer: '1'
     composer_home: ''
     modules:
@@ -132,11 +131,6 @@ php:
             - mcrypt
             - mysql
             - mysqlnd
-            - xmlrpc
-            - xsl
-            - common
-            - fpm
-            - odbc
         pear: {  }
         pecl:
             - pecl_http
@@ -144,7 +138,7 @@ php:
         display_errors: On
         error_reporting: '-1'
         session.save_path: /var/lib/php/session
-    timezone: America/Chicago
+    timezone: America/Los_Angeles
     mod_php: '1'
 hhvm:
     install: '0'
@@ -180,7 +174,7 @@ drush:
 ruby:
     install: '1'
     versions:
-        Kzr022YihANv:
+        AY8Y4LaRQlKe:
             version: ''
 nodejs:
     install: '0'
@@ -190,7 +184,7 @@ mysql:
     root_password: freelife123
     adminer: 0
     databases:
-        KXQFze2mzquO:
+        yMy3eNZ9YXy2:
             grant:
                 - ALL
             name: freelife_db
@@ -226,7 +220,7 @@ mongodb:
 redis:
     install: '0'
     settings:
-        conf_port: '6379'
+        conf_port: '7014'
 mailcatcher:
     install: '0'
     settings:
@@ -235,6 +229,7 @@ mailcatcher:
         http_ip: 0.0.0.0
         http_port: '1080'
         mailcatcher_path: /usr/local/rvm/wrappers/default
+        from_email_method: inline
 beanstalkd:
     install: '0'
     settings:

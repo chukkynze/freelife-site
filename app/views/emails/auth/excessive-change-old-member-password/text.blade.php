@@ -1,10 +1,10 @@
 We Apologize For The Inconvenience.
 <?php echo $TEXT_BREAK; ?>
 <?php echo $TEXT_BREAK; ?>
-It appears that you may be having problems signing up with <?php echo $COMPANY_NAME; ?>.
+It appears that you may be having problems resetting your old password with <?php echo $COMPANY_NAME; ?>.
 <?php echo $TEXT_BREAK; ?>
 <?php echo $TEXT_BREAK; ?>
-We detected multiple attempts to signup to our site using this or an associated email address. If this was not you, we advise that you contact us at <?php echo $CUSTOMER_SERVICE_EMAIL; ?> so we can make sure your account is properly setup and secured.
+We detected multiple attempts to reset your old password on our site using this mail address. If this was not you, we advise that you contact us at <?php echo $CUSTOMER_SERVICE_EMAIL; ?> so we can make sure your account is properly setup and secured.
 <?php echo $TEXT_BREAK; ?>
 <?php echo $TEXT_BREAK; ?>
 <?php echo $TEXT_BREAK; ?>
@@ -19,6 +19,9 @@ Sincerely,
 <?php echo $TEXT_BREAK; ?>
 <?php echo $CUSTOMER_SERVICE_NUMBER; ?>
 <?php echo $TEXT_BREAK; ?>
+<?php echo $TEXT_BREAK; ?>
+
+P.S.: We are truly sorry that you are having issues with our site. We will do all that is possible to get you up and running. Thank you for your business.
 <?php echo $TEXT_BREAK; ?>
 <?php echo $TEXT_BREAK; ?>
 

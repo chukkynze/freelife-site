@@ -294,10 +294,19 @@ h4, .h4{
                                                                             <h1 class="h1">We Apologize</h1>
                                                                             <h2 class="h2">For The Inconvenience.</h2>
                                                                             <br />
-                                                                            It appears that you may be having problems signing up with <?php echo $COMPANY_NAME; ?>.
+                                                                            It appears that you may be having problems logging into <?php echo $COMPANY_NAME; ?>.
                                                                             <br />
                                                                             <br />
-                                                                            We detected multiple attempts to signup to our site using this or an associated email address. If this was not you, we advise that you contact us at <?php echo $CUSTOMER_SERVICE_EMAIL; ?> so we can make sure your account is properly setup and secured.
+                                                                            We detected multiple attempts to login to our site using this email address. If this was you, we advice that you use our <a href="<?php echo $RESET_PWD_LINK; ?>" target="_blank">Forgotten Login Form</a> to reset your password.
+                                                                            <br />
+                                                                            <br />
+                                                                            or copy and paste this url in your browser address bar:
+                                                                            <br />
+                                                                            <br />
+                                                                            <a href="<?php echo $RESET_PWD_LINK; ?>" target="_blank"><?php echo $RESET_PWD_LINK; ?></a>
+                                                                            <br />
+                                                                            <br />
+                                                                            If this was not you, please still use the Forgotten Login Form, but also contact us at <a href="mailto:<?php echo $CUSTOMER_SERVICE_EMAIL; ?>"><?php echo $CUSTOMER_SERVICE_EMAIL; ?></a> so we can make sure your account is properly secured.
                                                                             <br />
                                                                             <br />
                                                                             <br />
@@ -314,7 +323,9 @@ h4, .h4{
                                                                             <?php echo $CUSTOMER_SERVICE_NUMBER; ?>
                                                                             <br />
                                                                             <br />
-			                                                                <br />
+                                                                            P.S.: We are truly sorry that you are having issues with our site. We will do all that is possible to get you back up and running. Thank you for your business.
+                                                                            <br />
+                                                                            <br />
 			                                                            </div>
                                                                     </td>
                                                                 </tr>
