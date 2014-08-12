@@ -91,4 +91,22 @@ class MemberDetails extends Eloquent
             throw new \Whoops\Example\Exception("MemberDetails ID is invalid.");
         }
     }
+
+    public function getMemberDetailsFromMemberID($memberID)
+    {
+        try
+        {
+            $query   =   DB::connection($this->connection)->table($this->table)
+                ->select('*')
+                ->where('member_id' , '=', $memberID)
+                ->get();
+
+            $result =   $query[0];
+            return $result;
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            throw new \Whoops\Example\Exception($e);
+        }
+    }
 }

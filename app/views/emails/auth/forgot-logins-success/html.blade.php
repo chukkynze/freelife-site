@@ -303,6 +303,7 @@ h4, .h4{
                                                                     <br />
                                                                     Well, we can make that happen. If this was not you however, we advise that you DO NOT click this link and instead contact us at <?php echo $CUSTOMER_SERVICE_EMAIL; ?> so we can make sure your account is properly setup and secured.
                                                                     <br />
+                                                                    <br />
                                                                     If this is actually your decision, please, click the link below to re-verify your email address.
                                                                     <br />
                                                                     <br />

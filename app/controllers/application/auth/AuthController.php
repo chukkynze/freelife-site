@@ -674,21 +674,21 @@ class AuthController extends BaseController
 
                         // Send an Email for Validation
                         $verifyEmailLink    =   $this->generateVerifyEmailLink($formFields['forgot_email'], $NewMemberID, 'forgot-logins-success');
-                        $MemberDetailsObject=   $this->getMemberDetailsObject($NewMemberID);
+                        $MemberDetails      =   $this->getMemberDetailsFromMemberID($NewMemberID);
                         $sendEmailStatus    =   $this->sendEmail
                             (
                                 'forgot-logins-success',
                                 array
                                 (
                                     'verifyEmailLink'   => $verifyEmailLink,
-                                    'first_name'	    =>	$MemberDetailsObject->first_name,
-                                    'last_name'			=>	$MemberDetailsObject->last_name,
+                                    'first_name'	    =>	$MemberDetails->first_name,
+                                    'last_name'			=>	$MemberDetails->last_name,
                                 ),
                                 array
                                 (
                                     'fromTag'           =>  'General',
                                     'sendToEmail'       =>  $formFields['forgot_email'],
-                                    'sendToName'        =>  $MemberDetailsObject->first_name . ' ' . $MemberDetailsObject->last_name,
+                                    'sendToName'        =>  $MemberDetails->first_name . ' ' . $MemberDetails->last_name,
                                     'subject'           =>  'Access Issues',
                                     'ccArray'           =>  FALSE,
                                     'attachArray'       =>  FALSE,
@@ -896,7 +896,7 @@ class AuthController extends BaseController
                             // Update Member Object with Member Type
                             $memberFillableArray    =   array
                                                         (
-                                                            'member_type'   =>  strtolower($formFields['member_type']),
+                                                            'member_type'   =>  $this->getMemberTypeFromFormValue(strtolower($formFields['member_type'])),
                                                         );
                             $this->updateMember($verifiedMemberIDArray['memberID'], $memberFillableArray);
                             $this->addMemberStatus('VerifiedStartupDetails', $verifiedMemberIDArray['memberID']);
@@ -1687,6 +1687,25 @@ class AuthController extends BaseController
         catch(\Whoops\Example\Exception $e)
         {
             Log::error("Could not add details for Member ID [" . $memberID . "] - " . $e);
+            return FALSE;
+        }
+    }
+
+    public function getMemberDetailsObject($memberDetailsID)
+    {
+
+    }
+
+    public function getMemberDetailsFromMemberID($memberID)
+    {
+        try
+        {
+            $MemberDetails    =   new MemberDetails();
+            return $MemberDetails->getMemberDetailsFromMemberID($memberID);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not get member details for Member ID [" . $memberID . "] - " . $e);
             return FALSE;
         }
     }

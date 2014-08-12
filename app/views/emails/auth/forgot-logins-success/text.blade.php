@@ -13,6 +13,7 @@ It appears that you may need to change your password to access your <?php echo $
 <?php echo $TEXT_BREAK; ?>
 Well, we can make that happen. If this was not you however, we advise that you DO NOT click this link and instead contact us at <?php echo $CUSTOMER_SERVICE_EMAIL; ?> so we can make sure your account is properly setup and secured.
 <?php echo $TEXT_BREAK; ?>
+<?php echo $TEXT_BREAK; ?>
 If this is actually your decision, please, click, copy or paste this url in your browser address bar to re-verify Your Email Address:
 <?php echo $TEXT_BREAK; ?>
 <?php echo $TEXT_BREAK; ?>

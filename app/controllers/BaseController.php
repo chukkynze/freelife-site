@@ -162,4 +162,18 @@ class BaseController extends Controller
                     :   Response::make(View::make($viewName, $viewData))->withCookie($this->SiteUserCookie);
     }
 
+    public function getMemberTypeFromFormValue($memberTypeIdentifier)
+    {
+        $currentMemberTypes =   array(
+            '0'     =>  'unknown',
+            '1'     =>  'vendor',
+            '2'     =>  'vendor-client',
+            '3'     =>  'freelancer',
+            '5'     =>  'report-viewer',
+            '900'   =>  'employee',
+        );
+
+        return $currentMemberTypes[(isset($memberTypeIdentifier) && is_numeric($memberTypeIdentifier) ? $memberTypeIdentifier : 0)];
+    }
+
 }

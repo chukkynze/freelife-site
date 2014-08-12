@@ -14,6 +14,7 @@
 class EmailUtility
 {
     // Replaceable Variables
+    public $cccc;
     private $fb_ogs             			=  "<meta property=\"og:title\"          	content=\"Welcome to ekinect.com\" />
                                     			<meta property=\"og:type\"            	content=\"website\" />
 												<meta property=\"og:url\"             	content=\"https://www.ekinect.com\" />

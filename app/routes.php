@@ -53,7 +53,7 @@ Route::post('/signup',                                                  array('a
 Route::get('/vendor-signup',                                            array('as' =>  'vendorSignup',                          'uses'  =>  'AuthController@vendorSignup',                      ));
 Route::get('/freelancer-signup',                                        array('as' =>  'freelancerSignup',                      'uses'  =>  'AuthController@freelancerSignup',                  ));
 Route::get('/forgot',                                                   array('as' =>  'forgot',                                'uses'  =>  'AuthController@forgot',                            ));
-Route::post('/forgot',                                                  array('as' =>  'processForgotPassword',                 'uses'  =>  'AuthController@processForgotPassword',             ));
+Route::post('/forgot',                                                  array('as' =>  'processForgotPassword',                 'uses'  =>  'AuthController@processForgotPassword',             'before' => 'csrf',));
 Route::get('/reset-password',                                           array('as' =>  'resetPassword',                         'uses'  =>  'AuthController@resetPassword',                     ));
 Route::get('/password-change',                                          array('as' =>  'changePasswordWithOldPassword',         'uses'  =>  'AuthController@changePasswordWithOldPassword',     ));
 Route::post('/verification-details',                                    array('as' =>  'processVerificationDetails',            'uses'  =>  'AuthController@processVerificationDetails',        ));
