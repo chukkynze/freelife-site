@@ -167,9 +167,9 @@ class BaseController extends Controller
         $currentMemberTypes =   array(
             '0'     =>  'unknown',
             '1'     =>  'vendor',
-            '2'     =>  'vendor-client',
-            '3'     =>  'freelancer',
-            '5'     =>  'report-viewer',
+            '2'     =>  'freelancer',
+            '3'     =>  'vendor-client',
+            '4'     =>  'report-viewer',
             '900'   =>  'employee',
         );
 

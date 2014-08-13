@@ -42,6 +42,7 @@ Route::get('/privacy',      'HomeController@showPrivacy');
 
 // Entering Paywall Routes - Access Authorization
 Route::get('/login',                                                    array('as' =>  'login',                                 'uses'  =>  'AuthController@showAccess',                        ));
+Route::post('/login',                                                   array('as' =>  'processLogin',                          'uses'  =>  'AuthController@processLogin',                      ));
 Route::get('/login-again',                                              array('as' =>  'loginAgain',                            'uses'  =>  'AuthController@loginAgain',                        ));
 Route::get('/you-have-successfully-logged-out',                         array('as' =>  'successfulLogout',                      'uses'  =>  'AuthController@successfulLogout',                  ));
 Route::get('/you-have-successfully-changed-your-access-credentials',    array('as' =>  'successfulAccessCredentialChange',      'uses'  =>  'AuthController@successfulAccessCredentialChange',  ));

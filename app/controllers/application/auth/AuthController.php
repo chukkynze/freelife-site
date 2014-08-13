@@ -78,6 +78,102 @@ class AuthController extends BaseController
 	}
 
 
+    public function processLogin()
+    {
+        if (Auth::check())
+        {
+            // Find out what type of member they are and
+            // Redirect to the intended page or on default
+            // Redirect to the appropriate starting dashboard
+        }
+
+		// Check if Access is allowed
+		if(!$this->isAccessAllowed())
+		{
+			return $this->redirect()->toRoute('access-temp-disabled');
+		}
+    }
+
+	/**
+	 * This is the catch all method for the policies affecting whether a user/member is allowed access.
+	 * It also takes into consideration reasons to lock the site that may go beyond just a single user
+	 *
+	 * @return bool
+	 */
+	public function isAccessAllowed()
+	{
+		$returnValue 	=	FALSE;
+
+		if($this->isUserAllowedAccess())
+		{
+			$returnValue	=	TRUE;
+		}
+
+		if($this->isUserIPAddressAllowedAccess())
+		{
+			$returnValue	=	TRUE;
+		}
+
+		if($this->isUserMemberAllowedAccess())
+		{
+			$returnValue	=	TRUE;
+		}
+
+		return $returnValue;
+	}
+
+	/**
+	 * This method determines if the user id is allowed access
+	 *
+	 * @return bool
+	 */
+	public function isUserAllowedAccess()
+	{
+		$this->SiteUser			=	$this->getUser();
+		$BlockedUserStatuses 	=	array
+									(
+										'Locked:Excessive-Login-Attempts',
+									);
+		return (!in_array($this->SiteUser->getUserStatus(),$BlockedUserStatuses) ? TRUE : FALSE);
+	}
+
+	/**
+	 * This determines if the ip address provided by the user is allowed access
+	 *
+	 * @return bool
+	 */
+	public function isUserIPAddressAllowedAccess()
+	{
+		$BlockedIPBinStatuses 	=	array
+									(
+										'Locked:Excessive-Login-Attempts',
+									);
+		return (count(array_intersect($BlockedIPBinStatuses, $this->getIPBinTable()->getIpStatusArrayByIPAddress($this->getUser()->getUserIPAddress())))  == 0 ? TRUE : FALSE);
+	}
+
+	/**
+	 * Is the member associated with this user allowed access
+	 *
+	 * @return bool
+	 */
+	public function isUserMemberAllowedAccess()
+	{
+		$BlockedMemberStatuses 	=	array
+									(
+										'Locked:Excessive-Login-Attempts',
+									);
+
+		return (	$this->getUser()->getUserMemberID()*1 > 0
+				&& 	!in_array
+					(
+						$this->getMemberStatusTable()->getMemberStatusByMemberID($this->getUser()->getUserMemberID()),
+						$BlockedMemberStatuses
+					)
+					? 	TRUE
+					: 	FALSE);
+	}
+
+
     public function resendSignupConfirmation()
 	{
 		$FormMessages       =   "";
@@ -197,7 +293,7 @@ class AuthController extends BaseController
                                     // Redirect to Successful Signup Page that informs them of the need to validate the email before they can enjoy the free 90 day Premium membership
                                     // Update status
                                     $this->addEmailStatus($formFields['lost_signup_email'], 'VerificationSentAgain');
-                                    $this->registerAccessAttempt('LostSignupVerificationForm', $FormName, 1);
+                                    $this->registerAccessAttempt($this->getSiteUser()->getID(), $FormName, 1);
                                     $viewData   =   array
                                                     (
                                                         'emailAddress' => $formFields['lost_signup_email'],
