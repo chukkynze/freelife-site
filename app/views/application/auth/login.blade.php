@@ -81,7 +81,7 @@
                                     <a class="close" data-dismiss="alert" href="#" aria-hidden="true">×</a>
                                     <h4><i class="fa fa-times"></i> Oh snap! You got an error!</h4>
 
-                                    <?php if( count($LoginFormMessages) >= 1 ): ?>
+                                    <?php if($LoginFormMessages != '' ): ?>
                                     <ul>
                                         <?php foreach($LoginFormMessages as $LoginFormMessage): ?>
                                         <li><?php echo $LoginFormMessage; ?></li>
@@ -89,7 +89,7 @@
                                     </ul>
                                     <?php endif; ?>
 
-                                    <?php if( count($LoginAttemptMessages) >= 1 ): ?>
+                                    <?php if($LoginAttemptMessages != '' ): ?>
                                     <ul>
                                          <?php foreach($LoginAttemptMessages as $LoginAttemptMessage): ?>
                                         <li><?php echo $LoginAttemptMessage; ?></li>

@@ -32,7 +32,7 @@ class Member extends Eloquent
     protected $fillable     =   array
                                 (
                                     'member_type',
-                                    'login_credentials',
+                                    'password',
                                     'salt1',
                                     'salt2',
                                     'salt3',
@@ -52,11 +52,34 @@ class Member extends Eloquent
 	 */
 	protected $hidden       =   array
                                 (
-                                    'login_credentials',
+                                    'password',
                                     'salt1',
                                     'salt2',
                                     'salt3',
                                 );
+
+    /**
+     * Get the unique identifier for the member.
+     *
+     * @return mixed
+     */
+    public function getAuthIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Get the password for the member.
+     *
+     * @return string
+     */
+    public function getAuthPassword()
+    {
+        return $this->password;
+    }
+
+
+
 
     public function addMember($LoginCredentials)
     {
@@ -65,7 +88,7 @@ class Member extends Eloquent
                             array
                             (
                                 'member_type'       =>  'unknown',
-                                'login_credentials' =>  $LoginCredentials[0],
+                                'password'          =>  Hash::make($LoginCredentials[0]),
                                 'salt1'             =>  $LoginCredentials[1],
                                 'salt2'             =>  $LoginCredentials[2],
                                 'salt3'             =>  $LoginCredentials[3],
@@ -97,6 +120,29 @@ class Member extends Eloquent
         else
         {
             throw new \Whoops\Example\Exception("Member ID is invalid.");
+        }
+    }
+
+    public function getMemberSaltFromID($memberID)
+    {
+        try
+        {
+            $query   =   DB::connection($this->connection)->table($this->table)
+                                ->select('salt1', 'salt2', 'salt3')
+                                ->where('id', '=', $memberID)
+                                ->get();
+
+            $result =   $query[0];
+            return array
+            (
+                'salt1' => $result->salt1,
+                'salt2' => $result->salt2,
+                'salt3' => $result->salt3,
+            );
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            throw new \Whoops\Example\Exception($e);
         }
     }
 }

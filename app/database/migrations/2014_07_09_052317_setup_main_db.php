@@ -107,7 +107,7 @@ class SetupMainDb extends Migration
                                             'employee',
                                             'report-viewer',
                                         ));
-            $table->string('login_credentials', 256);
+            $table->string('password', 256);
             $table->string('salt1', 32);
             $table->string('salt2', 32);
             $table->string('salt3', 32);

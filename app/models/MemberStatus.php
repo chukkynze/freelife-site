@@ -67,4 +67,83 @@ class MemberStatus extends Eloquent
             throw new \Whoops\Example\Exception("MemberStatus ID is invalid.");
         }
     }
+
+    public function checkMemberHasNoForce($memberID)
+    {
+        $result     =   DB::connection($this->connection)->table($this->table)
+                        ->select('status')
+                        ->where('member_id'       , '=', $memberID)
+                        ->orderBy('created_at', 'desc')
+                        ->first()
+        ;
+
+        $memberStatus   =   $result->status;
+
+        if(is_null($result))
+        {
+            $AttemptStatus 			=	TRUE;
+			$AttemptStatusRoute 	=	'';
+        }
+        elseif(substr($memberStatus, 0, 6) == 'Force:')
+		{
+			switch($memberStatus)
+			{
+				case 'Force:ChangePasswordWithVerifyEmailLink' 	:   $AttemptStatus 			=	FALSE;
+																	$AttemptStatusRoute 	=	'change-password-verification';
+																	break;
+
+				case 'Force:ChangePasswordWithOldPassword'		:   /**
+																	 * Force member to change password
+																	 * Keep in mind this presents a slew of problems
+																	 * 1. Password cannot be the same as the previous
+																	 * 2. Inform members not to do stupid things like change password to what it was before
+																	 * 3. Add Status 'PasswordChange:WithOld
+																	 */
+																	$AttemptStatus 			=	FALSE;
+																	$AttemptStatusRoute 	=	'force-change-password-2';
+																	break;
+
+				default : 	$AttemptStatus 			=	TRUE;
+							$AttemptStatusRoute 	=	'';
+			}
+		}
+		else
+		{
+			$AttemptStatus 			=	TRUE;
+			$AttemptStatusRoute 	=	'';
+		}
+
+		return 	array
+				(
+					'AttemptStatus' 		=>	$AttemptStatus,
+					'AttemptStatusRoute' 	=>	$AttemptStatusRoute,
+				);
+    }
+
+    public function isMemberStatusLocked($memberID)
+    {
+        $result     =   DB::connection($this->connection)->table($this->table)
+                        ->select('status')
+                        ->where('member_id'       , '=', $memberID)
+                        ->orderBy('created_at', 'desc')
+                        ->first()
+        ;
+
+        $memberStatus   =   $result->status;
+
+        if(is_null($result))
+        {
+            $bool = FALSE;
+        }
+        elseif(substr($memberStatus, 0, 6) == 'Locked')
+		{
+			$bool = TRUE;
+		}
+		else
+		{
+			$bool = FALSE;
+		}
+
+		return 	$bool;
+    }
 }

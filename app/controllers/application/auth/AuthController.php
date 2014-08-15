@@ -37,6 +37,21 @@ class AuthController extends BaseController
 
     public function showAccess()
 	{
+        if (Auth::check())
+        {
+
+            $returnToRoute  =   array
+                                (
+                                    'name'  =>  'get-member-home',
+                                    'data'  =>  FALSE,
+                                );
+            $memberID   =   Auth::id();
+            echo $memberID;
+            // Redirect to the intended page or on default
+            // Redirect to the appropriate starting dashboard
+            #return Redirect::route($returnToRoute['name'],$returnToRoute['data']);
+        }
+
         $activity   =   ( isset($this->activity)    ?   $this->activity :   'login');
         $reason     =   ( isset($this->reason)      ?   $this->reason   :   '');
 
@@ -80,18 +95,230 @@ class AuthController extends BaseController
 
     public function processLogin()
     {
-        if (Auth::check())
+        $FormName       =   'LoginForm';
+        $returnToRoute  =   array
+                            (
+                                'name'  =>  FALSE,
+                                'data'  =>  FALSE,
+                            );
+        switch($this->reason)
         {
-            // Find out what type of member they are and
-            // Redirect to the intended page or on default
-            // Redirect to the appropriate starting dashboard
+            case 'expired-session' 		:	$LoginHeaderMessage 	=	1; break;
+            case 'intentional-logout' 	:	$LoginHeaderMessage 	=	2; break;
+            case 'changed-password' 	:	$LoginHeaderMessage 	=	3; break;
+
+            default : $LoginHeaderMessage 	=	'';
+        }
+        $FormMessages       =   '';
+        $AttemptMessages    =   '';
+
+        if(Request::isMethod('post'))
+        {
+            if (Auth::check())
+            {
+
+                $returnToRoute  =   array
+                                    (
+                                        'name'  =>  'get-member-home',
+                                        'data'  =>  FALSE,
+                                    );
+                $memberID   =   Auth::id();
+                echo $memberID;
+                // Redirect to the intended page or on default
+                // Redirect to the appropriate starting dashboard
+                #return Redirect::route($returnToRoute['name'],$returnToRoute['data']);
+            }
+
+            // Check if Access is allowed
+            if(!$this->isAccessAllowed())
+            {
+                return Redirect::route('access-temp-disabled', FALSE);
+            }
+
+
+            $Attempts   =   $this->getAccessAttemptByUserIDs
+                                    (
+                                        'LoginForm',
+                                        array($this->getSiteUser()->id),
+                                        self::POLICY_AllowedAttemptsLookBackDuration
+                                    );
+
+            if($Attempts['total'] < self::POLICY_AllowedLoginAttempts)
+            {
+                if($this->isFormClean($FormName, Input::all()))
+                {
+                    $formFields     =   array
+                                        (
+                                            'returning_member'          =>  Input::get('returning_member'),
+                                            'LoginFormPasswordField'    =>  Input::get('LoginFormPasswordField'),
+                                        );
+                    $formRules      =   array
+                                        (
+                                            'returning_member'          =>  array
+                                                                            (
+                                                                                'required',
+                                                                                'email',
+                                                                                'exists:member_emails,email_address',
+                                                                                'between:5,120',
+                                                                            ),
+                                            'LoginFormPasswordField'    =>  array
+                                                                            (
+                                                                                'required',
+                                                                                'between:10,256',
+                                                                            ),
+                                        );
+                    $formMessages   =   array
+                                        (
+                                            'returning_member.required'   =>  "Your email address is required and can not be empty.",
+                                            'returning_member.email'      =>  "Your email address format is invalid.",
+                                            'returning_member.exists'     =>  "Have you previously <a href=\"#\" onclick=\"swapScreen('register');return false;\">signed up</a>?",
+                                            'returning_member.between'    =>  "Your email address is too long.",
+
+                                            'LoginFormPasswordField.required'     =>  "Please enter your password.",
+                                            'LoginFormPasswordField.between'      =>  "Passwords must be more than 10 digits.",
+                                        );
+
+                    $validator      =   Validator::make($formFields, $formRules, $formMessages);
+
+                    if ($validator->passes())
+                    {
+                        // Get the member id from the submitted email
+                        $memberID           =   $this->getMemberIDFromEmailAddress($formFields['returning_member']);
+                        $salts              =   $this->getMemberSaltFromID($memberID);
+                        $loginCredentials   =   $this->generateMemberLoginCredentials($formFields['returning_member'], $formFields['LoginFormPasswordField'], $salts['salt1'], $salts['salt2'], $salts['salt3']);
+
+
+                        // Check if Member Status is valid
+                        $isMemberStatusLocked      =   $this->isMemberStatusLocked($memberID);
+
+                        if(!$isMemberStatusLocked)
+                        {
+                            // Ensure member is not required to perform a forced behaviour
+                            $memberHasNoForce         =   $this->checkMemberHasNoForce($memberID);
+
+                            if($memberHasNoForce['AttemptStatus'])
+                            {
+                                // Check Member Financial Status
+                                $memberIsInGoodFinancialStanding		=	$this->checkMemberFinancialStatus();
+
+                                if($memberIsInGoodFinancialStanding['AttemptStatus'])
+                                {
+                                    // create our user data for the authentication
+                                    $authData           =   array
+                                                            (
+                                                                'id' 	            => $memberID,
+                                                                'password' => $loginCredentials,
+                                                            );
+
+                                    if (Auth::attempt($authData, true))
+                                    {
+                                        $memberID   =   Auth::id();
+                                        echo $memberID . 'SUCCESS!';
+                                    }
+                                    else
+                                    {
+                                        echo 'Fail!';
+                                    }
+                                }
+                                else
+                                {
+                                    $this->registerAccessAttempt($this->getSiteUser()->getID(), $FormName, 0);
+                                    $this->addAdminAlert();
+                                    Log::warning($FormName . " member financials are not in order.");
+                                    $returnToRoute  =   array
+                                                        (
+                                                            'name'  =>  'custom-error',
+                                                            'data'  =>  array('errorNumber' => 26),
+                                                        );
+                                }
+                            }
+                            else
+                            {
+                                $this->registerAccessAttempt($this->getSiteUser()->getID(), $FormName, 0);
+                                $this->addAdminAlert();
+                                Log::warning($FormName . " member is under force.");
+                                $returnToRoute  =   array
+                                                    (
+                                                        'name'  =>  'custom-error',
+                                                        'data'  =>  array('errorNumber' => 25),
+                                                    );
+                            }
+                        }
+                        else
+                        {
+                            $this->registerAccessAttempt($this->getSiteUser()->getID(), $FormName, 0);
+                            $this->addAdminAlert();
+                            Log::warning($FormName . " member status is under lock.");
+                            $returnToRoute  =   array
+                                                (
+                                                    'name'  =>  'custom-error',
+                                                    'data'  =>  array('errorNumber' => 24),
+                                                );
+                        }
+                    }
+                    else
+                    {
+                        $FormErrors   =   $validator->messages()->toArray();
+                        $FormMessages =   array();
+                        foreach($FormErrors as $errors)
+                        {
+                            $FormMessages[]   =   $errors[0];
+                        }
+
+                        $this->registerAccessAttempt($this->getSiteUser()->getID(),$FormName, 0);
+                        Log::info($FormName . " - form values did not pass.");
+                    }
+                }
+                else
+                {
+                    $this->registerAccessAttempt($this->getSiteUser()->getID(), $FormName, 0);
+                    $this->addAdminAlert();
+                    Log::warning($FormName . " has invalid dummy variables passed.");
+                    $returnToRoute  =   array
+                                        (
+                                            'name'  =>  'custom-error',
+                                            'data'  =>  array('errorNumber' => 23),
+                                        );
+                }
+            }
+            else
+            {
+                $this->applyLock('Locked:Excessive-Login-Attempts', '','excessive-logins', []);
+                $returnToRoute  =   array
+                                    (
+                                        'name'  =>  'custom-error',
+                                        'data'  =>  array('errorNumber' => 18),
+                                    );
+            }
+        }
+        else
+        {
+            Log::warning($FormName . " is not being correctly posted to.");
+            $returnToRoute  =   array
+                                (
+                                    'name'  =>  'custom-error',
+                                    'data'  =>  array('errorNumber' => 23),
+                                );
         }
 
-		// Check if Access is allowed
-		if(!$this->isAccessAllowed())
-		{
-			return $this->redirect()->toRoute('access-temp-disabled');
-		}
+        if(FALSE != $returnToRoute['name'])
+        {
+            return Redirect::route($returnToRoute['name'],$returnToRoute['data']);
+        }
+        else
+        {
+            $viewData   =   array(
+                'activity'                  =>  "login",
+
+                'LoginAttemptMessages'      =>  $AttemptMessages,
+                'LoginFormMessages'         =>  $FormMessages,
+                'LoginHeaderMessage'        =>  $LoginHeaderMessage,
+
+                'SignupFormMessages'        =>  '',
+                'ForgotFormMessages'        =>  '',
+            );
+            return $this->makeResponseView('application/auth/login', $viewData);
+        }
     }
 
 	/**
@@ -102,6 +329,19 @@ class AuthController extends BaseController
 	 */
 	public function isAccessAllowed()
 	{
+		$returnValue 	=	FALSE;
+
+		if($this->isUserIPAddressAllowedAccess())
+		{
+			$returnValue	=	TRUE;
+		}
+
+		return $returnValue;
+	}
+
+
+    public function isMemberAccessAllowed()
+    {
 		$returnValue 	=	FALSE;
 
 		if($this->isUserAllowedAccess())
@@ -120,21 +360,75 @@ class AuthController extends BaseController
 		}
 
 		return $returnValue;
+    }
+
+	/**
+	 * The "Force:" keyword is used to denote that the user, having passed basic identification (NOT Authentication)
+	 * needs to perform certain actions or have certain actions performed upon them
+	 *
+	 * @param $memberID
+     *
+     * @return array|bool
+     */
+    public function checkMemberHasNoForce($memberID)
+	{
+		try
+        {
+            $MemberStatus    =   new MemberStatus();
+            return $MemberStatus->checkMemberHasNoForce($memberID);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not check if member [ " . $memberID . " ] has a forced requirement. " . $e);
+            return FALSE;
+        }
+
+
+
+
+
+	}
+
+
+	public function checkMemberFinancialStatus()
+	{
+		$AttemptStatus 			=	TRUE;
+		$AttemptStatusRoute 	=	'';
+
+		return 	array
+				(
+					'AttemptStatus' 		=>	$AttemptStatus,
+					'AttemptStatusRoute' 	=>	$AttemptStatusRoute,
+				);
 	}
 
 	/**
-	 * This method determines if the user id is allowed access
+	 * This method determines if the member id is allowed access
+     * and is only checked upon validating that the login creds are valid and correct
 	 *
 	 * @return bool
 	 */
-	public function isUserAllowedAccess()
+
+    /**
+	 * This method determines if the member id is allowed access
+     * and is only checked upon validating that the login creds are valid and correct
+	 *
+     * @param $memberID
+     *
+     * @return bool
+     */
+    public function isMemberStatusLocked($memberID)
 	{
-		$this->SiteUser			=	$this->getUser();
-		$BlockedUserStatuses 	=	array
-									(
-										'Locked:Excessive-Login-Attempts',
-									);
-		return (!in_array($this->SiteUser->getUserStatus(),$BlockedUserStatuses) ? TRUE : FALSE);
+		try
+        {
+            $MemberStatus    =   new MemberStatus();
+            return $MemberStatus->isMemberStatusLocked($memberID);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not check if member [ " . $memberID . " ] status is locked. " . $e);
+            return FALSE;
+        }
 	}
 
 	/**
@@ -144,11 +438,16 @@ class AuthController extends BaseController
 	 */
 	public function isUserIPAddressAllowedAccess()
 	{
-		$BlockedIPBinStatuses 	=	array
-									(
-										'Locked:Excessive-Login-Attempts',
-									);
-		return (count(array_intersect($BlockedIPBinStatuses, $this->getIPBinTable()->getIpStatusArrayByIPAddress($this->getUser()->getUserIPAddress())))  == 0 ? TRUE : FALSE);
+		try
+        {
+            $IpBin   =   new IpBin();
+            return $IpBin->isUserIPAddressAllowedAccess($this->getSiteUser()->getId());
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not check if ip address is allowed access for user [" . $this->getSiteUser()->getId() . "]. " . $e);
+            return FALSE;
+        }
 	}
 
 	/**
@@ -513,7 +812,7 @@ class AuthController extends BaseController
 
                                             'password.required'     =>  "Please enter your password.",
                                             'password.confirmed'    =>  "A password confirmation is required.",
-                                            'password.between'      =>  "Passwords must be more than 10 digits. Valid characters only.",
+                                            'password.between'      =>  "Passwords must be more than 10 digits.",
 
                                             'password_confirmation.same'    =>  "A password confirmation is required.",
 
@@ -1233,7 +1532,9 @@ class AuthController extends BaseController
         /**
          * If an email address is passed we want to use it to inform the user/member that they were locked
          */
-        $validator  =   Validator::make
+        if($contactEmail != '')
+        {
+            $validator  =   Validator::make
                         (
                             array
                             (
@@ -1245,32 +1546,33 @@ class AuthController extends BaseController
                             )
                         );
 
-        if ($validator->passes())
-        {
-            // if email is in our database
-			if($this->isEmailVerified($contactEmail))
-			{
-                $MemberEmails       =   new MemberEmails();
-                $memberID           =   $MemberEmails->getMemberIDFromEmailAddress($contactEmail);
-                $memberPriEmail     =   $MemberEmails->getPrimaryEmailAddressFromMemberID($memberID);
-                $MemberDetailsModel =   MemberDetails::where('member_id', '=', $memberID)->first();
-                $sendToName         =   ($MemberDetailsModel->first_name != "" && $MemberDetailsModel->last_name != ""
-                                            ?   $MemberDetailsModel->first_name . " " . $MemberDetailsModel->last_name
-                                            :   "Ekinect Member");
+            if ($validator->passes())
+            {
+                // if email is in our database
+                if($this->isEmailVerified($contactEmail))
+                {
+                    $MemberEmails       =   new MemberEmails();
+                    $memberID           =   $MemberEmails->getMemberIDFromEmailAddress($contactEmail);
+                    $memberPriEmail     =   $MemberEmails->getPrimaryEmailAddressFromMemberID($memberID);
+                    $MemberDetailsModel =   MemberDetails::where('member_id', '=', $memberID)->first();
+                    $sendToName         =   ($MemberDetailsModel->first_name != "" && $MemberDetailsModel->last_name != ""
+                                                ?   $MemberDetailsModel->first_name . " " . $MemberDetailsModel->last_name
+                                                :   "Ekinect Member");
 
-				// Lock the member
-				$this->updateMemberStatus($memberID, ['status' => $lockStatus]);
+                    // Lock the member
+                    $this->updateMemberStatus($memberID, ['status' => $lockStatus]);
 
-				// Email Options for a Member
-                $messageOptionsArray    =   $this->getLockMessageOptions($lockStatus) + ['sendToEmail'   =>  $memberPriEmail, 'sendToName' => $sendToName,];
-			}
-			else
-			{
-                // Email Options for a Site User
-                $messageOptionsArray    =   $this->getLockMessageOptions($lockStatus) + ['sendToEmail'   =>  $contactEmail, 'sendToName' => 'Ekinect User',];
-			}
+                    // Email Options for a Member
+                    $messageOptionsArray    =   $this->getLockMessageOptions($lockStatus) + ['sendToEmail'   =>  $memberPriEmail, 'sendToName' => $sendToName,];
+                }
+                else
+                {
+                    // Email Options for a Site User
+                    $messageOptionsArray    =   $this->getLockMessageOptions($lockStatus) + ['sendToEmail'   =>  $contactEmail, 'sendToName' => 'Ekinect User',];
+                }
 
-            $this->sendEmail($emailTemplateName, $emailTemplateOptionsArray, $messageOptionsArray);
+                $this->sendEmail($emailTemplateName, $emailTemplateOptionsArray, $messageOptionsArray);
+            }
         }
 	}
 
@@ -1549,6 +1851,20 @@ class AuthController extends BaseController
                     $memberSalt2,
                     $memberSalt3,
                 );
+    }
+
+    public function getMemberSaltFromID($memberID)
+    {
+        try
+        {
+            $Member   =   new Member();
+            return $Member->getMemberSaltFromID($memberID);
+        }
+        catch(\Whoops\Example\Exception $e)
+        {
+            Log::error("Could not get member salts from id [" . $memberID . "]. " . $e);
+            return FALSE;
+        }
     }
 
     public function generateMemberLoginCredentials($newMemberEmail, $newMemberPassword, $memberSalt1, $memberSalt2, $memberSalt3)

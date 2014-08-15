@@ -43,4 +43,29 @@ class IpBin extends Eloquent
                             );
         $newIPBinLock->save();
     }
+
+    public function isUserIPAddressAllowedAccess($ipBinID)
+    {
+        $result     =   DB::connection($this->connection)->table($this->table)
+                        ->select('ip_status')
+                        ->where('user_id'       , '=', $ipBinID)
+                        ->orderBy('created_at', 'desc')
+                        ->first()
+        ;
+
+        if(is_null($result))
+        {
+            $bool = TRUE;
+        }
+        elseif(isset($result) && FALSE == stristr($result->ip_status, 'Locked:'))
+        {
+            $bool = TRUE;
+        }
+        else
+        {
+            $bool = FALSE;
+        }
+
+        return $bool;
+    }
 }

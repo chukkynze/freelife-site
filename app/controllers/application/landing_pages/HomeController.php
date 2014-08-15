@@ -144,6 +144,20 @@ class HomeController extends AbstractLandingController
             case '23'   :   $ErrorMsg       =   "Unfortunately your security parameters are incorrect. Please, retry, refresh or email " . $customerService . ". We are sure they can help you.";
                             break;
 
+
+
+
+
+
+            case '24'   :   $ErrorMsg       =   "Unfortunately, due to previous site use this account is locked. Please email " . $customerService . ". We are sure they can help you.";
+                            break;
+
+            case '25'   :   $ErrorMsg       =   "It appears you are required to perform certain actions before you can access the site. Please check your inbox and/or email " . $customerService . ". We are sure they can help you.";
+                            break;
+
+            case '26'   :   $ErrorMsg       =   "There appears to be an issue with your account. Please check your inbox and/or email " . $customerService . ". We are sure they can help you.";
+                            break;
+
 			/**
 			 * Change Password Errors
 			 */
