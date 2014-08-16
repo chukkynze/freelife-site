@@ -192,18 +192,59 @@ class BaseController extends Controller
     {
         if (Auth::check())
         {
+            $memberID       =   Auth::id();
+            $memberType     =   Auth::user()->member_type;
 
-            $returnToRoute  =   array
-            (
-                'name'  =>  'get-member-home', // This should be a route to logout of you can't find the correct member type
-                'data'  =>  FALSE,
-            );
-            $memberID   =   Auth::id();
-            echo $memberID;
-            // Redirect to the intended page or on default
-            // Redirect to the appropriate starting dashboard
-            return Redirect::route($returnToRoute['name'],$returnToRoute['data']);
+            if($memberID >= 1)
+            {
+                switch($memberType)
+                {
+                    case 'employee'         :   $returnToRoute  =   array
+                                                                (
+                                                                    'name'  =>  'employeeCheckBeforeAccess',
+                                                                );
+                                                break;
+
+                    case 'vendor'           :   $returnToRoute  =   array
+                                                                (
+                                                                    'name'  =>  'showVendorDashboard',
+                                                                );
+                                                break;
+
+                    case 'vendor-client'    :   $returnToRoute  =   array
+                                                                (
+                                                                    'name'  =>  'showVendorClientDashboard',
+                                                                );
+                                                break;
+
+                    case 'freelancer'       :   $returnToRoute  =   array
+                                                                (
+                                                                    'name'  =>  'get-member-home',
+                                                                );
+                                                break;
+
+                    default :   Auth::logout();
+                                $returnToRoute  =   array
+                                                    (
+                                                        'name'  =>  'memberLogout',
+                                                        'data'  =>  array
+                                                                    (
+                                                                        'memberID'  =>  $memberID
+                                                                    ),
+                                                    );
+                }
+            }
+            else
+            {
+                $returnToRoute  =   FALSE;
+            }
         }
+        else
+        {
+            $returnToRoute  =   FALSE;
+        }
+
+        return $returnToRoute;
     }
 
 }

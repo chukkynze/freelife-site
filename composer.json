@@ -13,7 +13,7 @@
 			"app/commands",
 			"app/controllers",
 			"app/controllers/admin/auth",
-			"app/controllers/admin/dashboard",
+			"app/controllers/admin/employee/dashboards",
 			"app/controllers/application/auth",
 			"app/controllers/application/landing_pages",
 			"app/controllers/application/members",

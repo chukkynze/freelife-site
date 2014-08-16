@@ -37,7 +37,8 @@ class AuthController extends BaseController
 
     public function showAccess()
 	{
-        $this->authCheckOnAccess();
+        $authCheck  =   $this->authCheckOnAccess();
+        if(FALSE != $authCheck){return Redirect::route($authCheck['name']);}
 
         $activity   =   ( isset($this->activity)    ?   $this->activity :   'login');
         $reason     =   ( isset($this->reason)      ?   $this->reason   :   '');
@@ -186,12 +187,17 @@ class AuthController extends BaseController
 
                                     if (Auth::attempt($authData, true))
                                     {
-                                        $memberID   =   Auth::id();
-                                        echo $memberID . 'SUCCESS!';
+                                        $this->registerAccessAttempt($this->getSiteUser()->getID(),$FormName, 1);
+                                        $authCheck  =   $this->authCheckOnAccess();
+                                        if(FALSE != $authCheck){return Redirect::route($authCheck['name']);}
                                     }
                                     else
                                     {
-                                        echo 'Fail!';
+                                        $FormMessages   =   array();
+                                        $FormMessages[] =   "Unfortunately, we do not recognize your login credentials. Please retry.";
+
+                                        $this->registerAccessAttempt($this->getSiteUser()->getID(),$FormName, 0);
+                                        Log::info($FormName . " - form values did not pass.");
                                     }
                                 }
                                 else

@@ -11,7 +11,7 @@
  */
 
 
-class AbstractFreelancerController extends BaseController
+class AbstractFreelancerController extends AbstractMemberController
 {
 
     /**

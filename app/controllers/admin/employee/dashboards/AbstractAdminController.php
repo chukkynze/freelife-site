@@ -1,8 +1,8 @@
 <?php
     /**
-     * Class AbstractVendorController
+     * Class AbstractAdminController
      *
-     * filename:   AbstractVendorController.php
+     * filename:   AbstractAdminController.php
      *
      * @author      Chukwuma J. Nze <chukkynze@ekinect.com>
      * @since       7/8/14 5:19 AM
@@ -11,7 +11,7 @@
      */
 
 
-    class AbstractVendorController extends AbstractMemberController
+    class AbstractAdminController extends BaseController
     {
 
         /**

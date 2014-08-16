@@ -1,19 +1,19 @@
 <?php
  /**
-  * Class FreelancerController
+  * Class AdminController
   *
-  * filename:   FreelancerController.php
+  * filename:   AdminController.php
   *
   * @author      Chukwuma J. Nze <chukkynze@ekinect.com>
-  * @since       7/8/14 5:24 AM
+  * @since       8/15/14 11:30 PM
   *
   * @copyright   Copyright (c) 2014 www.eKinect.com
   */
 
 
-class FreelancerController extends AbstractFreelancerController
+class AdminController extends AbstractAdminController
 {
-    public $viewRootFolder = 'application/members/freelancer/';
+    public $viewRootFolder = 'admin/employee/dashboards/';
 
     public function __construct()
     {

@@ -4,14 +4,14 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
-	| API Keys - vm.freelife.local
+	| API Keys - local.freelife.com/
 	|--------------------------------------------------------------------------
 	|
 	| Set the public and private API keys as provided by reCAPTCHA.
 	|
 	*/
-	'public_key'	=> '6LcJa_gSAAAAAB623CryM6_b_GAY41E65FeCJhGY',
-	'private_key'	=> '6LcJa_gSAAAAAI7pyXr6225GmTCR3FZU6n59-UYX',
+	'public_key'	=> '6LetTfgSAAAAANDnXDaoktLI5wzzeyab9HNLPIt5',
+	'private_key'	=> '6LetTfgSAAAAAJyNB8kU1jGp72beXODtjh7rRcsD',
 	
 	/*
 	|--------------------------------------------------------------------------
