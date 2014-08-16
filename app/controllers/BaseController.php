@@ -176,4 +176,34 @@ class BaseController extends Controller
         return $currentMemberTypes[(isset($memberTypeIdentifier) && is_numeric($memberTypeIdentifier) ? $memberTypeIdentifier : 0)];
     }
 
+
+    public function failedAuthCheck()
+    {
+
+    }
+
+
+    public function authCheckAfterAccess()
+    {
+
+    }
+
+    public function authCheckOnAccess()
+    {
+        if (Auth::check())
+        {
+
+            $returnToRoute  =   array
+            (
+                'name'  =>  'get-member-home', // This should be a route to logout of you can't find the correct member type
+                'data'  =>  FALSE,
+            );
+            $memberID   =   Auth::id();
+            echo $memberID;
+            // Redirect to the intended page or on default
+            // Redirect to the appropriate starting dashboard
+            return Redirect::route($returnToRoute['name'],$returnToRoute['data']);
+        }
+    }
+
 }

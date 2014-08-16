@@ -2,7 +2,7 @@
  /**
   * Class AuthController
   *
-  * filename:   AdminAuthController.php
+  * filename:   AuthController.php
   * 
   * @author      Chukwuma J. Nze <chukkynze@ekinect.com>
   * @since       7/9/14 8:58 PM
@@ -37,20 +37,7 @@ class AuthController extends BaseController
 
     public function showAccess()
 	{
-        if (Auth::check())
-        {
-
-            $returnToRoute  =   array
-                                (
-                                    'name'  =>  'get-member-home',
-                                    'data'  =>  FALSE,
-                                );
-            $memberID   =   Auth::id();
-            echo $memberID;
-            // Redirect to the intended page or on default
-            // Redirect to the appropriate starting dashboard
-            #return Redirect::route($returnToRoute['name'],$returnToRoute['data']);
-        }
+        $this->authCheckOnAccess();
 
         $activity   =   ( isset($this->activity)    ?   $this->activity :   'login');
         $reason     =   ( isset($this->reason)      ?   $this->reason   :   '');
@@ -114,20 +101,7 @@ class AuthController extends BaseController
 
         if(Request::isMethod('post'))
         {
-            if (Auth::check())
-            {
-
-                $returnToRoute  =   array
-                                    (
-                                        'name'  =>  'get-member-home',
-                                        'data'  =>  FALSE,
-                                    );
-                $memberID   =   Auth::id();
-                echo $memberID;
-                // Redirect to the intended page or on default
-                // Redirect to the appropriate starting dashboard
-                #return Redirect::route($returnToRoute['name'],$returnToRoute['data']);
-            }
+            $this->authCheckOnAccess();
 
             // Check if Access is allowed
             if(!$this->isAccessAllowed())
