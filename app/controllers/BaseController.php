@@ -219,7 +219,7 @@ class BaseController extends Controller
 
                     case 'freelancer'       :   $returnToRoute  =   array
                                                                 (
-                                                                    'name'  =>  'get-member-home',
+                                                                    'name'  =>  'showFreelancerDashboard',
                                                                 );
                                                 break;
 
@@ -246,5 +246,8 @@ class BaseController extends Controller
 
         return $returnToRoute;
     }
+
+
+
 
 }

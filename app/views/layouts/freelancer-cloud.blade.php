@@ -1,6 +1,6 @@
 <?php
 /**
- * filename:   vendor-cloud.blade.php
+ * filename:   freelancer-cloud.blade.php
  * 
  * @author      Chukwuma J. Nze <chukkynze@ekinect.com>
  * @since       8/16/14 2:44 AM
@@ -14,7 +14,7 @@
 
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<meta charset="utf-8">
-    <title>Ekinect - Vendor Dashboard.</title>
+    <title>Ekinect - Freelancer Dashboard.</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,IE=8,chrome=1">
     <meta name="description" content="">
@@ -22,15 +22,15 @@
 
     <link href="/notarytoolz/notary-view/notary-module.css" media="screen" rel="stylesheet" type="text/css">
     <link href="/notarytoolz/notary-view/notary/notary/css/index.css" media="screen" rel="stylesheet" type="text/css">
-    <link href="/app/members/vendor/css/cloud-admin.css" media="screen" rel="stylesheet" type="text/css">
-    <link href="/app/members/vendor/css/themes/default.css" media="screen" rel="stylesheet" type="text/css">
-    <link href="/app/members/vendor/css/responsive.css" media="screen" rel="stylesheet" type="text/css">
-    <link href="/app/members/vendor/font-awesome/css/font-awesome.min.css" media="screen" rel="stylesheet" type="text/css">
-    <link href="/app/members/vendor/css/animatecss/animate.min.css" media="screen" rel="stylesheet" type="text/css">
-    <link href="/app/members/vendor/js/bootstrap-daterangepicker/daterangepicker-bs3.css" media="screen" rel="stylesheet" type="text/css">
-    <link href="/app/members/vendor/js/jquery-todo/css/styles.css" media="screen" rel="stylesheet" type="text/css">
-    <link href="/app/members/vendor/js/fullcalendar/fullcalendar.min.css" media="screen" rel="stylesheet" type="text/css">
-    <link href="/app/members/vendor/js/gritter/css/jquery.gritter.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/app/members/freelancer/css/cloud-admin.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/app/members/freelancer/css/themes/default.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/app/members/freelancer/css/responsive.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/app/members/freelancer/font-awesome/css/font-awesome.min.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/app/members/freelancer/css/animatecss/animate.min.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/app/members/freelancer/js/bootstrap-daterangepicker/daterangepicker-bs3.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/app/members/freelancer/js/jquery-todo/css/styles.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/app/members/freelancer/js/fullcalendar/fullcalendar.min.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/app/members/freelancer/js/gritter/css/jquery.gritter.css" media="screen" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" media="screen" rel="stylesheet" type="text/css">
     <link href="/application/images/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon">
     <!--[if lt IE 9]><script type="text/javascript" src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
@@ -795,27 +795,27 @@
 	</section>
 	<!--/PAGE -->
 
-    <script type="text/javascript" src="/app/members/vendor/js/jquery/jquery-2.0.3.min.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/js/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/bootstrap-dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/js/bootstrap-daterangepicker/moment.min.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/js/bootstrap-daterangepicker/daterangepicker.min.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/js/jQuery-slimScroll-1.3.0/jquery.slimscroll.min.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/js/jQuery-slimScroll-1.3.0/slimScrollHorizontal.min.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/js/jQuery-BlockUI/jquery.blockUI.min.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/js/sparklines/jquery.sparkline.min.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/js/jquery-easing/jquery.easing.min.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/js/jquery-todo/js/paddystodolist.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/js/fullcalendar/fullcalendar.min.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/js/jQuery-Cookie/jquery.cookie.min.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/js/gritter/js/jquery.gritter.min.js"></script>
-    <script type="text/javascript" src="/app/members/vendor/js/script.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/jquery/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/bootstrap-dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/bootstrap-daterangepicker/moment.min.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/bootstrap-daterangepicker/daterangepicker.min.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/jQuery-slimScroll-1.3.0/jquery.slimscroll.min.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/jQuery-slimScroll-1.3.0/slimScrollHorizontal.min.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/jQuery-BlockUI/jquery.blockUI.min.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/sparklines/jquery.sparkline.min.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/jquery-easing/jquery.easing.min.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/jquery-todo/js/paddystodolist.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/fullcalendar/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/jQuery-Cookie/jquery.cookie.min.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/gritter/js/jquery.gritter.min.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/js/script.js"></script>
     <script type="text/javascript" src="/notarytoolz/notary-view/notary/notary/css/index.js"></script>
 
 	<script>
-		var ModuleDirectoryReference = 'vendor/';
+		var ModuleDirectoryReference = 'freelancer/';
 		jQuery(document).ready(function() {
-			App.setPage("VendorHome");  //Set current page
+			App.setPage("FreelancerHome");  //Set current page
 			App.init(); //Initialise plugins and elements
 					});
 	</script>

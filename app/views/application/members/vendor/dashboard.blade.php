@@ -56,7 +56,7 @@
 				<div class="col-lg-6">
 					<div class="jumbotron">
 						<h1>Crews</h1>
-						<p>Quickly create, view &amp; edit crew requests. Search for & notify the best freelancers or your favs. Create tasks to remind you of planned work.</p>
+						<p>Quickly create, view &amp; edit crew requests.</p>
 						<p>
 							<a href="/vendor/crews" class="btn btn-primary btn-icon input-block-level btn-lg" role="button">
 								<span class="visible-xs"><i class="fa fa-paperclip fa-fw"></i> <?php echo $crewsSectionButtonText_xs; ?></span>
@@ -113,7 +113,7 @@
 				<div class="col-md-6">
 					<div class="jumbotron">
 						<h1>Analytics</h1>
-						<p>Your personal number cruncher! Find answers to industry standard questions. Compare member averages to your business performance.</p>
+						<p>Your personal number cruncher!</p>
 						<a href="/vendor/analytics" class="btn btn-primary btn-icon input-block-level btn-lg" role="button">
 							<span class="visible-xs"><i class="fa fa-bar-chart-o fa-fw"></i> <?php echo $analyticsSectionButtonText_xs; ?></span>
 							<span class="visible-sm"><i class="fa fa-bar-chart-o fa-fw"></i> <?php echo $analyticsSectionButtonText_sm; ?></span>
@@ -134,7 +134,7 @@
 				<div class="col-md-6">
 					<div class="jumbotron">
 						<h1>Report Center</h1>
-						<p>Generate reports. Schedule data backups. Share with your clients</p>
+						<p>Generate reports. Share with your clients</p>
 						<a href="/vendor/reports" class="btn btn-primary btn-icon input-block-level btn-lg" role="button">
 							<span class="visible-xs"><i class="fa fa-folder-open fa-fw"></i> <?php echo $reportsSectionButtonText_xs; ?></span>
 							<span class="visible-sm"><i class="fa fa-folder-open fa-fw"></i> <?php echo $reportsSectionButtonText_sm; ?></span>
@@ -149,7 +149,7 @@
 				<div class="col-md-6">
 					<div class="jumbotron">
 						<h1>Help & Settings</h1>
-						<p>Get answers. Save Settings. Contact support.</p>
+						<p>Get answers. Contact support.</p>
 						<a href="/vendor/help" class="btn btn-primary btn-icon input-block-level btn-lg" role="button">
 							<span class="visible-xs"><i class="fa fa-question-circle fa-fw"></i> <?php echo $helpSectionButtonText_xs; ?></span>
 							<span class="visible-sm"><i class="fa fa-question-circle fa-fw"></i> <?php echo $helpSectionButtonText_sm; ?></span>

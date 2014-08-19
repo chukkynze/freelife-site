@@ -1,3 +1,6 @@
+SetEnv APPLICATION_ENV development
+SetEnv DB_CONNECTION_main_db_driver mysql
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         #Options -MultiViews
