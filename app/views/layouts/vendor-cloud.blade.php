@@ -20,8 +20,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <link href="/notarytoolz/notary-view/notary-module.css" media="screen" rel="stylesheet" type="text/css">
-    <link href="/notarytoolz/notary-view/notary/notary/css/index.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/app/members/vendor/vendor-module.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/app/members/vendor/controllers/vendor/css/index.css" media="screen" rel="stylesheet" type="text/css">
     <link href="/app/members/vendor/css/cloud-admin.css" media="screen" rel="stylesheet" type="text/css">
     <link href="/app/members/vendor/css/themes/default.css" media="screen" rel="stylesheet" type="text/css">
     <link href="/app/members/vendor/css/responsive.css" media="screen" rel="stylesheet" type="text/css">
@@ -47,7 +47,7 @@
 				<div class="navbar-brand">
 					<!-- COMPANY LOGO -->
 					<a href="<?php echo $memberHomeLink; ?>">
-						<img src="images/site/logos/logo.png" alt="NotaryToolz.com" class="img-responsive" height="30" width="120" style="margin-top:4px;">
+						<img src="/app/images/site_images/logo.png" alt="Ekinect.com" class="img-responsive" height="30" width="120" style="margin-top:4px;">
 					</a>
 					<!-- /COMPANY LOGO -->
 
@@ -60,15 +60,6 @@
 						</a>
 					</div>
 					-- /TEAM STATUS FOR MOBILE --
-
-
-					-- SHOP WIDGET - FOR MOBILE --
-					<div class="visible-xs">
-						<a href="#" class="shop-widget-toggle switcher btn dropdown-toggle">
-							<i class="fa fa-shopping-cart"></i>
-						</a>
-					</div>
-					-- /SHOP WIDGET FOR MOBILE --
 
 					-->
 
@@ -90,13 +81,6 @@
 						<a href="#" class="team-status-toggle dropdown-toggle tip-bottom" data-toggle="tooltip" title="Team Updates">
 							<i class="fa fa-bullhorn"></i>
 							<span class="name">Team Updates</span>
-							<i class="fa fa-angle-down"></i>
-						</a>
-					</li>
-					<li class="dropdown">
-						<a href="#" class="shop-widget-toggle dropdown-toggle tip-bottom" data-toggle="tooltip" title="Shop">
-							<i class="fa fa-shopping-cart"></i>
-							<span class="name">Shop</span>
 							<i class="fa fa-angle-down"></i>
 						</a>
 					</li>
@@ -281,7 +265,7 @@
 				<li class="current">
 				  <a href="javascript:void(0);">
 				  <span class="image">
-					  <img src="notary/img/avatars/avatar3.jpg" alt="" />
+					  <img src="/app/members/vendor/img/avatars/avatar3.jpg" alt="" />
 				  </span>
 				  <span class="title">
 					You
@@ -316,7 +300,7 @@
 				<li>
 				  <a href="javascript:void(0);">
 				  <span class="image">
-					  <img src="notary/img/avatars/avatar1.jpg" alt="" />
+					  <img src="/app/members/vendor/img/avatars/avatar1.jpg" alt="" />
 				  </span>
 				  <span class="title">
 					Max Doe
@@ -351,7 +335,7 @@
 				<li>
 				  <a href="javascript:void(0);">
 				  <span class="image">
-					  <img src="notary/img/avatars/avatar2.jpg" alt="" />
+					  <img src="/app/members/vendor/img/avatars/avatar2.jpg" alt="" />
 				  </span>
 				  <span class="title">
 					Jane Doe
@@ -386,7 +370,7 @@
 				<li>
 				  <a href="javascript:void(0);">
 				  <span class="image">
-					  <img src="notary/img/avatars/avatar4.jpg" alt="" />
+					  <img src="/app/members/vendor/img/avatars/avatar4.jpg" alt="" />
 				  </span>
 				  <span class="title">
 					Ellie Doe
@@ -421,7 +405,7 @@
 				<li>
 				  <a href="javascript:void(0);">
 				  <span class="image">
-					  <img src="notary/img/avatars/avatar5.jpg" alt="" />
+					  <img src="/app/members/vendor/img/avatars/avatar5.jpg" alt="" />
 				  </span>
 				  <span class="title">
 					Lisa Doe
@@ -456,7 +440,7 @@
 				<li>
 				  <a href="javascript:void(0);">
 				  <span class="image">
-					  <img src="notary/img/avatars/avatar6.jpg" alt="" />
+					  <img src="/app/members/vendor/img/avatars/avatar6.jpg" alt="" />
 				  </span>
 				  <span class="title">
 					Kelly Doe
@@ -491,7 +475,7 @@
 				<li>
 				  <a href="javascript:void(0);">
 				  <span class="image">
-					  <img src="notary/img/avatars/avatar7.jpg" alt="" />
+					  <img src="/app/members/vendor/img/avatars/avatar7.jpg" alt="" />
 				  </span>
 				  <span class="title">
 					Jessy Doe
@@ -526,7 +510,7 @@
 				<li>
 				  <a href="javascript:void(0);">
 				  <span class="image">
-					  <img src="notary/img/avatars/avatar8.jpg" alt="" />
+					  <img src="/app/members/vendor/img/avatars/avatar8.jpg" alt="" />
 				  </span>
 				  <span class="title">
 					Debby Doe
@@ -562,20 +546,6 @@
 			</div>
 		  </div>
 		<!-- /TEAM STATUS -->
-
-
-
-		<!-- SHOP WIDGET -->
-		<div class="container shop-widget" id="shop-widget">
-		  	<div id="scrollbar">
-				<div class="handle">
-				</div>
-		  	</div>
-		  	<div id="shop-widget-slider">
-			  store widget
-			</div>
-		</div>
-		<!-- /SHOP WIDGET -->
 
 
 
@@ -810,7 +780,7 @@
     <script type="text/javascript" src="/app/members/vendor/js/jQuery-Cookie/jquery.cookie.min.js"></script>
     <script type="text/javascript" src="/app/members/vendor/js/gritter/js/jquery.gritter.min.js"></script>
     <script type="text/javascript" src="/app/members/vendor/js/script.js"></script>
-    <script type="text/javascript" src="/notarytoolz/notary-view/notary/notary/css/index.js"></script>
+    <script type="text/javascript" src="/app/members/vendor/controllers/vendor/js/index.js"></script>
 
 	<script>
 		var ModuleDirectoryReference = 'vendor/';

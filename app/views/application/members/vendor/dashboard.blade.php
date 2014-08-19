@@ -24,21 +24,6 @@
 							<h3 class="content-title pull-left">Start Here, <a href="<?php echo $profileLink; ?>"><?php echo $displayName; ?></a></h3>
 
 
-							<!-- DATE RANGE PICKER -->
-							<span class="date-range pull-right hidden-xs  hidden-sm">
-								<div class="btn-group">
-									<a class="js_update btn btn-default hidden-xs" href="#">Date Range: </a>
-
-									<a id="reportrange" class="btn reportrange">
-										<i class="fa fa-calendar"></i>
-										<span></span>
-										<i class="fa fa-angle-down"></i>
-									</a>
-								</div>
-							</span>
-							<!-- /DATE RANGE PICKER -->
-
-
 
 
 						</div>

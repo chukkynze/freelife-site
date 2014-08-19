@@ -20,8 +20,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <link href="/notarytoolz/notary-view/notary-module.css" media="screen" rel="stylesheet" type="text/css">
-    <link href="/notarytoolz/notary-view/notary/notary/css/index.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/app/members/freelancer/freelancer-module.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/app/members/freelancer/controllers/freelancer/css/index.css" media="screen" rel="stylesheet" type="text/css">
     <link href="/app/members/freelancer/css/cloud-admin.css" media="screen" rel="stylesheet" type="text/css">
     <link href="/app/members/freelancer/css/themes/default.css" media="screen" rel="stylesheet" type="text/css">
     <link href="/app/members/freelancer/css/responsive.css" media="screen" rel="stylesheet" type="text/css">
@@ -47,30 +47,11 @@
 				<div class="navbar-brand">
 					<!-- COMPANY LOGO -->
 					<a href="<?php echo $memberHomeLink; ?>">
-						<img src="images/site/logos/logo.png" alt="NotaryToolz.com" class="img-responsive" height="30" width="120" style="margin-top:4px;">
+						<img src="/app/images/site_images/logo.png" alt="Ekinect.com" class="img-responsive" height="30" width="120" style="margin-top:4px;">
 					</a>
 					<!-- /COMPANY LOGO -->
 
 					<!-- Not implemented on mobile
-
-					-- TEAM STATUS FOR MOBILE --
-					<div class="visible-xs">
-						<a href="#" class="team-status-toggle switcher btn dropdown-toggle">
-							<i class="fa fa-bullhorn"></i>
-						</a>
-					</div>
-					-- /TEAM STATUS FOR MOBILE --
-
-
-					-- SHOP WIDGET - FOR MOBILE --
-					<div class="visible-xs">
-						<a href="#" class="shop-widget-toggle switcher btn dropdown-toggle">
-							<i class="fa fa-shopping-cart"></i>
-						</a>
-					</div>
-					-- /SHOP WIDGET FOR MOBILE --
-
-					-->
 
 
 					<!-- SIDEBAR COLLAPSE -->
@@ -81,27 +62,6 @@
 					</div>
 					<!-- /SIDEBAR COLLAPSE -->
 				</div>
-
-
-
-				<!-- NAVBAR LEFT -->
-				<ul class="nav navbar-nav pull-left hidden-xs" id="navbar-left">
-					<li class="dropdown">
-						<a href="#" class="team-status-toggle dropdown-toggle tip-bottom" data-toggle="tooltip" title="Team Updates">
-							<i class="fa fa-bullhorn"></i>
-							<span class="name">Team Updates</span>
-							<i class="fa fa-angle-down"></i>
-						</a>
-					</li>
-					<li class="dropdown">
-						<a href="#" class="shop-widget-toggle dropdown-toggle tip-bottom" data-toggle="tooltip" title="Shop">
-							<i class="fa fa-shopping-cart"></i>
-							<span class="name">Shop</span>
-							<i class="fa fa-angle-down"></i>
-						</a>
-					</li>
-				</ul>
-				<!-- /NAVBAR LEFT -->
 
 
 
@@ -267,315 +227,6 @@
 				</ul>
 				<!-- END TOP NAVIGATION MENU -->
 		</div>
-
-
-
-		<!-- TEAM STATUS -->
-		<div class="container team-status" id="team-status">
-		  <div id="scrollbar">
-			<div class="handle">
-			</div>
-		  </div>
-		  <div id="teamslider">
-			  <ul class="team-list">
-				<li class="current">
-				  <a href="javascript:void(0);">
-				  <span class="image">
-					  <img src="notary/img/avatars/avatar3.jpg" alt="" />
-				  </span>
-				  <span class="title">
-					You
-				  </span>
-					<div class="progress">
-					  <div class="progress-bar progress-bar-success" style="width: 35%">
-						<span class="sr-only">35% Complete (success)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-warning" style="width: 20%">
-						<span class="sr-only">20% Complete (warning)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-danger" style="width: 10%">
-						<span class="sr-only">10% Complete (danger)</span>
-					  </div>
-					</div>
-					<span class="status">
-						<div class="field">
-							<span class="badge badge-green">6</span> completed
-							<span class="pull-right fa fa-check"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-orange">3</span> in-progress
-							<span class="pull-right fa fa-adjust"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-red">1</span> pending
-							<span class="pull-right fa fa-list-ul"></span>
-						</div>
-				    </span>
-				  </a>
-				</li>
-				<li>
-				  <a href="javascript:void(0);">
-				  <span class="image">
-					  <img src="notary/img/avatars/avatar1.jpg" alt="" />
-				  </span>
-				  <span class="title">
-					Max Doe
-				  </span>
-					<div class="progress">
-					  <div class="progress-bar progress-bar-success" style="width: 15%">
-						<span class="sr-only">35% Complete (success)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-warning" style="width: 40%">
-						<span class="sr-only">20% Complete (warning)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-danger" style="width: 20%">
-						<span class="sr-only">10% Complete (danger)</span>
-					  </div>
-					</div>
-					<span class="status">
-						<div class="field">
-							<span class="badge badge-green">2</span> completed
-							<span class="pull-right fa fa-check"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-orange">8</span> in-progress
-							<span class="pull-right fa fa-adjust"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-red">4</span> pending
-							<span class="pull-right fa fa-list-ul"></span>
-						</div>
-				    </span>
-				  </a>
-				</li>
-				<li>
-				  <a href="javascript:void(0);">
-				  <span class="image">
-					  <img src="notary/img/avatars/avatar2.jpg" alt="" />
-				  </span>
-				  <span class="title">
-					Jane Doe
-				  </span>
-					<div class="progress">
-					  <div class="progress-bar progress-bar-success" style="width: 65%">
-						<span class="sr-only">35% Complete (success)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-warning" style="width: 10%">
-						<span class="sr-only">20% Complete (warning)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-danger" style="width: 15%">
-						<span class="sr-only">10% Complete (danger)</span>
-					  </div>
-					</div>
-					<span class="status">
-						<div class="field">
-							<span class="badge badge-green">10</span> completed
-							<span class="pull-right fa fa-check"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-orange">3</span> in-progress
-							<span class="pull-right fa fa-adjust"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-red">4</span> pending
-							<span class="pull-right fa fa-list-ul"></span>
-						</div>
-				    </span>
-				  </a>
-				</li>
-				<li>
-				  <a href="javascript:void(0);">
-				  <span class="image">
-					  <img src="notary/img/avatars/avatar4.jpg" alt="" />
-				  </span>
-				  <span class="title">
-					Ellie Doe
-				  </span>
-					<div class="progress">
-					  <div class="progress-bar progress-bar-success" style="width: 5%">
-						<span class="sr-only">35% Complete (success)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-warning" style="width: 48%">
-						<span class="sr-only">20% Complete (warning)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-danger" style="width: 27%">
-						<span class="sr-only">10% Complete (danger)</span>
-					  </div>
-					</div>
-					<span class="status">
-						<div class="field">
-							<span class="badge badge-green">1</span> completed
-							<span class="pull-right fa fa-check"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-orange">6</span> in-progress
-							<span class="pull-right fa fa-adjust"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-red">2</span> pending
-							<span class="pull-right fa fa-list-ul"></span>
-						</div>
-				    </span>
-				  </a>
-				</li>
-				<li>
-				  <a href="javascript:void(0);">
-				  <span class="image">
-					  <img src="notary/img/avatars/avatar5.jpg" alt="" />
-				  </span>
-				  <span class="title">
-					Lisa Doe
-				  </span>
-					<div class="progress">
-					  <div class="progress-bar progress-bar-success" style="width: 21%">
-						<span class="sr-only">35% Complete (success)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-warning" style="width: 20%">
-						<span class="sr-only">20% Complete (warning)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-danger" style="width: 40%">
-						<span class="sr-only">10% Complete (danger)</span>
-					  </div>
-					</div>
-					<span class="status">
-						<div class="field">
-							<span class="badge badge-green">4</span> completed
-							<span class="pull-right fa fa-check"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-orange">5</span> in-progress
-							<span class="pull-right fa fa-adjust"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-red">9</span> pending
-							<span class="pull-right fa fa-list-ul"></span>
-						</div>
-				    </span>
-				  </a>
-				</li>
-				<li>
-				  <a href="javascript:void(0);">
-				  <span class="image">
-					  <img src="notary/img/avatars/avatar6.jpg" alt="" />
-				  </span>
-				  <span class="title">
-					Kelly Doe
-				  </span>
-					<div class="progress">
-					  <div class="progress-bar progress-bar-success" style="width: 45%">
-						<span class="sr-only">35% Complete (success)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-warning" style="width: 21%">
-						<span class="sr-only">20% Complete (warning)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-danger" style="width: 10%">
-						<span class="sr-only">10% Complete (danger)</span>
-					  </div>
-					</div>
-					<span class="status">
-						<div class="field">
-							<span class="badge badge-green">6</span> completed
-							<span class="pull-right fa fa-check"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-orange">3</span> in-progress
-							<span class="pull-right fa fa-adjust"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-red">1</span> pending
-							<span class="pull-right fa fa-list-ul"></span>
-						</div>
-				    </span>
-				  </a>
-				</li>
-				<li>
-				  <a href="javascript:void(0);">
-				  <span class="image">
-					  <img src="notary/img/avatars/avatar7.jpg" alt="" />
-				  </span>
-				  <span class="title">
-					Jessy Doe
-				  </span>
-					<div class="progress">
-					  <div class="progress-bar progress-bar-success" style="width: 7%">
-						<span class="sr-only">35% Complete (success)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-warning" style="width: 30%">
-						<span class="sr-only">20% Complete (warning)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-danger" style="width: 10%">
-						<span class="sr-only">10% Complete (danger)</span>
-					  </div>
-					</div>
-					<span class="status">
-						<div class="field">
-							<span class="badge badge-green">1</span> completed
-							<span class="pull-right fa fa-check"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-orange">6</span> in-progress
-							<span class="pull-right fa fa-adjust"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-red">2</span> pending
-							<span class="pull-right fa fa-list-ul"></span>
-						</div>
-				    </span>
-				  </a>
-				</li>
-				<li>
-				  <a href="javascript:void(0);">
-				  <span class="image">
-					  <img src="notary/img/avatars/avatar8.jpg" alt="" />
-				  </span>
-				  <span class="title">
-					Debby Doe
-				  </span>
-					<div class="progress">
-					  <div class="progress-bar progress-bar-success" style="width: 70%">
-						<span class="sr-only">35% Complete (success)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-warning" style="width: 20%">
-						<span class="sr-only">20% Complete (warning)</span>
-					  </div>
-					  <div class="progress-bar progress-bar-danger" style="width: 5%">
-						<span class="sr-only">10% Complete (danger)</span>
-					  </div>
-					</div>
-					<span class="status">
-						<div class="field">
-							<span class="badge badge-green">13</span> completed
-							<span class="pull-right fa fa-check"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-orange">7</span> in-progress
-							<span class="pull-right fa fa-adjust"></span>
-						</div>
-						<div class="field">
-							<span class="badge badge-red">1</span> pending
-							<span class="pull-right fa fa-list-ul"></span>
-						</div>
-				    </span>
-				  </a>
-				</li>
-			  </ul>
-			</div>
-		  </div>
-		<!-- /TEAM STATUS -->
-
-
-
-		<!-- SHOP WIDGET -->
-		<div class="container shop-widget" id="shop-widget">
-		  	<div id="scrollbar">
-				<div class="handle">
-				</div>
-		  	</div>
-		  	<div id="shop-widget-slider">
-			  store widget
-			</div>
-		</div>
-		<!-- /SHOP WIDGET -->
 
 
 
@@ -810,7 +461,7 @@
     <script type="text/javascript" src="/app/members/freelancer/js/jQuery-Cookie/jquery.cookie.min.js"></script>
     <script type="text/javascript" src="/app/members/freelancer/js/gritter/js/jquery.gritter.min.js"></script>
     <script type="text/javascript" src="/app/members/freelancer/js/script.js"></script>
-    <script type="text/javascript" src="/notarytoolz/notary-view/notary/notary/css/index.js"></script>
+    <script type="text/javascript" src="/app/members/freelancer/controllers/freelancer/js/index.js"></script>
 
 	<script>
 		var ModuleDirectoryReference = 'freelancer/';

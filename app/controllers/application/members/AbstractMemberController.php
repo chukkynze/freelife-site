@@ -13,7 +13,12 @@
 
 class AbstractMemberController extends BaseController
 {
-    protected $memberID;
+    public $memberID;
+
+    public function __construct()
+    {
+        $this->authCheckAfterAccess();
+    }
 
     public function getMemberDetailsFromMemberID($memberID)
     {
@@ -48,5 +53,14 @@ class AbstractMemberController extends BaseController
     public function getMemberDetailsObject($primaryKey)
     {
         return (isset($primaryKey) && is_numeric($primaryKey) && $primaryKey >= 1 ? MemberDetails::find($primaryKey) : FALSE);
+    }
+
+    public function memberLogout()
+    {
+        // perform generic member activities before logging out
+
+
+        // Actual Logout
+        Auth::logout();
     }
 }

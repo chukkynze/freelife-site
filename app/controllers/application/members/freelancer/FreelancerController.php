@@ -112,7 +112,7 @@ class FreelancerController extends AbstractFreelancerController
 										(
 											'messageLink' 			=>	'/freelancer/inbox/message/',
 											'messageLinkID'			=>	'1',
-											'messageAvatar'			=>	'freelancer/img/avatars/avatar8.jpg',
+											'messageAvatar'			=>	'/app/members/freelancer/img/avatars/avatar8.jpg',
 											'messageAvatarAltText'	=>	'Jane Doe',
 											'messageFromMemberType'	=>	'Signing Agency',
 											'messageFrom'			=>	'Jane Doe',
@@ -126,7 +126,7 @@ class FreelancerController extends AbstractFreelancerController
 										(
 											'messageLink' 			=>	'/freelancer/inbox/message/',
 											'messageLinkID'			=>	'2',
-											'messageAvatar'			=>	'freelancer/img/avatars/avatar7.jpg',
+											'messageAvatar'			=>	'/app/members/freelancer/img/avatars/avatar7.jpg',
 											'messageAvatarAltText'	=>	'Jane Doe',
 											'messageFromMemberType'	=>	'Freelancer',
 											'messageFrom'			=>	'Jane Doe',
@@ -140,7 +140,7 @@ class FreelancerController extends AbstractFreelancerController
 										(
 											'messageLink' 			=>	'/freelancer/inbox/message/',
 											'messageLinkID'			=>	'3',
-											'messageAvatar'			=>	'freelancer/img/avatars/avatar6.jpg',
+											'messageAvatar'			=>	'/app/members/freelancer/img/avatars/avatar6.jpg',
 											'messageAvatarAltText'	=>	'Jane Doe',
 											'messageFromMemberType'	=>	'Signing Source',
 											'messageFrom'			=>	'Jane Doe',
@@ -154,7 +154,7 @@ class FreelancerController extends AbstractFreelancerController
 										(
 											'messageLink' 			=>	'/freelancer/inbox/message/',
 											'messageLinkID'			=>	'3',
-											'messageAvatar'			=>	'freelancer/img/avatars/default-male.jpg',
+											'messageAvatar'			=>	'/app/members/freelancer/img/avatars/default-male.jpg',
 											'messageAvatarAltText'	=>	'Jane Doe',
 											'messageFromMemberType'	=>	'Client',
 											'messageFrom'			=>	'Jane Doe',
@@ -168,7 +168,7 @@ class FreelancerController extends AbstractFreelancerController
 										(
 											'messageLink' 			=>	'/freelancer/inbox/message/',
 											'messageLinkID'			=>	'3',
-											'messageAvatar'			=>	'freelancer/img/avatars/default-male.jpg',
+											'messageAvatar'			=>	'/app/members/freelancer/img/avatars/default-male.jpg',
 											'messageAvatarAltText'	=>	'Jane Doe',
 											'messageFromMemberType'	=>	'Guest',
 											'messageFrom'			=>	'Jane Doe',
@@ -297,10 +297,10 @@ class FreelancerController extends AbstractFreelancerController
 										),
 									);
 
-		$defaultLargeProfilePicUrl  	=	isset($this->freelancerGender) ? 'freelancer/img/avatars/default-male-large.jpg' : 'freelancer/img/avatars/default-female-large.jpg';
-		$defaultMediumProfilePicUrl  	=	isset($this->freelancerGender) ? 'freelancer/img/avatars/default-male.jpg' : 'freelancer/img/avatars/default-female.jpg';
-		$defaultSmallProfilePicUrl  	=	isset($this->freelancerGender) ? 'freelancer/img/avatars/default-male.jpg' : 'freelancer/img/avatars/default-female.jpg';
-		$defaultXSmallProfilePicUrl  	=	isset($this->freelancerGender) ? 'freelancer/img/avatars/default-male.jpg' : 'freelancer/img/avatars/default-female.jpg';
+		$defaultLargeProfilePicUrl  	=	isset($this->freelancerGender) ? '/app/members/freelancer/img/avatars/default-male-large.jpg'   : '/app/members/freelancer/img/avatars/default-female-large.jpg';
+		$defaultMediumProfilePicUrl  	=	isset($this->freelancerGender) ? '/app/members/freelancer/img/avatars/default-male.jpg'         : '/app/members/freelancer/img/avatars/default-female.jpg';
+		$defaultSmallProfilePicUrl  	=	isset($this->freelancerGender) ? '/app/members/freelancer/img/avatars/default-male.jpg'         : '/app/members/freelancer/img/avatars/default-female.jpg';
+		$defaultXSmallProfilePicUrl  	=	isset($this->freelancerGender) ? '/app/members/freelancer/img/avatars/default-male.jpg'         : '/app/members/freelancer/img/avatars/default-female.jpg';
 
 		$memberPicUrlLarge				=	$MemberDetailsObject->getMemberDetailsProfilePicUrl();
 		$memberPicUrlMedium				=	$MemberDetailsObject->getMemberDetailsProfilePicUrl();
@@ -360,7 +360,7 @@ class FreelancerController extends AbstractFreelancerController
 										),
 										array
 										(
-											'link'			=>	'/freelancerLogout',
+											'link'			=>	'/freelancer/logout',
 											'iconClass'		=>	'fa fa-power-off',
 											'sectionName'	=>	'Log Out',
 											'labelClass'	=>	'',

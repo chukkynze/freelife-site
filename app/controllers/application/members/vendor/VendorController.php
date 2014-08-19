@@ -22,6 +22,8 @@ class VendorController extends AbstractVendorController
 
     public function __construct()
     {
+        parent::__construct();
+
         $this->getSiteUser();   // Find/Create a SiteUser uid from cookie
         $this->setSiteHit();    // Register a SiteHit
 
@@ -112,7 +114,7 @@ class VendorController extends AbstractVendorController
 										(
 											'messageLink' 			=>	'/vendor/inbox/message/',
 											'messageLinkID'			=>	'1',
-											'messageAvatar'			=>	'vendor/img/avatars/avatar8.jpg',
+											'messageAvatar'			=>	'/app/members/vendor/img/avatars/avatar8.jpg',
 											'messageAvatarAltText'	=>	'Jane Doe',
 											'messageFromMemberType'	=>	'Signing Agency',
 											'messageFrom'			=>	'Jane Doe',
@@ -126,7 +128,7 @@ class VendorController extends AbstractVendorController
 										(
 											'messageLink' 			=>	'/vendor/inbox/message/',
 											'messageLinkID'			=>	'2',
-											'messageAvatar'			=>	'vendor/img/avatars/avatar7.jpg',
+											'messageAvatar'			=>	'/app/members/vendor/img/avatars/avatar7.jpg',
 											'messageAvatarAltText'	=>	'Jane Doe',
 											'messageFromMemberType'	=>	'Vendor',
 											'messageFrom'			=>	'Jane Doe',
@@ -140,7 +142,7 @@ class VendorController extends AbstractVendorController
 										(
 											'messageLink' 			=>	'/vendor/inbox/message/',
 											'messageLinkID'			=>	'3',
-											'messageAvatar'			=>	'vendor/img/avatars/avatar6.jpg',
+											'messageAvatar'			=>	'/app/members/vendor/img/avatars/avatar6.jpg',
 											'messageAvatarAltText'	=>	'Jane Doe',
 											'messageFromMemberType'	=>	'Signing Source',
 											'messageFrom'			=>	'Jane Doe',
@@ -154,7 +156,7 @@ class VendorController extends AbstractVendorController
 										(
 											'messageLink' 			=>	'/vendor/inbox/message/',
 											'messageLinkID'			=>	'3',
-											'messageAvatar'			=>	'vendor/img/avatars/default-male.jpg',
+											'messageAvatar'			=>	'/app/members/vendor/img/avatars/default-male.jpg',
 											'messageAvatarAltText'	=>	'Jane Doe',
 											'messageFromMemberType'	=>	'Client',
 											'messageFrom'			=>	'Jane Doe',
@@ -168,7 +170,7 @@ class VendorController extends AbstractVendorController
 										(
 											'messageLink' 			=>	'/vendor/inbox/message/',
 											'messageLinkID'			=>	'3',
-											'messageAvatar'			=>	'vendor/img/avatars/default-male.jpg',
+											'messageAvatar'			=>	'/app/members/vendor/img/avatars/default-male.jpg',
 											'messageAvatarAltText'	=>	'Jane Doe',
 											'messageFromMemberType'	=>	'Guest',
 											'messageFrom'			=>	'Jane Doe',
@@ -297,10 +299,10 @@ class VendorController extends AbstractVendorController
 										),
 									);
 
-		$defaultLargeProfilePicUrl  	=	isset($this->vendorGender) ? 'vendor/img/avatars/default-male-large.jpg' : 'vendor/img/avatars/default-female-large.jpg';
-		$defaultMediumProfilePicUrl  	=	isset($this->vendorGender) ? 'vendor/img/avatars/default-male.jpg' : 'vendor/img/avatars/default-female.jpg';
-		$defaultSmallProfilePicUrl  	=	isset($this->vendorGender) ? 'vendor/img/avatars/default-male.jpg' : 'vendor/img/avatars/default-female.jpg';
-		$defaultXSmallProfilePicUrl  	=	isset($this->vendorGender) ? 'vendor/img/avatars/default-male.jpg' : 'vendor/img/avatars/default-female.jpg';
+		$defaultLargeProfilePicUrl  	=	isset($this->vendorGender) ? '/app/members/vendor/img/avatars/default-male-large.jpg' : '/app/members/vendor/img/avatars/default-female-large.jpg';
+		$defaultMediumProfilePicUrl  	=	isset($this->vendorGender) ? '/app/members/vendor/img/avatars/default-male.jpg' : '/app/members/vendor/img/avatars/default-female.jpg';
+		$defaultSmallProfilePicUrl  	=	isset($this->vendorGender) ? '/app/members/vendor/img/avatars/default-male.jpg' : '/app/members/vendor/img/avatars/default-female.jpg';
+		$defaultXSmallProfilePicUrl  	=	isset($this->vendorGender) ? '/app/members/vendor/img/avatars/default-male.jpg' : '/app/members/vendor/img/avatars/default-female.jpg';
 
 		$memberPicUrlLarge				=	$MemberDetailsObject->getMemberDetailsProfilePicUrl();
 		$memberPicUrlMedium				=	$MemberDetailsObject->getMemberDetailsProfilePicUrl();
@@ -360,7 +362,7 @@ class VendorController extends AbstractVendorController
 										),
 										array
 										(
-											'link'			=>	'/vendorLogout',
+											'link'			=>	'/vendor/logout',
 											'iconClass'		=>	'fa fa-power-off',
 											'sectionName'	=>	'Log Out',
 											'labelClass'	=>	'',
